@@ -80,7 +80,7 @@ public class PedometerFragment extends Fragment {
                 if (isWalking) {
                     stepCount++;
                     updateStepCount();
-                    updateProgressBar(); // Update the custom CircularProgressBar
+                    updateProgressBar();
                     updateStopwatch();
                     updateStats();
                     handler.postDelayed(this, 1000); // Update every second
