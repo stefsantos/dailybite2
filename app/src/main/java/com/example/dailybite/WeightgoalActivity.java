@@ -1,5 +1,6 @@
 package com.example.dailybite;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -8,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Intent;
 
 public class WeightgoalActivity extends AppCompatActivity {
 
@@ -18,6 +18,7 @@ public class WeightgoalActivity extends AppCompatActivity {
     private TextView gainWeightText;
     private ImageButton proceedButton;
     private TextView backTextView;
+    private TextView selectedOption = null;  // Variable to store selected weight goal
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,19 +71,28 @@ public class WeightgoalActivity extends AppCompatActivity {
         proceedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 Intent intent = new Intent(WeightgoalActivity.this, GenderActivity.class); // Replace with the next activity
-                 startActivity(intent);
+                if (selectedOption == null) {
+                    // If no option has been selected, show an error message
+                    Toast.makeText(WeightgoalActivity.this, "Please select a weight goal before proceeding", Toast.LENGTH_SHORT).show();
+                } else {
+                    // If a weight goal is selected, proceed to the next activity
+                    Intent intent = new Intent(WeightgoalActivity.this, GenderActivity.class);
+                    startActivity(intent);
+                }
             }
         });
     }
 
-    private void selectWeightOption(TextView selectedOption) {
+    private void selectWeightOption(TextView selectedOptionView) {
         // Reset the backgrounds for all options
         loseWeightText.setBackgroundResource(android.R.color.transparent);
         keepWeightText.setBackgroundResource(android.R.color.transparent);
         gainWeightText.setBackgroundResource(android.R.color.transparent);
 
         // Apply the outline to the selected option
-        selectedOption.setBackgroundResource(R.drawable.outline);
+        selectedOptionView.setBackgroundResource(R.drawable.outline);
+
+        // Set the selected option to track which one was chosen
+        selectedOption = selectedOptionView;
     }
 }
