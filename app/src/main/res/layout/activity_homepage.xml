@@ -3,14 +3,550 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation" />
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
 
+    <TextView
+        android:id="@+id/itami"
+        android:layout_width="43dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="44dp"
+        android:gravity="top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/itami"
+        android:textAppearance="@style/itami"
+        android:translationY="-0.11sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/today"
+        android:layout_width="41dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="44dp"
+        android:gravity="top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/today"
+        android:textAppearance="@style/today"
+        android:translationY="-0.03sp"
+        app:layout_constraintStart_toEndOf="@+id/itami"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/nutrients_i"
+            android:layout_width="109dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="133dp"
+            android:gravity="center_horizontal|top"
+            android:lineSpacingExtra="0sp"
+            android:text="@string/nutrients_i"
+            android:textAppearance="@style/nutrients_i"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/itami" />
+
+        <RelativeLayout
+        android:id="@+id/nutrients_box"
+        android:layout_width="380dp"
+        android:layout_height="144dp"
+        android:layout_marginTop="160dp"
+            android:layout_marginStart="16dp"
+        android:background="@drawable/nutrients_i"
+        android:clipToOutline="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_protein"
+        android:layout_width="85.33dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="171dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="150 / 225"
+        android:textAppearance="@style/tv_nutrients"
+        app:layout_constraintBottom_toTopOf="@+id/progressBarDeterminate_proteins"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarDeterminate_proteins"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="190dp"
+        android:max="100"
+        android:progress="66"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/proteins"
+        android:layout_width="85.33dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="198dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/proteins"
+        android:textAppearance="@style/nutrients"
+        android:translationY="-0.03sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_fats"
+        android:layout_width="85.33dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="171dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="30 / 118"
+        android:textAppearance="@style/tv_nutrients"
+        app:layout_constraintBottom_toTopOf="@+id/progressBarDeterminate_fats"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarDeterminate_fats"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="192dp"
+        android:max="100"
+        android:progress="26"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/fats"
+        android:layout_width="85.33dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="198dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="Fats"
+        android:textAppearance="@style/nutrients"
+        android:translationY="-0.03sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_carbs"
+        android:layout_width="85.33dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="266dp"
+        android:layout_marginTop="171dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="319 / 340"
+        android:textAppearance="@style/tv_nutrients"
+        app:layout_constraintBottom_toTopOf="@+id/progressBarDeterminate_Carbs"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarDeterminate_Carbs"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="266dp"
+        android:layout_marginTop="192dp"
+        android:max="100"
+        android:progress="66"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/carbs"
+        android:layout_width="85.33dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="266dp"
+        android:layout_marginTop="198dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="Carbs"
+        android:textAppearance="@style/nutrients"
+        android:translationY="-0.03sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_calories"
+        android:layout_width="304dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="239dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="2456 / 3400"
+        android:textAppearance="@style/calories"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarDeterminate_calories"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="304dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="260dp"
+        android:max="100"
+        android:progress="72"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/calories"
+        android:layout_width="304dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="270dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="Calories"
+        android:textAppearance="@style/calories"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/tv_water_intak"
+        android:layout_width="74dp"
+        android:layout_height="15dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="323dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/water_intak"
+        android:textAppearance="@style/water_intak"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/water_box"
+        android:layout_width="380dp"
+        android:layout_height="144dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="350dp"
+        android:background="@drawable/nutrients_i"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/water"
+        android:layout_width="34dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="364dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/water"
+        android:textAppearance="@style/water"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/liters_water"
+        android:layout_width="92dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="379dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/liters_water"
+        android:textAppearance="@style/liters_water"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/last_time_1"
+        android:layout_width="110dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="443dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/last_time_1"
+        android:textAppearance="@style/last_time_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/icon_button_plus"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="378dp"
+        android:background="@drawable/button_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/icon_button_minus"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="426dp"
+        android:background="@drawable/button_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/surface_bac"
+        android:layout_width="40dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="318dp"
+        android:layout_marginTop="364dp"
+        android:background="@drawable/water_bac"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/water_backg"
+        android:layout_width="40dp"
+        android:layout_height="76dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="318dp"
+        android:layout_marginTop="398dp"
+        android:background="@drawable/water_backg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/water_percent"
+        android:layout_width="24dp"
+        android:layout_height="15dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="326dp"
+        android:layout_marginTop="428dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/water_percent"
+        android:textAppearance="@style/water_percent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/calendar_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="348dp"
+        android:layout_marginTop="44dp"
+        app:layout_constraintStart_toEndOf="@id/itami"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/group" />
+
+    <ImageView
+        android:id="@+id/plus_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="378dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/plus_icon" />
+
+    <ImageView
+        android:id="@+id/minus_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="426dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/minus_icon" />
+
+    <ImageView
+        android:id="@+id/user_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/user_image" />
+
+    <TextView
+        android:id="@+id/tv_meals"
+        android:layout_width="74dp"
+        android:layout_height="15dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="504dp"
+        android:gravity="top|left"
+        android:lineSpacingExtra="0sp"
+        android:text="Meals"
+        android:textAppearance="@style/water_intak"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/plus_icon_meal"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="372dp"
+        android:layout_marginTop="500dp"
+        android:onClick="addMeal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/plus_icon" />
+
+    <RelativeLayout
+        android:id="@+id/meal_1"
+        android:layout_width="380dp"
+        android:layout_height="89dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="534dp"
+        android:background="@drawable/meal"
+        android:clipToOutline="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/breakfast"
+        android:layout_width="63dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="550dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="Breakfast"
+        android:textAppearance="@style/meal"
+        android:translationY="-0.03sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="591dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_clock" />
+
+
+    <TextView
+        android:id="@+id/time_breakfast"
+        android:layout_width="54dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="590dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="10:45 AM"
+        android:textAppearance="@style/time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/meal_cal_breakfast"
+        android:layout_width="57dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="321dp"
+        android:layout_marginTop="550dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="1sp"
+        android:text="531 Cal"
+        android:textAppearance="@style/meal_cal"
+        android:translationY="-0.32sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/meal_2"
+        android:layout_width="380dp"
+        android:layout_height="89dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="635dp"
+        android:background="@drawable/meal"
+        android:clipToOutline="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/lunch"
+        android:layout_width="63dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="652dp"
+        android:gravity="left|top"
+        android:lineSpacingExtra="0sp"
+        android:text="Lunch"
+        android:textAppearance="@style/meal"
+        android:translationY="-0.03sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView_clock_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="692dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_clock" />
+
+    <TextView
+        android:id="@+id/time_lunch"
+        android:layout_width="54dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="692dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="0sp"
+        android:text="03:45 PM"
+        android:textAppearance="@style/time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/meal_cal_lunch"
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="321dp"
+        android:layout_marginTop="651dp"
+        android:gravity="left|top"
+        android:lineSpacingExtra="1sp"
+        android:text="1024 Cal"
+        android:textAppearance="@style/meal_cal"
+        android:translationY="-0.32sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
+    </ScrollView>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
