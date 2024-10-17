@@ -1,14 +1,113 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
-    <TextView
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reports Fragment"
-        android:textSize="20sp" />
+        android:src="@drawable/ic_back"
+    android:contentDescription="Back"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    android:layout_marginTop="16dp"
+    android:layout_marginStart="16dp"
+    android:onClick="onBackPressed" />
 
-</LinearLayout>
+    <!-- Weight Label -->
+    <TextView
+        android:id="@+id/weight_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weight"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back_button"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
+    <!-- Time Dropdown -->
+    <Spinner
+        android:id="@+id/time_dropdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/time_period"
+        app:layout_constraintTop_toTopOf="@id/weight_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp" />
+
+    <!-- Results Label -->
+    <TextView
+        android:id="@+id/results_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Results"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/time_dropdown"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp" />
+
+    <!-- Plus Icon for Adding Results -->
+
+    <!-- Results List -->
+    <LinearLayout
+        android:id="@+id/results_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/results_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <!-- Example Result Items -->
+        <TextView
+            android:id="@+id/result_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Jan 21, 2022    81.5 kg"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/result_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Aug 31, 2022    82 kg"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/result_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Jan 1, 2023    83.5 kg"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/result_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Nov 16, 2023    89.3 kg"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/result_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Feb 29, 2024    91 kg"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

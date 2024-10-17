@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.fragment.app.Fragment;
 import java.util.Calendar;
 
@@ -18,14 +20,21 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Initialize the plus icon for adding meals within the fragment's view
+        TextView username = view.findViewById(R.id.username);
+        username.setOnClickListener(v -> navigateToUserProfile());
+
+        // Initialize the calendar icon for date selection
+        ImageView calendarIcon = view.findViewById(R.id.calendar_icon);
+        calendarIcon.setOnClickListener(v -> openCalendar());
+
+        // Initialize the plus icon for navigating to meal input
         ImageView plusIconMeal = view.findViewById(R.id.plus_icon_meal);
-        plusIconMeal.setOnClickListener(v -> openCalendar());
+        plusIconMeal.setOnClickListener(v -> navigateToMealInputWithoutDate());
 
         return view;
     }
 
-    // Moved the calendar logic from Homepage activity to HomeFragment
+    // Open a calendar to select a date (only opens the calendar, no navigation)
     private void openCalendar() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -35,7 +44,7 @@ public class HomeFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getActivity(),
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    navigateToMealInput(selectedYear, selectedMonth + 1, selectedDay);
+                    // No navigation here, just opens the calendar
                 },
                 year, month, day
         );
@@ -43,12 +52,17 @@ public class HomeFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    // Moved the navigation to meal input from Homepage activity to HomeFragment
-    private void navigateToMealInput(int year, int month, int day) {
+    // Navigate to meal input activity without passing a date
+    private void navigateToMealInputWithoutDate() {
         Intent intent = new Intent(getActivity(), meal_input.class);
-        intent.putExtra("year", year);
-        intent.putExtra("month", month);
-        intent.putExtra("day", day);
-        startActivity(intent);
+        startActivity(intent); // No date passed, direct navigation
     }
+
+    private void navigateToUserProfile() {
+        Intent intent = new Intent(getActivity(), ProfileActivity.class);
+        startActivity(intent); // Replace UserProfileActivity with your desired activity
+    }
+
 }
+
+

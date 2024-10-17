@@ -5,18 +5,6 @@
     android:padding="16dp">
 
     <!-- App Name at the Top Left Corner -->
-    <TextView
-        android:id="@+id/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Username_here"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
 
     <!-- Main LinearLayout to contain the rest of the UI -->
     <LinearLayout
@@ -25,8 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp"
-        android:layout_below="@id/app_name">
+        android:padding="16dp">
 
         <!-- Steps TextView -->
         <TextView
