@@ -413,6 +413,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="372dp"
         android:layout_marginTop="500dp"
+        android:onClick="addMeal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/plus_icon" />
