@@ -1,15 +1,10 @@
 package com.example.dailybite;
 
-import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import java.util.Calendar;
 
 public class Homepage extends AppCompatActivity {
 
@@ -21,6 +16,7 @@ public class Homepage extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
+        // Set the Home item as the default selected item
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -42,39 +38,5 @@ public class Homepage extends AppCompatActivity {
             // If not, set the home fragment as the default fragment on first load
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }
-
-        // Initialize the plus icon for adding meals
-        ImageView plusIconMeal = findViewById(R.id.plus_icon_meal);
-        plusIconMeal.setOnClickListener(view -> openCalendar());
-    }
-
-    private void openCalendar() {
-
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                Homepage.this,
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-
-                    navigateToMealInput(selectedYear, selectedMonth + 1, selectedDay);
-                },
-                year, month, day
-        );
-
-
-        datePickerDialog.show();
-    }
-
-
-    private void navigateToMealInput(int year, int month, int day) {
-        Intent intent = new Intent(Homepage.this, meal_input.class);
-        intent.putExtra("year", year);
-        intent.putExtra("month", month);
-        intent.putExtra("day", day);
-        startActivity(intent);
     }
 }
