@@ -1,11 +1,14 @@
 package com.example.dailybite;
 
 public class foodItem {
-    private String name;
-    private int calories;
 
-    public foodItem(String name, int calories) {
+    private String name;
+    private String servingSize;
+    private String calories;
+
+    public foodItem(String name, String servingSize, String calories) {
         this.name = name;
+        this.servingSize = servingSize;
         this.calories = calories;
     }
 
@@ -13,7 +16,11 @@ public class foodItem {
         return name;
     }
 
-    public int getCalories() {
+    public String getServingSize() {
+        return servingSize;
+    }
+
+    public String getCalories() {
         return calories;
     }
 }

@@ -1,49 +1,68 @@
 package com.example.dailybite;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class meal_input extends AppCompatActivity implements foodAdapter.OnItemDeleteListener { // Ensure the class name matches
+public class meal_input extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
+    private TextView caloriesText, proteinsText, fatsText, carbsText;
+    private RecyclerView foodRecyclerView;
     private foodAdapter foodAdapter;
-    private List<foodItem> foodItemList;
+    private Button saveButton;
+    private ImageButton addButton, closeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meal_input); // Make sure the layout name is correct
+        setContentView(R.layout.activity_meal_input);
 
-        recyclerView = findViewById(R.id.food_recycler_view);
-        foodItemList = new ArrayList<>();
+        // Initialize views
+        caloriesText = findViewById(R.id.caloriesText);
+        proteinsText = findViewById(R.id.proteinsText);
+        fatsText = findViewById(R.id.fatsText);
+        carbsText = findViewById(R.id.carbsText);
+        foodRecyclerView = findViewById(R.id.foodRecyclerView);
+        saveButton = findViewById(R.id.saveButton);
+        addButton = findViewById(R.id.add_button);
+        closeButton = findViewById(R.id.close_button);
 
-        foodItemList.add(new foodItem("Fried Eggs", 300));
-        foodItemList.add(new foodItem("Ham", 145));
-        foodItemList.add(new foodItem("Bread", 53));
+        // Set up RecyclerView
+        foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        foodAdapter = new foodAdapter(this, getSampleFoodItems(), true);  // Correct instance with Context, List, and boolean
 
-        foodAdapter = new foodAdapter(this, foodItemList, this); // 'this' should refer to the current activity
-        recyclerView.setAdapter(foodAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        foodRecyclerView.setAdapter(foodAdapter);
+
+        addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(meal_input.this, FoodSearchActivity.class);
+            startActivity(intent);
+        });
+
+        // Set up click listeners (for adding new food or closing)
+        closeButton.setOnClickListener(v -> finish());
+
+        // Example logic for the save button
+        saveButton.setOnClickListener(v -> {
+            // Save the current meal data logic
+        });
     }
 
-    @Override
-    public void onItemDelete(foodItem foodItem, int position) {
-        new AlertDialog.Builder(this)
-                .setTitle("Delete Food Item")
-                .setMessage("Are you sure you want to delete " + foodItem.getName() + "?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    foodItemList.remove(position);
-                    foodAdapter.notifyItemRemoved(position);
-                    Toast.makeText(this, foodItem.getName() + " deleted.", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .show();
+    // Sample data for the food items
+    private List<foodItem> getSampleFoodItems() {
+        List<foodItem> foodItems = new ArrayList<>();
+        foodItems.add(new foodItem("Fried eggs", "100 g", "300 Cal"));
+        foodItems.add(new foodItem("Apple", "200 g", "116 Cal"));
+        return foodItems;
     }
 }

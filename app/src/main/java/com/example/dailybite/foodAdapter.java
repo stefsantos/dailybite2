@@ -12,55 +12,60 @@ import java.util.List;
 
 public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder> {
 
-    private List<foodItem> foodList;
+    private List<foodItem> foodItems;
     private Context context;
-    private OnItemDeleteListener onItemDeleteListener;
+    private boolean showOptionsButton;
 
-    public foodAdapter(Context context, List<foodItem> foodList, OnItemDeleteListener listener) {
+    // Constructor
+    public foodAdapter(Context context, List<foodItem> foodItems, boolean showOptionsButton) {
         this.context = context;
-        this.foodList = foodList;
-        this.onItemDeleteListener = listener;
+        this.foodItems = foodItems;
+        this.showOptionsButton = showOptionsButton;
     }
 
     @NonNull
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.food_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_item, parent, false);
         return new FoodViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
-        foodItem foodItem = foodList.get(position);
-        holder.foodName.setText(foodItem.getName());
-        holder.calories.setText(String.valueOf(foodItem.getCalories()) + " cal");
+        foodItem item = foodItems.get(position);
+        holder.nameText.setText(item.getName());
+        holder.servingSizeText.setText(item.getServingSize());
 
-        holder.deleteButton.setOnClickListener(v -> {
-            if (onItemDeleteListener != null) {
-                onItemDeleteListener.onItemDelete(foodItem, position);
-            }
-        });
+        // Show or hide the options button based on the flag
+        if (showOptionsButton) {
+            holder.optionsButton.setVisibility(View.VISIBLE);
+        } else {
+            holder.optionsButton.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return foodList.size();
+        return foodItems.size();
+    }
+
+    // Update the food list in the adapter
+    public void updateFoodList(List<foodItem> newFoodItems) {
+        this.foodItems.clear();
+        this.foodItems.addAll(newFoodItems);
+        notifyDataSetChanged();
     }
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
-        TextView foodName;
-        TextView calories;
-        ImageButton deleteButton;
 
-        public FoodViewHolder(View itemView) {
+        TextView nameText, servingSizeText;
+        ImageButton optionsButton;
+
+        public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
-            foodName = itemView.findViewById(R.id.food_name);
-            calories = itemView.findViewById(R.id.calories);
-            deleteButton = itemView.findViewById(R.id.delete_button);
+            nameText = itemView.findViewById(R.id.food_name);
+            servingSizeText = itemView.findViewById(R.id.food_serving_size);
+            optionsButton = itemView.findViewById(R.id.food_options_button);
         }
-    }
-
-    public interface OnItemDeleteListener {
-        void onItemDelete(foodItem foodItem, int position);
     }
 }

@@ -58,6 +58,9 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false"/>
+        <activity
+            android:name=".FoodSearchActivity"
+            android:exported="false"/>
 
         <activity android:name=".MeActivity" />
 
