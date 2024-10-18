@@ -65,7 +65,7 @@
         android:layout_height="50dp"
         android:text="Login"
         android:textColor="@android:color/white"
-        android:backgroundTint="#00C853"
+        android:backgroundTint="#35CC8C"
         android:layout_below="@id/password_input"
         android:layout_marginTop="40dp"
         android:elevation="4dp"/>

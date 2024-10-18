@@ -47,7 +47,7 @@
         android:layout_height="50dp"
         android:text="Start"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#00C853"
+        android:backgroundTint="#35CC8C"
         android:layout_below="@id/welcome_subtext"
         android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true"
@@ -63,7 +63,7 @@
         android:textSize="14sp"
         android:layout_below="@id/start_button"
         android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

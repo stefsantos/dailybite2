@@ -76,13 +76,13 @@
         android:id="@+id/next_button"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
-        android:backgroundTint="#00C853"
-        android:src="@drawable/next_arrow"
-        android:scaleType="centerInside"
         android:background="@drawable/ellipse"
-        android:contentDescription="Next" />
+        android:backgroundTint="#35CC8C"
+        android:contentDescription="Next"
+        android:scaleType="centerInside"
+        android:src="@drawable/next_arrow" />
 
 </RelativeLayout>

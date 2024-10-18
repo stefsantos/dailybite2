@@ -1,9 +1,8 @@
 package com.example.dailybite;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,8 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView goalValue, ageValue, heightValue, weightValue, genderValue, lifestyleValue;
-    private Button saveButton;
+    private TextView profileTitle, profileEmail, goalValue, calorieIntake, weightValue;
+    private ImageButton backButton, toProfileButton;
+    private ImageView userImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,56 +21,55 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile); // Ensure this matches your XML file name
 
-        // Initialize the TextViews
-        goalValue = findViewById(R.id.goal_value);
-        ageValue = findViewById(R.id.age_value);
-        heightValue = findViewById(R.id.height_value);
-        weightValue = findViewById(R.id.weight_value);
-        genderValue = findViewById(R.id.gender_value);
-        lifestyleValue = findViewById(R.id.lifestyle_value);
+        // Initialize the views from the layout
+        backButton = findViewById(R.id.backbutton2); // Back button
+        userImage = findViewById(R.id.user_image); // User image
+        profileTitle = findViewById(R.id.textView3); // User name (Itami)
+        profileEmail = findViewById(R.id.textView4); // User email (itamiomw@gmail.com)
+        goalValue = findViewById(R.id.textView5); // "Me" button text
+        calorieIntake = findViewById(R.id.CalorieCount2); // Calorie count
+        weightValue = findViewById(R.id.weightInKG); // Weight value
+        toProfileButton = findViewById(R.id.toProfile); // Next button on "Me"
 
-        // Initialize the Save Button
-        saveButton = findViewById(R.id.save_button);
+        // Initialize the Back Button functionality
+        backButton.setOnClickListener(v -> finish());
 
-        // Set default or passed values (you can load real values from a database or preferences)
+        // Set default or sample values
         setupDefaultValues();
 
-        // Set a click listener for the Save button
-        saveButton.setOnClickListener(v -> {
-            // Handle saving logic
-            saveUserProfile();
+        // Set up any additional button actions or logic as needed
+        findViewById(R.id.ProfileButtonContainer).setOnClickListener(v -> {
+            // Action when "Me" is clicked
+            Toast.makeText(this, "Navigating to Personal Page...", Toast.LENGTH_SHORT).show();
+            // You can add intent to navigate to another activity here
         });
 
-        // Back button functionality
-        findViewById(R.id.back_button).setOnClickListener(v -> finish());
+        findViewById(R.id.CalorieDisplayReport).setOnClickListener(v -> {
+            // Action when "Calorie Report" is clicked
+            Toast.makeText(this, "Navigating to Calorie Report...", Toast.LENGTH_SHORT).show();
+            // You can add intent to navigate to another activity here
+        });
+
+        findViewById(R.id.WeightReport).setOnClickListener(v -> {
+            // Action when "Weight Report" is clicked
+            Toast.makeText(this, "Navigating to Weight Report...", Toast.LENGTH_SHORT).show();
+            // You can add intent to navigate to another activity here
+        });
+
+        findViewById(R.id.Logout).setOnClickListener(v -> {
+            // Action when "Logout" is clicked
+            Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
+            // Add logout logic here
+        });
     }
 
     // Method to setup default values for the profile fields
     private void setupDefaultValues() {
-        // Set some default values or get them from shared preferences or a database
-        goalValue.setText("Gain weight");
-        ageValue.setText("17 years");
-        heightValue.setText("184 cm");
+        // You can fetch these values from SharedPreferences, a database, or API
+        profileTitle.setText("Itami");
+        profileEmail.setText("itamiomw@gmail.com");
+        goalValue.setText("Me"); // Refers to the "Me" button
+        calorieIntake.setText("3400 cal");
         weightValue.setText("88 kg");
-        genderValue.setText("Male");
-        lifestyleValue.setText("Active");
-    }
-
-    // Method to handle saving the profile
-    private void saveUserProfile() {
-        // Get the current values
-        String goal = goalValue.getText().toString();
-        String age = ageValue.getText().toString();
-        String height = heightValue.getText().toString();
-        String weight = weightValue.getText().toString();
-        String gender = genderValue.getText().toString();
-        String lifestyle = lifestyleValue.getText().toString();
-
-        // Here you can save the data to shared preferences or a database
-        // For now, just show a Toast message
-        Toast.makeText(this, "Profile Saved", Toast.LENGTH_SHORT).show();
-
-        // Optionally navigate back or perform another action
-        // Example: finish(); // to close the activity and return to the previous one
     }
 }

@@ -16,24 +16,26 @@
         android:contentDescription="Back"/>
 
     <!-- Title: Sign In -->
+
+    <!-- Username Input Field -->
     <TextView
         android:id="@+id/signin_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Account"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="111dp"
         android:layout_marginTop="16dp"
-        android:textColor="@android:color/black"/>
+        android:text="Create Account"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
-    <!-- Username Input Field -->
     <EditText
         android:id="@+id/username_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/signin_title"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="180dp"
         android:hint="Username"
         android:inputType="textPersonName"
         android:drawableStart="@drawable/usericon"
@@ -79,7 +81,7 @@
         android:layout_height="50dp"
         android:text="Create Account"
         android:textColor="@android:color/white"
-        android:backgroundTint="#00C853"
+        android:backgroundTint="#35CC8C"
         android:layout_below="@id/password_input"
         android:layout_marginTop="40dp"
         android:elevation="4dp"/>

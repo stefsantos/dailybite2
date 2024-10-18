@@ -42,7 +42,7 @@
         android:layout_below="@id/pfc_subtitle"
         android:layout_marginStart="40dp"
         android:layout_marginTop="53dp"
-        android:backgroundTint="#00C853"
+        android:backgroundTint="#35CC8C"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:text="Proteins: 225g"
@@ -61,7 +61,7 @@
         android:layout_marginStart="26dp"
         android:layout_marginTop="53dp"
         android:layout_toEndOf="@id/proteins_button"
-        android:backgroundTint="#00C853"
+        android:backgroundTint="#35CC8C"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:text="Fats: 118g"
@@ -74,13 +74,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/proteins_button"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="19dp"
-        android:backgroundTint="#00C853"
+        android:layout_marginTop="18dp"
+        android:backgroundTint="#35CC8C"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:text="Carbs: 340g"
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
+
+    <!-- Continue with Email Button -->
 
     <Button
         android:id="@+id/calories_button"
@@ -90,14 +92,12 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_toEndOf="@id/carbs_button"
-        android:backgroundTint="#00C853"
+        android:backgroundTint="#35CC8C"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:text="Calories: 3400"
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
-
-    <!-- Continue with Email Button -->
 
     <Button
         android:id="@+id/continue_with_google"
