@@ -1,5 +1,6 @@
 package com.example.dailybite;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -11,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView profileTitle, profileEmail, goalValue, calorieIntake, weightValue;
+    private TextView profileTitle, profileEmail, goalValue, calorieIntake;
     private ImageButton backButton, toProfileButton;
     private ImageView userImage;
 
@@ -28,7 +29,6 @@ public class ProfileActivity extends AppCompatActivity {
         profileEmail = findViewById(R.id.textView4); // User email (itamiomw@gmail.com)
         goalValue = findViewById(R.id.textView5); // "Me" button text
         calorieIntake = findViewById(R.id.CalorieCount2); // Calorie count
-        weightValue = findViewById(R.id.weightInKG); // Weight value
         toProfileButton = findViewById(R.id.toProfile); // Next button on "Me"
 
         // Initialize the Back Button functionality
@@ -50,16 +50,11 @@ public class ProfileActivity extends AppCompatActivity {
             // You can add intent to navigate to another activity here
         });
 
-        findViewById(R.id.WeightReport).setOnClickListener(v -> {
-            // Action when "Weight Report" is clicked
-            Toast.makeText(this, "Navigating to Weight Report...", Toast.LENGTH_SHORT).show();
-            // You can add intent to navigate to another activity here
-        });
-
         findViewById(R.id.Logout).setOnClickListener(v -> {
             // Action when "Logout" is clicked
             Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
-            // Add logout logic here
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -70,6 +65,5 @@ public class ProfileActivity extends AppCompatActivity {
         profileEmail.setText("itamiomw@gmail.com");
         goalValue.setText("Me"); // Refers to the "Me" button
         calorieIntake.setText("3400 cal");
-        weightValue.setText("88 kg");
     }
 }
