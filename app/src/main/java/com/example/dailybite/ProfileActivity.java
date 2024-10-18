@@ -20,7 +20,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile); // Ensure this matches your XML file name
+        setContentView(R.layout.activity_profile);
 
         // Initialize the views from the layout
         backButton = findViewById(R.id.backbutton2); // Back button
@@ -29,7 +29,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileEmail = findViewById(R.id.textView4); // User email (itamiomw@gmail.com)
         goalValue = findViewById(R.id.textView5); // "Me" button text
         calorieIntake = findViewById(R.id.CalorieCount2); // Calorie count
-        toProfileButton = findViewById(R.id.toProfile); // Next button on "Me"
+        toProfileButton = findViewById(R.id.toProfile); // "Me" Button inside the profile card
 
         // Initialize the Back Button functionality
         backButton.setOnClickListener(v -> finish());
@@ -37,11 +37,11 @@ public class ProfileActivity extends AppCompatActivity {
         // Set default or sample values
         setupDefaultValues();
 
-        // Set up any additional button actions or logic as needed
+        // "Me" Button action
         findViewById(R.id.ProfileButtonContainer).setOnClickListener(v -> {
-            // Action when "Me" is clicked
-            Toast.makeText(this, "Navigating to Personal Page...", Toast.LENGTH_SHORT).show();
-            // You can add intent to navigate to another activity here
+            // Navigate to MeActivity
+            Intent intent = new Intent(ProfileActivity.this, MeActivity.class);
+            startActivity(intent);
         });
 
         findViewById(R.id.CalorieDisplayReport).setOnClickListener(v -> {
