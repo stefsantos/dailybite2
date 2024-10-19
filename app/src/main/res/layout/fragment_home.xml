@@ -16,16 +16,16 @@
 
             <TextView
                 android:id="@+id/username"
-                android:layout_width="wrap_content"
+                android:layout_width="59dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="80dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="60dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
                 android:text="Itami"
                 android:textAppearance="@style/itami"
-                android:clickable="true"
-                android:focusable="true"
                 android:translationY="-0.11sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -33,10 +33,10 @@
 
             <TextView
                 android:id="@+id/today"
-                android:layout_width="41dp"
+                android:layout_width="50dp"
                 android:layout_height="24dp"
-                android:layout_marginStart="300dp"
-                android:layout_marginTop="44dp"
+                android:layout_marginStart="290dp"
+                android:layout_marginTop="60dp"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
                 android:text="@string/today"
@@ -45,14 +45,13 @@
                 app:layout_constraintStart_toEndOf="@+id/itami"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <TextView
                 android:id="@+id/nutrients_i"
-                android:layout_width="109dp"
-                android:layout_height="15dp"
+                android:layout_width="122dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="133dp"
-                android:gravity="center_horizontal|top"
+                android:gravity="left|top"
                 android:lineSpacingExtra="0sp"
                 android:text="@string/nutrients_i"
                 android:textAppearance="@style/nutrients_i"
@@ -232,15 +231,17 @@
                 android:textAppearance="@style/calories"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/tv_water_intak"
-                android:layout_width="74dp"
+                android:layout_width="106dp"
                 android:layout_height="15dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="323dp"
-                android:gravity="center_horizontal|top"
+                android:gravity="left|top"
+                android:textStyle="bold"
                 android:lineSpacingExtra="0sp"
                 android:text="@string/water_intak"
                 android:textAppearance="@style/water_intak"
@@ -360,20 +361,20 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="348dp"
-                android:layout_marginTop="44dp"
+                android:layout_marginTop="60dp"
                 app:layout_constraintStart_toEndOf="@id/itami"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/group" />
 
             <ImageView
                 android:id="@+id/plus_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="268dp"
-                android:layout_marginTop="378dp"
+                android:layout_width="15dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="273dp"
+                android:layout_marginTop="380dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/plus_icon" />
+                app:srcCompat="@drawable/plus" />
 
             <ImageView
                 android:id="@+id/minus_icon"
@@ -383,27 +384,28 @@
                 android:layout_marginTop="426dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/minus_icon" />
+                app:srcCompat="@drawable/minus" />
 
             <ImageView
                 android:id="@+id/user_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="50dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/user_image" />
 
             <TextView
                 android:id="@+id/tv_meals"
-                android:layout_width="74dp"
-                android:layout_height="15dp"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="504dp"
                 android:gravity="top|left"
+                android:textStyle="bold"
                 android:lineSpacingExtra="0sp"
                 android:text="Meals"
                 android:textAppearance="@style/water_intak"
@@ -413,14 +415,14 @@
 
             <ImageView
                 android:id="@+id/plus_icon_meal"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="372dp"
-                android:layout_marginTop="500dp"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_marginStart="370dp"
+                android:layout_marginTop="507dp"
                 android:onClick="addMeal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/plus_icon" />
+                app:srcCompat="@drawable/plus" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_meals"
