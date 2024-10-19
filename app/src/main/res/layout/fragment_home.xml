@@ -19,7 +19,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="80dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="40dp"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
                 android:text="Itami"
@@ -33,10 +33,10 @@
 
             <TextView
                 android:id="@+id/today"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="290dp"
-                android:layout_marginTop="65dp"
+                android:layout_width="41dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="300dp"
+                android:layout_marginTop="44dp"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
                 android:text="@string/today"
@@ -327,40 +327,40 @@
                 android:background="@drawable/water_bac"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
             <View
                 android:id="@+id/water_backg"
                 android:layout_width="40dp"
-                android:layout_height="76dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="true"
                 android:layout_marginStart="318dp"
-                android:layout_marginTop="398dp"
+                android:layout_marginTop="445dp"
                 android:background="@drawable/water_backg"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+            />
 
             <TextView
-                android:id="@+id/water_percent"
-                android:layout_width="24dp"
-                android:layout_height="15dp"
+                android:id="@+id/water_drank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginStart="326dp"
+                android:layout_marginStart="319dp"
                 android:layout_marginTop="428dp"
                 android:gravity="center_horizontal|top"
                 android:lineSpacingExtra="0sp"
-                android:text="@string/water_percent"
+                android:text="0 Cups"
                 android:textAppearance="@style/water_percent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
 
             <ImageView
                 android:id="@+id/calendar_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="348dp"
-                android:layout_marginTop="63dp"
+                android:layout_marginTop="44dp"
                 app:layout_constraintStart_toEndOf="@id/itami"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/group" />
@@ -390,7 +390,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/user_image" />
@@ -413,142 +413,23 @@
 
             <ImageView
                 android:id="@+id/plus_icon_meal"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginStart="372dp"
-                android:layout_marginTop="507dp"
+                android:layout_marginTop="500dp"
                 android:onClick="addMeal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/plus" />
+                app:srcCompat="@drawable/plus_icon" />
 
-            <RelativeLayout
-                android:id="@+id/meal_1"
-                android:layout_width="380dp"
-                android:layout_height="89dp"
-                android:layout_marginStart="16dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_meals"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="534dp"
-                android:background="@drawable/meal"
-                android:clipToOutline="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/breakfast"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="550dp"
-                android:gravity="center_horizontal|top"
-                android:lineSpacingExtra="0sp"
-                android:text="Breakfast"
-                android:textAppearance="@style/meal"
-                android:translationY="-0.03sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/imageView_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="591dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/icon_clock" />
+                android:layout_marginStart="0dp"/>
 
 
-            <TextView
-                android:id="@+id/time_breakfast"
-                android:layout_width="54dp"
-                android:layout_height="15dp"
-                android:layout_marginStart="55dp"
-                android:layout_marginTop="590dp"
-                android:gravity="center_horizontal|top"
-                android:lineSpacingExtra="0sp"
-                android:text="10:45 AM"
-                android:textAppearance="@style/time"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/meal_cal_breakfast"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="321dp"
-                android:layout_marginTop="550dp"
-                android:gravity="center_horizontal|top"
-                android:lineSpacingExtra="1sp"
-                android:text="531 Cal"
-                android:textAppearance="@style/meal_cal"
-                android:translationY="-0.32sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <RelativeLayout
-                android:id="@+id/meal_2"
-                android:layout_width="380dp"
-                android:layout_height="89dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="635dp"
-                android:background="@drawable/meal"
-                android:clipToOutline="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-
-            </RelativeLayout>
-
-            <TextView
-                android:id="@+id/lunch"
-                android:layout_width="63dp"
-                android:layout_height="17dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="652dp"
-                android:gravity="left|top"
-                android:lineSpacingExtra="0sp"
-                android:text="Lunch"
-                android:textAppearance="@style/meal"
-                android:translationY="-0.03sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/imageView_clock_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="692dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/icon_clock" />
-
-            <TextView
-                android:id="@+id/time_lunch"
-                android:layout_width="54dp"
-                android:layout_height="15dp"
-                android:layout_marginStart="55dp"
-                android:layout_marginTop="692dp"
-                android:gravity="center_horizontal|top"
-                android:lineSpacingExtra="0sp"
-                android:text="03:45 PM"
-                android:textAppearance="@style/time"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/meal_cal_lunch"
-                android:layout_width="70dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="321dp"
-                android:layout_marginTop="651dp"
-                android:gravity="left|top"
-                android:lineSpacingExtra="1sp"
-                android:text="1024 Cal"
-                android:textAppearance="@style/meal_cal"
-                android:translationY="-0.32sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
         </FrameLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
