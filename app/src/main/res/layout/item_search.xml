@@ -78,14 +78,4 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Right section: Delete button -->
-    <ImageButton
-        android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/close"
-        android:contentDescription="Delete"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="8dp" />
-
 </LinearLayout>

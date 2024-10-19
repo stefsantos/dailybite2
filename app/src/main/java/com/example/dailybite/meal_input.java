@@ -61,8 +61,11 @@ public class meal_input extends AppCompatActivity {
     // Sample data for the food items
     private List<foodItem> getSampleFoodItems() {
         List<foodItem> foodItems = new ArrayList<>();
-        foodItems.add(new foodItem("Fried eggs", "100 g", "300 Cal"));
-        foodItems.add(new foodItem("Apple", "200 g", "116 Cal"));
+        foodItems.add(new foodItem("Fried eggs", 100, 6, 1, 20));  // 100g serving, 6g proteins, 1g carbs, 20g fats
+        foodItems.add(new foodItem("Apple", 116, 1, 30, 0));       // 200g serving, 1g proteins, 30g carbs, 0g fats
+        foodItems.add(new foodItem("Banana", 90, 1, 22, 0));       // Another example item
+        // Add more food items as needed
         return foodItems;
     }
+
 }

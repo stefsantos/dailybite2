@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHolder> {
 
     private Context context;
     private List<foodItem> foodList;
 
-    public foodAdapter(Context context, List<foodItem> foodList, boolean someFlag) {
+    public SearchAdapter(Context context, List<foodItem> foodList, boolean someFlag) {
         this.context = context;
         this.foodList = foodList;
     }
@@ -25,7 +25,7 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate the custom layout for each food item
-        View view = LayoutInflater.from(context).inflate(R.layout.food_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_search, parent, false);
         return new FoodViewHolder(view);
     }
 
@@ -41,13 +41,6 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
         holder.foodCarbsTextView.setText(String.format("Carbs: %d g", foodItem.getCarbs()));
         holder.foodFatsTextView.setText(String.format("Fats: %d g", foodItem.getFats()));
 
-        // Handle delete button click
-        holder.deleteButton.setOnClickListener(v -> {
-            // Remove the item from the list
-            foodList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, foodList.size());
-        });
     }
 
     @Override
