@@ -50,7 +50,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
         public MealViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            mealLayout = itemView.findViewById(R.id.meal_item_layout);  // Assuming the layout ID is "meal_item_layout"
+            mealLayout = itemView.findViewById(R.id.meal_item_layout);
             mealName = itemView.findViewById(R.id.meal_name);
             mealTime = itemView.findViewById(R.id.meal_time);
             mealCalories = itemView.findViewById(R.id.meal_calories);
