@@ -31,23 +31,22 @@ public class ProfileActivity extends AppCompatActivity {
         calorieIntake = findViewById(R.id.CalorieCount2); // Calorie count
         toProfileButton = findViewById(R.id.toProfile); // "Me" Button inside the profile card
 
-        // Initialize the Back Button functionality
+
         backButton.setOnClickListener(v -> finish());
 
         // Set default or sample values
         setupDefaultValues();
 
-        // "Me" Button action
         findViewById(R.id.ProfileButtonContainer).setOnClickListener(v -> {
-            // Navigate to MeActivity
+            Toast.makeText(this, "Navigating to Me...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(ProfileActivity.this, MeActivity.class);
             startActivity(intent);
         });
 
         findViewById(R.id.CalorieDisplayReport).setOnClickListener(v -> {
-            // Action when "Calorie Report" is clicked
             Toast.makeText(this, "Navigating to Calorie Report...", Toast.LENGTH_SHORT).show();
-            // You can add intent to navigate to another activity here
+            Intent intent = new Intent(ProfileActivity.this, CalorieIntakeActivity.class);
+            startActivity(intent);
         });
 
         findViewById(R.id.Logout).setOnClickListener(v -> {

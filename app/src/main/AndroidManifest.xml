@@ -64,6 +64,9 @@
 
         <activity android:name=".MeActivity" />
 
+        <activity android:name=".CalorieIntakeActivity" />
+
+
 
     </application>
 
