@@ -22,6 +22,8 @@ public class meal_input extends AppCompatActivity {
     private Button saveButton;
     private ImageButton addButton, closeButton;
     private String mealName;
+    private TextView meal_title;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -38,11 +40,14 @@ public class meal_input extends AppCompatActivity {
         addButton = findViewById(R.id.add_button);
         closeButton = findViewById(R.id.close_button);
         mealName = getIntent().getStringExtra("MEAL_NAME");
+        meal_title = findViewById(R.id.meal_title);
 
         if (mealName == null || mealName.trim().isEmpty()) {
             mealName = "New Meal";
+            meal_title.setText(mealName);
+
         } else {
-            setTitle(mealName);
+            meal_title.setText(mealName);
         }
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
