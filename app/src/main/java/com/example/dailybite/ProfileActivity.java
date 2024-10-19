@@ -38,20 +38,19 @@ public class ProfileActivity extends AppCompatActivity {
         setupDefaultValues();
 
         findViewById(R.id.ProfileButtonContainer).setOnClickListener(v -> {
-            Toast.makeText(this, "Navigating to Me...", Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(ProfileActivity.this, MeActivity.class);
             startActivity(intent);
         });
 
         findViewById(R.id.CalorieDisplayReport).setOnClickListener(v -> {
-            Toast.makeText(this, "Navigating to Calorie Report...", Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(ProfileActivity.this, CalorieIntakeActivity.class);
             startActivity(intent);
         });
 
         findViewById(R.id.Logout).setOnClickListener(v -> {
             // Action when "Logout" is clicked
-            Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
             startActivity(intent);
         });
