@@ -1,9 +1,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/meal_item_layout"
     android:layout_width="380dp"
     android:layout_height="89dp"
     android:layout_margin="10dp"
     android:background="@drawable/meal"
+    android:clickable="true"
     android:clipToOutline="true">
 
     <TextView
@@ -16,7 +18,7 @@
         android:textAppearance="@style/meal" />
 
     <ImageView
-        android:id="@+id/food_options_button"
+        android:id="@+id/clock_meal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_clock"
@@ -30,8 +32,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/meal_name"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="63dp"
+        android:layout_marginStart="42dp"
+        android:layout_marginTop="30dp"
         android:text="Meal Time"
         android:textAppearance="@style/time"/>
 

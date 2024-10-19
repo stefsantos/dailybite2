@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,7 +21,7 @@ public class meal_input extends AppCompatActivity {
     private foodAdapter foodAdapter;
     private Button saveButton;
     private ImageButton addButton, closeButton;
-
+    private String mealName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -37,7 +37,13 @@ public class meal_input extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
         addButton = findViewById(R.id.add_button);
         closeButton = findViewById(R.id.close_button);
+        mealName = getIntent().getStringExtra("MEAL_NAME");
 
+        if (mealName == null || mealName.trim().isEmpty()) {
+            mealName = "New Meal";
+        } else {
+            setTitle(mealName);
+        }
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         foodAdapter = new foodAdapter(this, getSampleFoodItems(), true);  // Correct instance with Context, List, and boolean
@@ -53,9 +59,15 @@ public class meal_input extends AppCompatActivity {
         closeButton.setOnClickListener(v -> finish());
 
         // Example logic for the save button
-        saveButton.setOnClickListener(v -> {
-            // Save the current meal data logic
-        });
+        saveButton.setOnClickListener(v -> saveMeal() );
+    }
+
+    private void saveMeal() {
+        String calories = caloriesText.getText().toString();
+        String proteins = proteinsText.getText().toString();
+        String fats = fatsText.getText().toString();
+        String carbs = carbsText.getText().toString();
+        Toast.makeText(this, "Meal saved: " + mealName, Toast.LENGTH_SHORT).show();
     }
 
     // Sample data for the food items

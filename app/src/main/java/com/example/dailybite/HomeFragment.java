@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Calendar;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements MealAdapter.OnMealClickListener{
     private RecyclerView recyclerView;
     private MealAdapter mealAdapter;
     private List<Meal> mealList;
@@ -29,11 +30,11 @@ public class HomeFragment extends Fragment {
     private static final int MIN_MARGIN_TOP_DP = 345; // Minimum margin at 8 glasses
     private static final int GLASS_HEIGHT_DP = (1+MAX_MARGIN_TOP_DP-MIN_MARGIN_TOP_DP)/8; // Each glass increases height by 0dp
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         TextView username = view.findViewById(R.id.username);
         username.setOnClickListener(v -> navigateToUserProfile());
 
@@ -45,7 +46,7 @@ public class HomeFragment extends Fragment {
         ImageView plusIconMeal = view.findViewById(R.id.plus_icon_meal);
         plusIconMeal.setOnClickListener(v -> navigateToMealInputWithoutDate());
 
-        //initialize recyclerview-meals
+        // Initialize views and set up click listeners
         recyclerView = view.findViewById(R.id.recyclerView_meals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -58,34 +59,19 @@ public class HomeFragment extends Fragment {
         mealList.add(new Meal("Breakfast", "10:45 AM", "531 Cal"));
         mealList.add(new Meal("Lunch", "03:45 PM", "1024 Cal"));
 
-        mealAdapter = new MealAdapter(mealList);
+        // Pass 'this' as the listener to the adapter
+        mealAdapter = new MealAdapter(mealList, this);  // 'this' refers to HomeFragment, which implements the listener
         recyclerView.setAdapter(mealAdapter);
 
-        // Set initial values
+        // Set initial values for water consumption
         glassesOfWater = 0;
-        waterHeight = 0;
         updateWaterDisplay();
 
-        // Plus button to add water
-        plusIcon.setOnClickListener(v -> {
-            if (glassesOfWater < 8) {
-                glassesOfWater++;
-                waterHeight += GLASS_HEIGHT_DP; // Increase by one glass height
-                updateWaterDisplay();
-            }
-        });
+        // Set onClickListeners for buttons to add or remove water
+        plusIcon.setOnClickListener(v -> addGlass());
+        minusIcon.setOnClickListener(v -> minusGlass());
 
-        // Minus button to remove water
-        minusIcon.setOnClickListener(v -> {
-            if (glassesOfWater > 0) {
-                glassesOfWater--;
-                waterHeight -= waterHeight; // Decrease by one glass height
-                updateWaterDisplay();
-            }
-        });
         return view;
-
-
     }
 
     // Open a calendar to select a date (only opens the calendar, no navigation)
@@ -109,7 +95,7 @@ public class HomeFragment extends Fragment {
     // Navigate to meal input activity without passing a date
     private void navigateToMealInputWithoutDate() {
         Intent intent = new Intent(getActivity(), meal_input.class);
-        startActivity(intent); // No date passed, direct navigation
+        startActivity(intent);
     }
 
     private void updateWaterDisplay() {
@@ -136,9 +122,32 @@ public class HomeFragment extends Fragment {
         waterPercent.setText(glassesOfWater + " Cups");
     }
 
+    // Increase by one glass height
+    private void addGlass(){
+        if (glassesOfWater < 8) {
+            glassesOfWater++;
+            waterHeight += GLASS_HEIGHT_DP;
+            updateWaterDisplay();
+        }
+    }
+    // Decrease by one glass height
+    private void minusGlass(){
+            if (glassesOfWater > 0) {
+                glassesOfWater--;
+                waterHeight -= waterHeight;
+                updateWaterDisplay();
+            }
+    }
+
     private void navigateToUserProfile() {
         Intent intent = new Intent(getActivity(), ProfileActivity.class);
         startActivity(intent); // Replace UserProfileActivity with your desired activity
+    }
+
+    public void onMealClick(Meal meal) {
+        Intent intent = new Intent(getActivity(), meal_input.class);
+        intent.putExtra("MEAL_NAME", meal.getName());
+        startActivity(intent);
     }
 
 }
