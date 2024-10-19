@@ -31,8 +31,8 @@ public class HeightActivity extends AppCompatActivity {
         // Initialize the UI components
         meterPicker = findViewById(R.id.meter_picker);
         cmPicker = findViewById(R.id.cm_picker);
-        nextButton = findViewById(R.id.next_button);
-        backText = findViewById(R.id.back_text);
+        nextButton = findViewById(R.id.proceed_button);
+        backText = findViewById(R.id.textView);
         unitSwitch = findViewById(R.id.unit_switch);
 
         // Initial setup for metric system

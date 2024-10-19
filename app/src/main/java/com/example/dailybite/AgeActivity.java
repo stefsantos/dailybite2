@@ -25,8 +25,8 @@ public class AgeActivity extends AppCompatActivity {
 
         // Initialize the UI components
         ageInput = findViewById(R.id.age_input);
-        nextButton = findViewById(R.id.next_button);
-        backText = findViewById(R.id.back_text);
+        nextButton = findViewById(R.id.proceed_button);
+        backText = findViewById(R.id.textView);
 
         // Set onClickListener for the next button
         nextButton.setOnClickListener(new View.OnClickListener() {

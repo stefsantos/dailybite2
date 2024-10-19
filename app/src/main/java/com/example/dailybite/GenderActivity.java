@@ -26,8 +26,8 @@ public class GenderActivity extends AppCompatActivity {
         // Initialize the UI components
         maleText = findViewById(R.id.male_button);
         femaleText = findViewById(R.id.female_button);
-        nextButton = findViewById(R.id.next_button);
-        backText = findViewById(R.id.back_text);
+        nextButton = findViewById(R.id.proceed_button);
+        backText = findViewById(R.id.textView);
 
         // Set onClickListener for Male option
         maleText.setOnClickListener(new View.OnClickListener() {

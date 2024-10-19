@@ -17,7 +17,6 @@ public class SignInActivity extends AppCompatActivity {
     private EditText emailInput;
     private EditText passwordInput;
     private Button loginButton;
-    private TextView forgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,6 @@ public class SignInActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.email_input);
         passwordInput = findViewById(R.id.password_input);
         loginButton = findViewById(R.id.login_button);
-        forgotPassword = findViewById(R.id.forgot_password);
 
         // Set OnClickListener for the back button to return to the previous activity
         backButton.setOnClickListener(v -> onBackPressed()); // This will handle navigating to the previous page/activity
@@ -61,7 +59,5 @@ public class SignInActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Set OnClickListener for the forgot password text
-        forgotPassword.setOnClickListener(v -> Toast.makeText(SignInActivity.this, "Forgot password clicked", Toast.LENGTH_SHORT).show());
     }
 }

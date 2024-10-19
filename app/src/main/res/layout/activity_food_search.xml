@@ -12,7 +12,8 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:layout_alignParentStart="true"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="30dp"/>
 
     <!-- Search bar -->
     <EditText
@@ -22,18 +23,22 @@
         android:hint="Search food"
         android:padding="12dp"
         android:layout_toEndOf="@id/back_button"
+        android:layout_marginTop="15dp"
         android:layout_alignParentTop="true" />
 
     <!-- Spinner for filtering options -->
+
+    <!-- Empty text -->
+
     <Spinner
         android:id="@+id/filterSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/searchEditText"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="113dp" />
 
-    <!-- Empty text -->
     <TextView
         android:id="@+id/emptyTextView"
         android:layout_width="wrap_content"

@@ -29,7 +29,7 @@ public class PFCActivity extends AppCompatActivity {
         caloriesButton = findViewById(R.id.calories_button);
         continueWithGoogleButton = findViewById(R.id.continue_with_google);
         continueWithEmailButton = findViewById(R.id.continue_with_email);
-        backText = findViewById(R.id.back_text);
+        backText = findViewById(R.id.back_button);
 
         // Optionally set click listeners for the PFC buttons (if needed)
         proteinsButton.setOnClickListener(new View.OnClickListener() {

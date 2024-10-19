@@ -28,8 +28,8 @@ public class ActivenessActivity extends AppCompatActivity {
         lowActiveText = findViewById(R.id.low_active_text);
         activeText = findViewById(R.id.active_text);
         veryActiveText = findViewById(R.id.very_active_text);
-        nextButton = findViewById(R.id.next_button);
-        backText = findViewById(R.id.back_text);
+        nextButton = findViewById(R.id.proceed_button);
+        backText = findViewById(R.id.textView);
 
         // Set onClickListeners for the activity level options
         sedentaryText.setOnClickListener(new View.OnClickListener() {

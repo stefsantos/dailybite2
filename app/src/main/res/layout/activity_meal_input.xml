@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:layout_marginTop="25dp"
         android:paddingBottom="16dp">
 
         <!-- Close Button -->
@@ -28,15 +29,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Meal #1"
-            android:textSize="18sp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="18sp" />
 
         <!-- Add Button -->
         <ImageButton
             android:id="@+id/add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/plus_icon"
+            android:src="@drawable/plus"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Add" />
     </LinearLayout>
@@ -90,14 +91,14 @@
         android:layout_weight="1"
         android:scrollbars="vertical" />
 
-    <!-- Save Button -->
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="75dp"
         android:backgroundTint="#35CC8C"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp" />
+        android:text="Save"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

@@ -29,8 +29,8 @@ public class WeightActivity extends AppCompatActivity {
         // Initialize the UI components
         weightInput = findViewById(R.id.weight_input);
         unitToggleButton = findViewById(R.id.unit_toggle_button);
-        nextButton = findViewById(R.id.next_button);
-        backText = findViewById(R.id.back_text);
+        nextButton = findViewById(R.id.proceed_button);
+        backText = findViewById(R.id.textView);
 
         // Set the initial unit text (kg)
         unitToggleButton.setText("kg");

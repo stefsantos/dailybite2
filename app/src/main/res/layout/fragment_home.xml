@@ -19,7 +19,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="80dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="60dp"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
                 android:text="Itami"
@@ -33,10 +33,10 @@
 
             <TextView
                 android:id="@+id/today"
-                android:layout_width="41dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="300dp"
-                android:layout_marginTop="44dp"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="290dp"
+                android:layout_marginTop="65dp"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
                 android:text="@string/today"
@@ -360,7 +360,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="348dp"
-                android:layout_marginTop="44dp"
+                android:layout_marginTop="63dp"
                 app:layout_constraintStart_toEndOf="@id/itami"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/group" />
@@ -390,7 +390,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="50dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/user_image" />
@@ -413,14 +413,14 @@
 
             <ImageView
                 android:id="@+id/plus_icon_meal"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:layout_marginStart="372dp"
-                android:layout_marginTop="500dp"
+                android:layout_marginTop="507dp"
                 android:onClick="addMeal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/plus_icon" />
+                app:srcCompat="@drawable/plus" />
 
             <RelativeLayout
                 android:id="@+id/meal_1"
@@ -435,8 +435,8 @@
 
             <TextView
                 android:id="@+id/breakfast"
-                android:layout_width="63dp"
-                android:layout_height="17dp"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="550dp"
                 android:gravity="center_horizontal|top"
@@ -473,8 +473,8 @@
 
             <TextView
                 android:id="@+id/meal_cal_breakfast"
-                android:layout_width="57dp"
-                android:layout_height="20dp"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="321dp"
                 android:layout_marginTop="550dp"
                 android:gravity="center_horizontal|top"
