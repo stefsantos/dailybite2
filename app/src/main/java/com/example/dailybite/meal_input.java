@@ -72,9 +72,21 @@ public class meal_input extends AppCompatActivity {
         String proteins = proteinsText.getText().toString();
         String fats = fatsText.getText().toString();
         String carbs = carbsText.getText().toString();
+
+        // Create an Intent to hold the meal data
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("MEAL_NAME", mealName);
+        resultIntent.putExtra("MEAL_CALORIES", calories);
+        resultIntent.putExtra("MEAL_PROTEINS", proteins);
+        resultIntent.putExtra("MEAL_FATS", fats);
+        resultIntent.putExtra("MEAL_CARBS", carbs);
+
+        // Set the result and finish the activity
+        setResult(RESULT_OK, resultIntent);
         Toast.makeText(this, "Meal saved: " + mealName, Toast.LENGTH_SHORT).show();
         finish();
     }
+
 
     // Sample data for the food items
     private List<foodItem> getSampleFoodItems() {
