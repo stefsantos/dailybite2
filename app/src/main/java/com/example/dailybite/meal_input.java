@@ -83,7 +83,7 @@ public class meal_input extends AppCompatActivity {
 
         // Set the result and finish the activity
         setResult(RESULT_OK, resultIntent);
-        Toast.makeText(this, "Meal saved: " + mealName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Meal saved: " + mealName + " Calories: " + calories + " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
         finish();
     }
 

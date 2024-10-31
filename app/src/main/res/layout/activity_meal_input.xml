@@ -49,22 +49,23 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="4"
-        android:paddingBottom="16dp">
+        android:paddingBottom="1dp">
 
         <TextView
             android:id="@+id/caloriesText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="416 Cal"
+            android:text="416"
             android:textAlignment="center" />
+
 
         <TextView
             android:id="@+id/proteinsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="20g Proteins"
+            android:text="20"
             android:textAlignment="center" />
 
         <TextView
@@ -72,7 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="15g Fats"
+            android:text="15"
             android:textAlignment="center" />
 
         <TextView
@@ -80,10 +81,44 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="15g Carbs"
+            android:text="15"
             android:textAlignment="center" />
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:paddingBottom="16dp">
+        <TextView
+            android:id="@+id/caloriesTextLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cal"
+            android:textAlignment="center" />
+        <TextView
+            android:id="@+id/proteinsTextLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="g Protein"
+            android:textAlignment="center" />
+        <TextView
+            android:id="@+id/fatsTextLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="g Fat"
+            android:textAlignment="center" />
+        <TextView
+            android:id="@+id/carbsTextLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="g Carbs"
+            android:textAlignment="center" />
+    </LinearLayout>
     <!-- Food Items List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foodRecyclerView"

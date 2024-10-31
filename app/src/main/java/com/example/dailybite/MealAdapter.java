@@ -14,14 +14,22 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
 
     private List<Meal> mealList;
     private OnMealClickListener listener;
+    private OnMealLongClickListener longClickListener;
 
-    public MealAdapter(List<Meal> mealList, OnMealClickListener listener) {
+    // Updated constructor to accept both click and long-click listeners
+    public MealAdapter(List<Meal> mealList, OnMealClickListener listener, OnMealLongClickListener longClickListener) {
         this.mealList = mealList;
         this.listener = listener;
+        this.longClickListener = longClickListener;
     }
 
+    // Define the interfaces at the top level of the MealAdapter class
     public interface OnMealClickListener {
         void onMealClick(Meal meal);  // Callback for item clicks
+    }
+
+    public interface OnMealLongClickListener {
+        void onMealLongClick(int position);  // Callback for item long-clicks
     }
 
     @NonNull
@@ -56,21 +64,28 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
             mealCalories = itemView.findViewById(R.id.meal_calories);
             mealClock = itemView.findViewById(R.id.clock_meal);
 
-            // Set click listener for the entire layout
+            // Set up the click listener for the entire layout
             mealLayout.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     listener.onMealClick(mealList.get(position));
                 }
             });
+
+            // Set up the long click listener for the entire layout
+            mealLayout.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    longClickListener.onMealLongClick(position);
+                }
+                return true;
+            });
         }
 
         public void bind(Meal meal) {
             mealName.setText(meal.getName());
             mealTime.setText(meal.getTime());
-            mealCalories.setText(meal.getCalories());
+            mealCalories.setText(String.valueOf(meal.getCalories()));
         }
     }
-
-
 }

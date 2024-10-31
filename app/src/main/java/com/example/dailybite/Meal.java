@@ -3,15 +3,21 @@ package com.example.dailybite;
 public class Meal {
     private String name;
     private String time;
-    private String calories;
+    private int calories;
+    private int proteins;
+    private int fats;
+    private int carbs;
 
-    public Meal(String name, String time, String calories) {
+    // Constructor to initialize proteins, fats, and carbs
+    public Meal(String name, String time, int calories, int proteins, int fats, int carbs) {
         this.name = name;
         this.time = time;
         this.calories = calories;
+        this.proteins = proteins;
+        this.fats = fats;
+        this.carbs = carbs;
     }
 
-    // Getters
     public String getName() {
         return name;
     }
@@ -20,27 +26,29 @@ public class Meal {
         return time;
     }
 
-    public String getCalories() {
+    public int getCalories() {
         return calories;
     }
 
-    // Setters
-    public void setName(String name) {
+    public int getProteins() {
+        return proteins;
+    }
+
+    public int getFats() {
+        return fats;
+    }
+
+    public int getCarbs() {
+        return carbs;
+    }
+
+    // Update meal method, if you want to update protein, fat, and carb values as well
+    public void updateMeal(String name, String time, int calories, int proteins, int fats, int carbs) {
         this.name = name;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public void setCalories(String calories) {
-        this.calories = calories;
-    }
-
-    // Method to update meal properties
-    public void updateMeal(String name, String time, String calories) {
-        this.name = name;
         this.time = time;
         this.calories = calories;
+        this.proteins = proteins;
+        this.fats = fats;
+        this.carbs = carbs;
     }
 }

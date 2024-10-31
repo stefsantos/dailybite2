@@ -38,7 +38,7 @@
         android:textAppearance="@style/time"/>
 
     <TextView
-        android:id="@+id/meal_calories"
+        android:id="@+id/meal_calories_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -46,4 +46,14 @@
         android:layout_marginTop="16dp"
         android:text="Calories"
         android:textAppearance="@style/meal_cal"/>
+
+    <TextView
+        android:id="@+id/meal_calories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="85dp"
+        android:text="Calories"
+        android:textAppearance="@style/meal_cal" />
 </RelativeLayout>
