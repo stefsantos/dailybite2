@@ -72,10 +72,10 @@ public class meal_input extends AppCompatActivity {
         String proteins = proteinsText.getText().toString();
         String fats = fatsText.getText().toString();
         String carbs = carbsText.getText().toString();
-
+        String newMealName = meal_title.getText().toString();
         // Create an Intent to hold the meal data
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("MEAL_NAME", mealName);
+        resultIntent.putExtra("MEAL_NAME", newMealName);
         resultIntent.putExtra("MEAL_CALORIES", calories);
         resultIntent.putExtra("MEAL_PROTEINS", proteins);
         resultIntent.putExtra("MEAL_FATS", fats);
@@ -83,7 +83,7 @@ public class meal_input extends AppCompatActivity {
 
         // Set the result and finish the activity
         setResult(RESULT_OK, resultIntent);
-        Toast.makeText(this, "Meal saved: " + mealName + " Calories: " + calories + " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories + " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
         finish();
     }
 

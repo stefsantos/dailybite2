@@ -249,12 +249,15 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     public void onMealClick(Meal meal) {
         // Set editPosition to the position of the clicked meal to avoid duplicates
         editPosition = mealList.indexOf(meal);
-
         Intent intent = new Intent(getActivity(), meal_input.class);
         intent.putExtra("MEAL_NAME", meal.getName());
-        intent.putExtra("MEAL_CALORIES", meal.getCalories());
-        startActivity(intent);
+        intent.putExtra("MEAL_CALORIES", String.valueOf(meal.getCalories()));
+        intent.putExtra("MEAL_PROTEINS", String.valueOf(meal.getProteins()));
+        intent.putExtra("MEAL_FATS", String.valueOf(meal.getFats()));
+        intent.putExtra("MEAL_CARBS", String.valueOf(meal.getCarbs()));
+        mealInputLauncher.launch(intent);
     }
+
 
     @Override
     public void onMealLongClick(int position) {

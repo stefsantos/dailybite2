@@ -24,14 +24,18 @@
             android:contentDescription="Close" />
 
         <!-- Title -->
-        <TextView
+        <EditText
             android:id="@+id/meal_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Meal #1"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:hint="Enter meal title"
+            android:inputType="textCapWords"
+            android:background="@null"/>
+
 
         <!-- Add Button -->
         <ImageButton
