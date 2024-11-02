@@ -134,10 +134,12 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                         // Check if we are editing an existing meal
                         if (editPosition != -1) {
                             // Update the existing meal at editPosition
+                            deleteMeal(mealList.get(editPosition));
                             Meal existingMeal = mealList.get(editPosition);
                             existingMeal.updateMeal(mealName, currentTime, mealCalories,mealProteins,mealFats,mealCarbs);
 
                             mealAdapter.notifyItemChanged(editPosition);
+                            addMeal(existingMeal);
                             editPosition = -1;
                         } else {
                             // Create a new Meal with the current time and received data
