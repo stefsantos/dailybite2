@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class meal_input extends AppCompatActivity {
+public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodItemDeletedListener{
 
     private TextView caloriesText, proteinsText, fatsText, carbsText;
     private RecyclerView foodRecyclerView;
@@ -51,7 +51,7 @@ public class meal_input extends AppCompatActivity {
         }
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        foodAdapter = new foodAdapter(this, getSampleFoodItems(), true);  // Correct instance with Context, List, and boolean
+        foodAdapter = new foodAdapter(this, getSampleFoodItems(), this);  // Correct instance with Context, List, and boolean
 
         foodRecyclerView.setAdapter(foodAdapter);
 
@@ -65,6 +65,7 @@ public class meal_input extends AppCompatActivity {
 
         // Example logic for the save button
         saveButton.setOnClickListener(v -> saveMeal() );
+        calculateTotalNutrients();
     }
 
     private void saveMeal() {
@@ -95,6 +96,29 @@ public class meal_input extends AppCompatActivity {
         foodItems.add(new foodItem("Apple", 116, 1, 30, 0));       // 200g serving, 1g proteins, 30g carbs, 0g fats
         foodItems.add(new foodItem("Banana", 90, 1, 22, 0));       // Another example item
         return foodItems;
+    }
+
+    private void calculateTotalNutrients() {
+        int totalCalories = 0;
+        int totalProteins = 0;
+        int totalFats = 0;
+        int totalCarbs = 0;
+
+        for (foodItem item : foodAdapter.getFoodList()) {
+            totalCalories += item.getCalories();
+            totalProteins += item.getProteins();
+            totalFats += item.getFats();
+            totalCarbs += item.getCarbs();
+        }
+
+        caloriesText.setText(String.valueOf(totalCalories));
+        proteinsText.setText(String.valueOf(totalProteins));
+        fatsText.setText(String.valueOf(totalFats));
+        carbsText.setText(String.valueOf(totalCarbs));
+    }
+
+    public void onFoodItemDeleted() {
+        calculateTotalNutrients();
     }
 
 }

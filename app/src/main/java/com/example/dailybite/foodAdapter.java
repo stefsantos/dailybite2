@@ -15,38 +15,44 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
 
     private Context context;
     private List<foodItem> foodList;
+    private OnFoodItemDeletedListener deleteListener;
 
-    public foodAdapter(Context context, List<foodItem> foodList, boolean someFlag) {
+    public foodAdapter(Context context, List<foodItem> foodList, OnFoodItemDeletedListener deleteListener) {
         this.context = context;
         this.foodList = foodList;
+        this.deleteListener = deleteListener;
+    }
+
+
+    public interface OnFoodItemDeletedListener {
+        void onFoodItemDeleted();
     }
 
     @NonNull
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the custom layout for each food item
         View view = LayoutInflater.from(context).inflate(R.layout.food_item, parent, false);
         return new FoodViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
-        // Get the food item at the current position
         foodItem foodItem = foodList.get(position);
 
-        // Bind the data to the views in the ViewHolder
         holder.foodNameTextView.setText(foodItem.getName());
         holder.foodCaloriesTextView.setText(String.format("%d Cal", foodItem.getCalories()));
         holder.foodProteinsTextView.setText(String.format("Proteins: %d g", foodItem.getProteins()));
         holder.foodCarbsTextView.setText(String.format("Carbs: %d g", foodItem.getCarbs()));
         holder.foodFatsTextView.setText(String.format("Fats: %d g", foodItem.getFats()));
 
-        // Handle delete button click
         holder.deleteButton.setOnClickListener(v -> {
-            // Remove the item from the list
             foodList.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, foodList.size());
+
+            if (deleteListener != null) {
+                deleteListener.onFoodItemDeleted();
+            }
         });
     }
 
@@ -55,31 +61,28 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
         return foodList.size();
     }
 
-    // Update the list of food items and notify the adapter
-    public void updateFoodList(List<foodItem> newList) {
-        this.foodList = newList;
-        notifyDataSetChanged(); // Notify the RecyclerView to refresh
+
+    public List<foodItem> getFoodList() {
+        return foodList;
     }
 
-    // ViewHolder class to hold the views for each food item
+    public void updateFoodList(List<foodItem> newList) {
+        this.foodList = newList;
+        notifyDataSetChanged();
+    }
+
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
-        TextView foodNameTextView;
-        TextView foodCaloriesTextView;
-        TextView foodProteinsTextView;
-        TextView foodCarbsTextView;
-        TextView foodFatsTextView;
+        TextView foodNameTextView, foodCaloriesTextView, foodProteinsTextView, foodCarbsTextView, foodFatsTextView;
         ImageButton deleteButton;
 
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            // Initialize the views from the layout
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodCaloriesTextView = itemView.findViewById(R.id.foodCaloriesTextView);
             foodProteinsTextView = itemView.findViewById(R.id.foodProteinsTextView);
             foodCarbsTextView = itemView.findViewById(R.id.foodCarbsTextView);
             foodFatsTextView = itemView.findViewById(R.id.foodFatsTextView);
-            deleteButton = itemView.findViewById(R.id.deleteButton); // Reference to the delete button
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
