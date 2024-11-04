@@ -2,7 +2,6 @@ package com.example.dailybite;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -13,16 +12,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-    // Declare UI elements
     private EditText usernameInput, emailInput, passwordInput;
     private Button loginButton;
     private ImageView backButton;
 
-    // Firebase Authentication instance
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +32,9 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createaccount);
 
-        // Initialize Firebase Auth
+        // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // Initialize UI elements
         usernameInput = findViewById(R.id.username_input);
@@ -41,43 +44,58 @@ public class CreateAccountActivity extends AppCompatActivity {
         backButton = findViewById(R.id.back_button);
 
         // Handle back button press
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        backButton.setOnClickListener(v -> finish());
 
         // Handle login button press (for account creation)
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailInput.getText().toString().trim();
-                String password = passwordInput.getText().toString().trim();
+        loginButton.setOnClickListener(v -> {
+            String username = usernameInput.getText().toString().trim();
+            String email = emailInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
 
-                // Validate inputs
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(CreateAccountActivity.this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
-                } else {
-                    createAccount(email, password);
-                }
+            // Validate inputs
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(CreateAccountActivity.this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+            } else {
+                createAccount(username, email, password);
             }
         });
     }
 
-    private void createAccount(String email, String password) {
+    private void createAccount(String username, String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Account creation success, navigate to home page
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(CreateAccountActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(CreateAccountActivity.this, Homepage.class));
-                        finish();
+                        if (user != null) {
+                            // Show a success toast
+                            Toast.makeText(CreateAccountActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
+                            // Save additional user details in Firestore
+                            saveUserDetails(user.getUid(), username, email);
+                        }
                     } else {
-                        // If account creation fails, display a message to the user
+                        // Display error message if account creation fails
                         Toast.makeText(CreateAccountActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
+                });
+    }
+
+    private void saveUserDetails(String userId, String username, String email) {
+        // Create a user object to store in Firestore
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", username);
+        user.put("email", email);
+
+        // Add user document to Firestore in the "users" collection with the UID as the document ID
+        db.collection("users").document(userId).set(user)
+                .addOnSuccessListener(aVoid -> {
+                    // Show welcome message and navigate to Homepage on success
+                    Toast.makeText(CreateAccountActivity.this, "Welcome, " + username + "!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(CreateAccountActivity.this, Homepage.class));
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    // Display an error if saving details fails
+                    Toast.makeText(CreateAccountActivity.this, "Failed to save user details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }
