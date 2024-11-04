@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -18,29 +20,34 @@ public class SignInActivity extends AppCompatActivity {
     private EditText passwordInput;
     private Button loginButton;
 
+    // Firebase Authentication instance
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_signin); // Make sure activity_login.xml exists and is referenced correctly
+        setContentView(R.layout.activity_signin);
 
-        // Initialize views by finding them by ID
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        // Initialize views
         backButton = findViewById(R.id.back_button);
         emailInput = findViewById(R.id.email_input);
         passwordInput = findViewById(R.id.password_input);
         loginButton = findViewById(R.id.login_button);
 
-        // Set OnClickListener for the back button to return to the previous activity
-        backButton.setOnClickListener(v -> onBackPressed()); // This will handle navigating to the previous page/activity
+        // Set OnClickListener for the back button
+        backButton.setOnClickListener(v -> onBackPressed());
 
         // Set OnClickListener for the login button
         loginButton.setOnClickListener(v -> {
-            // Perform login logic or validation here
             String email = emailInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
-            // Simple validation
+            // Validate inputs
             if (email.isEmpty()) {
                 emailInput.setError("Email is required");
                 emailInput.requestFocus();
@@ -53,11 +60,21 @@ public class SignInActivity extends AppCompatActivity {
                 return;
             }
 
-            // Proceed with login logic
-            Toast.makeText(SignInActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(SignInActivity.this, Homepage.class);
-            startActivity(intent);
+            // Sign in with Firebase Authentication
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            // Sign-in success, navigate to the Homepage
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(SignInActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(SignInActivity.this, Homepage.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Sign-in failure, display a message to the user
+                            Toast.makeText(SignInActivity.this, "Authentication failed. Please check your credentials.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
-
     }
 }

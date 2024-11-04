@@ -11,6 +11,9 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class CreateAccountActivity extends AppCompatActivity {
 
     // Declare UI elements
@@ -18,11 +21,17 @@ public class CreateAccountActivity extends AppCompatActivity {
     private Button loginButton;
     private ImageView backButton;
 
+    // Firebase Authentication instance
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_createaccount);  // Make sure your layout file is named correctly
+        setContentView(R.layout.activity_createaccount);
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
 
         // Initialize UI elements
         usernameInput = findViewById(R.id.username_input);
@@ -35,31 +44,40 @@ public class CreateAccountActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate back to the previous screen
-                finish();  // Or you can use startActivity(new Intent(CreateAccountActivity.this, PreviousActivity.class));
+                finish();
             }
         });
 
-        // Handle login button press (could be renamed to "register" or "create account")
+        // Handle login button press (for account creation)
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get the entered username, email, and password
-                String username = usernameInput.getText().toString().trim();
                 String email = emailInput.getText().toString().trim();
                 String password = passwordInput.getText().toString().trim();
 
                 // Validate inputs
-                if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                if (email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(CreateAccountActivity.this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Proceed with the account creation logic
-                    Toast.makeText(CreateAccountActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
-
-                    // Redirect to login page or home page after account creation
-                    startActivity(new Intent(CreateAccountActivity.this, Homepage.class));
+                    createAccount(email, password);
                 }
             }
         });
+    }
+
+    private void createAccount(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Account creation success, navigate to home page
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Toast.makeText(CreateAccountActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(CreateAccountActivity.this, Homepage.class));
+                        finish();
+                    } else {
+                        // If account creation fails, display a message to the user
+                        Toast.makeText(CreateAccountActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

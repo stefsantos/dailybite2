@@ -19,8 +19,8 @@
     <!-- Subtext -->
     <TextView
         android:id="@+id/goal_subtext"
-        android:layout_width="191dp"
-        android:layout_height="43dp"
+        android:layout_width="193dp"
+        android:layout_height="55dp"
         android:layout_below="@id/goal_question"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"

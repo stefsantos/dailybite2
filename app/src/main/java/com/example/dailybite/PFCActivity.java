@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class PFCActivity extends AppCompatActivity {
+public class  PFCActivity extends AppCompatActivity {
 
     private Button proteinsButton, fatsButton, carbsButton, caloriesButton;
     private Button continueWithGoogleButton, continueWithEmailButton;
