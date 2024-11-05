@@ -17,7 +17,7 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -25,6 +25,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -34,10 +35,12 @@ android {
 dependencies {
     // Firebase BOM - automatically manages versions for all Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
+    implementation("com.google.android.gms:play-services-auth:20.5.0")
 
-    // Firebase dependencies without specific versions
+    // Firebase and Google Sign-In dependencies
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.android.gms:play-services-auth")
 
     // Other dependencies
     implementation(libs.appcompat)
@@ -48,3 +51,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
+
+// Apply the Google services plugin
+apply(plugin = "com.google.gms.google-services")

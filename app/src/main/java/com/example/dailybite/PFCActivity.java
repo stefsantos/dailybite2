@@ -2,90 +2,134 @@ package com.example.dailybite;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class  PFCActivity extends AppCompatActivity {
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-    private Button proteinsButton, fatsButton, carbsButton, caloriesButton;
+import java.util.HashMap;
+import java.util.Map;
+
+public class PFCActivity extends AppCompatActivity {
+
+    private static final int RC_SIGN_IN = 9001;
+    private static final String TAG = "PFCActivity";
+
     private Button continueWithGoogleButton, continueWithEmailButton;
     private TextView backText;
 
+    private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pfc);  // Ensure this matches the name of your layout XML
+        setContentView(R.layout.activity_pfc);
 
-        // Initialize the UI components
-        proteinsButton = findViewById(R.id.proteins_button);
-        fatsButton = findViewById(R.id.fats_button);
-        carbsButton = findViewById(R.id.carbs_button);
-        caloriesButton = findViewById(R.id.calories_button);
+        // Initialize Firebase Auth and Firestore
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        // Configure Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // Initialize UI components
         continueWithGoogleButton = findViewById(R.id.continue_with_google);
         continueWithEmailButton = findViewById(R.id.continue_with_email);
         backText = findViewById(R.id.back_button);
 
-        // Optionally set click listeners for the PFC buttons (if needed)
-        proteinsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle protein button click, if needed
-            }
-        });
-
-        fatsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle fats button click, if needed
-            }
-        });
-
-        carbsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle carbs button click, if needed
-            }
-        });
-
-        caloriesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle calories button click, if needed
-            }
-        });
-
         // Handle Continue with Google button click
-        continueWithGoogleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Intent to move to another activity for Google login (optional)
-                Intent intent = new Intent(PFCActivity.this, CreateAccountActivity.class);
-                startActivity(intent);
-            }
-        });
+        continueWithGoogleButton.setOnClickListener(v -> signInWithGoogle());
 
         // Handle Continue with Email button click
-        continueWithEmailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Intent to move to another activity for Email login (optional)
-                Intent intent = new Intent(PFCActivity.this, CreateAccountActivity.class);
-                startActivity(intent);
-            }
+        continueWithEmailButton.setOnClickListener(v -> {
+            Intent intent = new Intent(PFCActivity.this, CreateAccountActivity.class);
+            startActivity(intent);
         });
 
         // Handle the back button
-        backText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();  // Go back to the previous activity
+        backText.setOnClickListener(v -> finish());
+    }
+
+    private void signInWithGoogle() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(Exception.class);
+                if (account != null) {
+                    firebaseAuthWithGoogle(account);
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Google sign-in failed", e);
+                Toast.makeText(this, "Google sign-in failed", Toast.LENGTH_SHORT).show();
             }
-        });
+        }
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            String email = user.getEmail();
+                            String username = email != null && email.contains("@") ? email.split("@")[0] : user.getDisplayName();
+
+                            // Save username to Firestore
+                            saveUserDetails(user.getUid(), username, email);
+                        }
+                    } else {
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(PFCActivity.this, "Authentication Failed.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void saveUserDetails(String userId, String username, String email) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("username", username);
+        userMap.put("email", email);
+
+        db.collection("users").document(userId).set(userMap)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(PFCActivity.this, "Welcome, " + username + "!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(PFCActivity.this, Homepage.class));
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(PFCActivity.this, "Failed to save user details: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 }
