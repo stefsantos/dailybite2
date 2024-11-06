@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,44 +15,46 @@ import java.util.List;
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHolder> {
 
     private Context context;
-    private List<foodItem> foodList;
+    private List<NutritionixResponse.FoodItem> foodItems;
 
-    public SearchAdapter(Context context, List<foodItem> foodList, boolean someFlag) {
+    // Constructor that takes a context and a list of FoodItems
+    public SearchAdapter(Context context, List<NutritionixResponse.FoodItem> foodItems) {
         this.context = context;
-        this.foodList = foodList;
+        this.foodItems = foodItems;
+    }
+
+    // Method to update the food list and refresh the RecyclerView
+    public void updateFoodList(List<NutritionixResponse.FoodItem> newFoodItems) {
+        this.foodItems = newFoodItems;
+        notifyDataSetChanged(); // Notify the RecyclerView to refresh the list
     }
 
     @NonNull
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the custom layout for each food item
-        View view = LayoutInflater.from(context).inflate(R.layout.item_search, parent, false);
+        // Inflate the item layout for each food item
+        View view = LayoutInflater.from(context).inflate(R.layout.food_item, parent, false);
         return new FoodViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
-        // Get the food item at the current position
-        foodItem foodItem = foodList.get(position);
+        // Ensure foodItems list is not empty before accessing it
+        if (foodItems != null && position < foodItems.size()) {
+            NutritionixResponse.FoodItem foodItem = foodItems.get(position);
 
-        // Bind the data to the views in the ViewHolder
-        holder.foodNameTextView.setText(foodItem.getName());
-        holder.foodCaloriesTextView.setText(String.format("%d Cal", foodItem.getCalories()));
-        holder.foodProteinsTextView.setText(String.format("Proteins: %d g", foodItem.getProteins()));
-        holder.foodCarbsTextView.setText(String.format("Carbs: %d g", foodItem.getCarbs()));
-        holder.foodFatsTextView.setText(String.format("Fats: %d g", foodItem.getFats()));
-
+            // Bind data to views with proper formatting
+            holder.foodNameTextView.setText(foodItem.getFoodName());
+            holder.foodCaloriesTextView.setText(String.format("%.0f cal / 100 g", foodItem.getCalories()));
+            holder.foodProteinsTextView.setText(String.format("Proteins: %.1f g", foodItem.getProtein()));
+            holder.foodCarbsTextView.setText(String.format("Carbs: %.1f g", foodItem.getCarbs()));
+            holder.foodFatsTextView.setText(String.format("Fats: %.1f g", foodItem.getFats()));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return foodList.size();
-    }
-
-    // Update the list of food items and notify the adapter
-    public void updateFoodList(List<foodItem> newList) {
-        this.foodList = newList;
-        notifyDataSetChanged(); // Notify the RecyclerView to refresh
+        return (foodItems != null) ? foodItems.size() : 0;
     }
 
     // ViewHolder class to hold the views for each food item
@@ -66,13 +69,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            // Initialize the views from the layout
+            // Initialize the views from the layout with matching IDs
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodCaloriesTextView = itemView.findViewById(R.id.foodCaloriesTextView);
             foodProteinsTextView = itemView.findViewById(R.id.foodProteinsTextView);
             foodCarbsTextView = itemView.findViewById(R.id.foodCarbsTextView);
             foodFatsTextView = itemView.findViewById(R.id.foodFatsTextView);
-            deleteButton = itemView.findViewById(R.id.deleteButton); // Reference to the delete button
+            deleteButton = itemView.findViewById(R.id.deleteButton); // Optional delete button, can be used for item removal
         }
     }
 }
