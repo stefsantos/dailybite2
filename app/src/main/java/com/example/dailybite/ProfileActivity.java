@@ -58,9 +58,16 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.Logout).setOnClickListener(v -> {
+            // Sign out the user
+            mAuth.signOut();
+
+            // Navigate to the login screen (MainActivity)
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear the back stack
             startActivity(intent);
+            finish(); // Close the ProfileActivity
         });
+
     }
 
     // Load user's profile information from Firestore

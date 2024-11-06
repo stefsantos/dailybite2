@@ -24,7 +24,7 @@
                 android:focusable="true"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"
-                android:text="Username"
+                android:text="User"
                 android:textAppearance="@style/itami"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
