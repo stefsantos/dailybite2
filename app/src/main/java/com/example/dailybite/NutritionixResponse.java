@@ -5,39 +5,69 @@ import java.util.List;
 
 public class NutritionixResponse {
 
-    @SerializedName("foods")
-    private List<FoodItem> foods;
+    @SerializedName("common")
+    private List<FoodItem> common;
 
-    public List<FoodItem> getFoods() {
-        return foods;
+    @SerializedName("branded")
+    private List<BrandedFoodItem> branded;
+
+    public List<FoodItem> getCommonFoods() {
+        return common;
+    }
+
+    public List<BrandedFoodItem> getBrandedFoods() {
+        return branded;
     }
 
     public static class FoodItem {
         @SerializedName("food_name")
         private String foodName;
 
-        @SerializedName("nf_calories")
-        private float calories;  // Changed to float to handle decimal values
+        @SerializedName("serving_qty")
+        private int servingQty;
 
-        @SerializedName("nf_protein")
-        private float protein;  // Changed to float
+        @SerializedName("serving_unit")
+        private String servingUnit;
 
-        @SerializedName("nf_total_carbohydrate")
-        private float carbs;  // Changed to float
+        @SerializedName("photo")
+        private Photo photo;
 
-        @SerializedName("nf_total_fat")
-        private float fats;  // Changed to float
-
-        // Constructor, if needed
-        public FoodItem(String foodName, float calories, float protein, float carbs, float fats) {
-            this.foodName = foodName;
-            this.calories = calories;
-            this.protein = protein;
-            this.carbs = carbs;
-            this.fats = fats;
+        public String getFoodName() {
+            return foodName;
         }
 
-        // Getter methods
+        public int getServingQty() {
+            return servingQty;
+        }
+
+        public String getServingUnit() {
+            return servingUnit;
+        }
+
+        public Photo getPhoto() {
+            return photo;
+        }
+
+        public static class Photo {
+            @SerializedName("thumb")
+            private String thumbUrl;
+
+            public String getThumbUrl() {
+                return thumbUrl;
+            }
+        }
+    }
+
+    public static class BrandedFoodItem {
+        @SerializedName("food_name")
+        private String foodName;
+
+        @SerializedName("nf_calories")
+        private float calories;
+
+        @SerializedName("photo")
+        private Photo photo;
+
         public String getFoodName() {
             return foodName;
         }
@@ -46,17 +76,17 @@ public class NutritionixResponse {
             return calories;
         }
 
-        public float getProtein() {
-            return protein;
+        public Photo getPhoto() {
+            return photo;
         }
 
-        public float getCarbs() {
-            return carbs;
-        }
+        public static class Photo {
+            @SerializedName("thumb")
+            private String thumbUrl;
 
-        public float getFats() {
-            return fats;
+            public String getThumbUrl() {
+                return thumbUrl;
+            }
         }
     }
-
 }

@@ -66,8 +66,10 @@ public class FoodSearchActivity extends AppCompatActivity {
 
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        foodItems = new ArrayList<>();  // Initialize empty food items list
-        foodAdapter = new SearchAdapter(this, foodItems);
+        foodItems = new ArrayList<>();
+
+        // Initialize adapter with isBranded flag set to false for common foods
+        foodAdapter = new SearchAdapter(this, foodItems, false);
         foodRecyclerView.setAdapter(foodAdapter);
 
         // Handle back button click
@@ -80,15 +82,13 @@ public class FoodSearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Cancel any previous search tasks
                 if (searchRunnable != null) {
                     handler.removeCallbacks(searchRunnable);
                 }
 
-                // Start a new search with a delay to throttle API calls
                 searchRunnable = () -> {
                     String query = charSequence.toString().trim();
-                    if (query.length() >= 3) { // Trigger search only if query has 3 or more characters
+                    if (query.length() >= 3) {
                         searchFood(query);
                     } else {
                         foodItems.clear();
@@ -114,25 +114,22 @@ public class FoodSearchActivity extends AppCompatActivity {
     }
 
     private void searchFood(String query) {
-        // Prepare the request
-        NutritionixRequest request = new NutritionixRequest(query);
+        Call<NutritionixResponse> call = apiService.searchInstant(query);
 
-        // Call the API
-        apiService.searchFood(request).enqueue(new Callback<NutritionixResponse>() {
+        call.enqueue(new Callback<NutritionixResponse>() {
             @Override
             public void onResponse(Call<NutritionixResponse> call, Response<NutritionixResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    foodItems = response.body().getFoods();
+                    foodItems = response.body().getCommonFoods(); // Use common or branded as needed
                     if (foodItems != null && !foodItems.isEmpty()) {
                         foodAdapter.updateFoodList(foodItems);
                         updateEmptyView();
                     } else {
-                        Log.d("FoodSearchActivity", "No food items found in response.");
                         emptyTextView.setText("No results found.");
                         updateEmptyView();
                     }
                 } else {
-                    Log.d("FoodSearchActivity", "API response was unsuccessful: " + response.errorBody());
+                    Log.d("FoodSearchActivity", "Error: " + response.code() + ", " + response.errorBody());
                     emptyTextView.setText("Failed to load data.");
                     updateEmptyView();
                 }
@@ -140,7 +137,7 @@ public class FoodSearchActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<NutritionixResponse> call, Throwable t) {
-                Log.d("FoodSearchActivity", "API call failed", t);
+                Log.e("FoodSearchActivity", "API call failed", t);
                 emptyTextView.setText("Failed to load data.");
                 updateEmptyView();
             }
