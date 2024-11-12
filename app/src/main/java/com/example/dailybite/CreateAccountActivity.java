@@ -1,6 +1,8 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,10 +82,40 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     private void saveUserDetails(String userId, String username, String email) {
+        // Retrieve data from shared preferences for weight, height, age, etc.
+        SharedPreferences weightPrefs = getSharedPreferences("WeightPrefs", Context.MODE_PRIVATE);
+        SharedPreferences heightPrefs = getSharedPreferences("HeightPrefs", Context.MODE_PRIVATE);
+        SharedPreferences agePrefs = getSharedPreferences("AgePrefs", Context.MODE_PRIVATE);
+        SharedPreferences genderPrefs = getSharedPreferences("GenderPrefs", Context.MODE_PRIVATE);
+        SharedPreferences activityPrefs = getSharedPreferences("ActivityLevelPrefs", Context.MODE_PRIVATE);
+
+        // Retrieve saved values from shared preferences
+        String weight = weightPrefs.getString("Weight", "");
+        String weightUnit = weightPrefs.getBoolean("Unit", true) ? "kg" : "lbs";
+        int heightMeters = heightPrefs.getInt("HeightMeters", 0);
+        int heightCentimeters = heightPrefs.getInt("HeightCentimeters", 0);
+        boolean isMetric = heightPrefs.getBoolean("UnitSystem", true);
+        String height = isMetric ? heightMeters + "m " + heightCentimeters + "cm" : heightMeters + "ft " + heightCentimeters + "in";
+        String age = agePrefs.getString("Age", "");
+        String gender = genderPrefs.getString("SelectedGender", "");
+        String activityLevel = activityPrefs.getString("SelectedActivityLevel", "");
+
         // Create a user object to store in Firestore
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
         user.put("email", email);
+
+        // Organize additional data under a "user_info" nested map
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("weight", weight);
+        userInfo.put("weight_unit", weightUnit);
+        userInfo.put("height", height);
+        userInfo.put("age", age);
+        userInfo.put("gender", gender);
+        userInfo.put("activity_level", activityLevel);
+
+        // Add userInfo as a nested field within the user map
+        user.put("user_info", userInfo);
 
         // Add user document to Firestore in the "users" collection with the UID as the document ID
         db.collection("users").document(userId).set(user)

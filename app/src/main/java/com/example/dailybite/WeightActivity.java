@@ -1,6 +1,8 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class WeightActivity extends AppCompatActivity {
 
+    private static final String PREFS_NAME = "WeightPrefs";
+    private static final String WEIGHT_KEY = "Weight";
+    private static final String UNIT_KEY = "Unit";
+
     private EditText weightInput;
     private TextView unitToggleButton;
     private ImageButton nextButton;
@@ -24,28 +30,23 @@ public class WeightActivity extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weight);  // Set your layout
+        setContentView(R.layout.activity_weight);
 
-        // Initialize the UI components
         weightInput = findViewById(R.id.weight_input);
         unitToggleButton = findViewById(R.id.unit_toggle_button);
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
 
-        // Set the initial unit text (kg)
-        unitToggleButton.setText("kg");
+        // Load saved preferences
+        loadPreferences();
 
         // Toggle between kg and lbs when unit button is clicked
         unitToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isKg) {
-                    unitToggleButton.setText("lbs");
-                    isKg = false;
-                } else {
-                    unitToggleButton.setText("kg");
-                    isKg = true;
-                }
+                isKg = !isKg;
+                unitToggleButton.setText(isKg ? "kg" : "lbs");
+                savePreferences();
             }
         });
 
@@ -57,12 +58,12 @@ public class WeightActivity extends AppCompatActivity {
                 if (weight.isEmpty()) {
                     Toast.makeText(WeightActivity.this, "Please enter your weight", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Pass the selected weight and unit to the next activity
                     String selectedUnit = isKg ? "kg" : "lbs";
                     Intent intent = new Intent(WeightActivity.this, AgeActivity.class);
                     intent.putExtra("weight", weight);
                     intent.putExtra("unit", selectedUnit);
                     startActivity(intent);
+                    savePreferences();
                 }
             }
         });
@@ -71,8 +72,25 @@ public class WeightActivity extends AppCompatActivity {
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();  // Go back to the previous screen
+                finish();
             }
         });
+    }
+
+    private void savePreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(WEIGHT_KEY, weightInput.getText().toString());
+        editor.putBoolean(UNIT_KEY, isKg);
+        editor.apply();
+    }
+
+    private void loadPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String savedWeight = sharedPreferences.getString(WEIGHT_KEY, "");
+        isKg = sharedPreferences.getBoolean(UNIT_KEY, true);
+
+        weightInput.setText(savedWeight);
+        unitToggleButton.setText(isKg ? "kg" : "lbs");
     }
 }

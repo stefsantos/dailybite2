@@ -1,6 +1,8 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AgeActivity extends AppCompatActivity {
 
+    private static final String PREFS_NAME = "AgePrefs";
+    private static final String AGE_KEY = "Age";
+
     private EditText ageInput;
     private ImageButton nextButton;
     private TextView backText;
@@ -21,12 +26,14 @@ public class AgeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_age);  // Set your layout
+        setContentView(R.layout.activity_age);
 
-        // Initialize the UI components
         ageInput = findViewById(R.id.age_input);
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
+
+        // Load saved age preference
+        loadAgePreference();
 
         // Set onClickListener for the next button
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -36,7 +43,8 @@ public class AgeActivity extends AppCompatActivity {
                 if (age.isEmpty()) {
                     Toast.makeText(AgeActivity.this, "Please enter your age", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Pass the age to the next activity
+                    // Save age to preferences and proceed to the next activity
+                    saveAgePreference(age);
                     Intent intent = new Intent(AgeActivity.this, PFCActivity.class);
                     intent.putExtra("age", age);
                     startActivity(intent);
@@ -48,8 +56,21 @@ public class AgeActivity extends AppCompatActivity {
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();  // Go back to the previous screen
+                finish();
             }
         });
+    }
+
+    private void saveAgePreference(String age) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(AGE_KEY, age);
+        editor.apply();
+    }
+
+    private void loadAgePreference() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String savedAge = sharedPreferences.getString(AGE_KEY, "");
+        ageInput.setText(savedAge);
     }
 }

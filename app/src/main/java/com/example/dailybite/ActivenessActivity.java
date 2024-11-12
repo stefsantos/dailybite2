@@ -1,6 +1,8 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -12,18 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ActivenessActivity extends AppCompatActivity {
 
+    private static final String PREFS_NAME = "ActivityLevelPrefs";
+    private static final String ACTIVITY_LEVEL_KEY = "SelectedActivityLevel";
+
     private TextView sedentaryText, lowActiveText, activeText, veryActiveText;
     private ImageButton nextButton;
     private TextView backText;
-    private String selectedActivityLevel = null;  // Variable to store selected activity level
+    private String selectedActivityLevel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activeness);  // Set your layout
+        setContentView(R.layout.activity_activeness);
 
-        // Initialize the UI components
         sedentaryText = findViewById(R.id.sedentary_text);
         lowActiveText = findViewById(R.id.low_active_text);
         activeText = findViewById(R.id.active_text);
@@ -31,12 +35,15 @@ public class ActivenessActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
 
-        // Set onClickListeners for the activity level options
+        // Load the saved activity level
+        loadSelectedActivityLevel();
+
         sedentaryText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectActivityLevel(sedentaryText);
                 selectedActivityLevel = "Sedentary";
+                saveSelectedActivityLevel("Sedentary");
                 Toast.makeText(ActivenessActivity.this, "Selected: Sedentary", Toast.LENGTH_SHORT).show();
             }
         });
@@ -46,6 +53,7 @@ public class ActivenessActivity extends AppCompatActivity {
             public void onClick(View v) {
                 selectActivityLevel(lowActiveText);
                 selectedActivityLevel = "Low Active";
+                saveSelectedActivityLevel("Low Active");
                 Toast.makeText(ActivenessActivity.this, "Selected: Low Active", Toast.LENGTH_SHORT).show();
             }
         });
@@ -55,6 +63,7 @@ public class ActivenessActivity extends AppCompatActivity {
             public void onClick(View v) {
                 selectActivityLevel(activeText);
                 selectedActivityLevel = "Active";
+                saveSelectedActivityLevel("Active");
                 Toast.makeText(ActivenessActivity.this, "Selected: Active", Toast.LENGTH_SHORT).show();
             }
         });
@@ -64,29 +73,26 @@ public class ActivenessActivity extends AppCompatActivity {
             public void onClick(View v) {
                 selectActivityLevel(veryActiveText);
                 selectedActivityLevel = "Very Active";
+                saveSelectedActivityLevel("Very Active");
                 Toast.makeText(ActivenessActivity.this, "Selected: Very Active", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Set onClickListener for the back button
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();  // Finish this activity and go back to the previous screen
+                finish();
             }
         });
 
-        // Set onClickListener for the proceed button
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selectedActivityLevel != null) {
-                    // If an activity level is selected, proceed to the next activity
-                    Intent intent = new Intent(ActivenessActivity.this, HeightActivity.class);  // Replace with your next activity
-                    intent.putExtra("selectedActivityLevel", selectedActivityLevel);  // Pass the selected activity level
+                    Intent intent = new Intent(ActivenessActivity.this, HeightActivity.class);
+                    intent.putExtra("selectedActivityLevel", selectedActivityLevel);
                     startActivity(intent);
                 } else {
-                    // Show a message if no activity level is selected
                     Toast.makeText(ActivenessActivity.this, "Please select an activity level", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -94,13 +100,36 @@ public class ActivenessActivity extends AppCompatActivity {
     }
 
     private void selectActivityLevel(TextView selectedButton) {
-        // Reset the backgrounds for all options
         sedentaryText.setBackgroundResource(android.R.color.transparent);
         lowActiveText.setBackgroundResource(android.R.color.transparent);
         activeText.setBackgroundResource(android.R.color.transparent);
         veryActiveText.setBackgroundResource(android.R.color.transparent);
 
-        // Apply the outline to the selected button
-        selectedButton.setBackgroundResource(R.drawable.outline);  // Apply green outline
+        selectedButton.setBackgroundResource(R.drawable.outline);
+    }
+
+    private void saveSelectedActivityLevel(String activityLevel) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ACTIVITY_LEVEL_KEY, activityLevel);
+        editor.apply();
+    }
+
+    private void loadSelectedActivityLevel() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String savedActivityLevel = sharedPreferences.getString(ACTIVITY_LEVEL_KEY, null);
+
+        if (savedActivityLevel != null) {
+            selectedActivityLevel = savedActivityLevel;
+            if (savedActivityLevel.equals("Sedentary")) {
+                selectActivityLevel(sedentaryText);
+            } else if (savedActivityLevel.equals("Low Active")) {
+                selectActivityLevel(lowActiveText);
+            } else if (savedActivityLevel.equals("Active")) {
+                selectActivityLevel(activeText);
+            } else if (savedActivityLevel.equals("Very Active")) {
+                selectActivityLevel(veryActiveText);
+            }
+        }
     }
 }

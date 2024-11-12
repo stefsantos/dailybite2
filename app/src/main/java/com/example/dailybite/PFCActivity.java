@@ -1,6 +1,8 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -107,7 +109,7 @@ public class PFCActivity extends AppCompatActivity {
                             String email = user.getEmail();
                             String username = email != null && email.contains("@") ? email.split("@")[0] : user.getDisplayName();
 
-                            // Save username to Firestore
+                            // Save user data to Firestore
                             saveUserDetails(user.getUid(), username, email);
                         }
                     } else {
@@ -118,11 +120,43 @@ public class PFCActivity extends AppCompatActivity {
     }
 
     private void saveUserDetails(String userId, String username, String email) {
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("username", username);
-        userMap.put("email", email);
+        // Retrieve data from shared preferences for weight, height, age, etc.
+        SharedPreferences weightPrefs = getSharedPreferences("WeightPrefs", Context.MODE_PRIVATE);
+        SharedPreferences heightPrefs = getSharedPreferences("HeightPrefs", Context.MODE_PRIVATE);
+        SharedPreferences agePrefs = getSharedPreferences("AgePrefs", Context.MODE_PRIVATE);
+        SharedPreferences genderPrefs = getSharedPreferences("GenderPrefs", Context.MODE_PRIVATE);
+        SharedPreferences activityPrefs = getSharedPreferences("ActivityLevelPrefs", Context.MODE_PRIVATE);
 
-        db.collection("users").document(userId).set(userMap)
+        // Retrieve saved values from shared preferences
+        String weight = weightPrefs.getString("Weight", "");
+        String weightUnit = weightPrefs.getBoolean("Unit", true) ? "kg" : "lbs";
+        int heightMeters = heightPrefs.getInt("HeightMeters", 0);
+        int heightCentimeters = heightPrefs.getInt("HeightCentimeters", 0);
+        boolean isMetric = heightPrefs.getBoolean("UnitSystem", true);
+        String height = isMetric ? heightMeters + "m " + heightCentimeters + "cm" : heightMeters + "ft " + heightCentimeters + "in";
+        String age = agePrefs.getString("Age", "");
+        String gender = genderPrefs.getString("SelectedGender", "");
+        String activityLevel = activityPrefs.getString("SelectedActivityLevel", "");
+
+        // Create a user object to store in Firestore
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", username);
+        user.put("email", email);
+
+        // Organize additional data under a "user_info" nested map
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("weight", weight);
+        userInfo.put("weight_unit", weightUnit);
+        userInfo.put("height", height);
+        userInfo.put("age", age);
+        userInfo.put("gender", gender);
+        userInfo.put("activity_level", activityLevel);
+
+        // Add userInfo as a nested field within the user map
+        user.put("user_info", userInfo);
+
+        // Add user document to Firestore in the "users" collection with the UID as the document ID
+        db.collection("users").document(userId).set(user)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(PFCActivity.this, "Welcome, " + username + "!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(PFCActivity.this, Homepage.class));
