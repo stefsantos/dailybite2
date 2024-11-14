@@ -8,7 +8,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
 public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder> {
@@ -22,7 +21,6 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
         this.foodList = foodList;
         this.deleteListener = deleteListener;
     }
-
 
     public interface OnFoodItemDeletedListener {
         void onFoodItemDeleted();
@@ -61,14 +59,9 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
         return foodList.size();
     }
 
-
+    // Getter method to access the food list
     public List<foodItem> getFoodList() {
         return foodList;
-    }
-
-    public void updateFoodList(List<foodItem> newList) {
-        this.foodList = newList;
-        notifyDataSetChanged();
     }
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {

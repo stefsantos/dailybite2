@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeFragment extends Fragment implements MealAdapter.OnMealClickListener, MealAdapter.OnMealLongClickListener {
     private TextView tvProtein, tvFats, tvCarbs, tvCalories;
@@ -49,12 +50,12 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private int glassesOfWater;
     private TextView litersWaterTextView;
     private TextView lastTimeTextView;
-    private TextView username; // Add TextView reference for username
+    private TextView username;
     private int editPosition = -1;
-    private final int TARGET_PROTEINS = 150;
-    private final int TARGET_FATS = 50;
-    private final int TARGET_CARBS = 190;
-    private final int TARGET_CALORIES = 2000;
+    private int TARGET_PROTEINS = 150;
+    private int TARGET_FATS = 50;
+    private int TARGET_CARBS = 190;
+    private int TARGET_CALORIES = 2000;
     private int currentProteins = 0;
     private int currentFats = 0;
     private int currentCarbs = 0;
@@ -150,6 +151,9 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                 }
         );
 
+        // Fetch intake targets from Firestore
+        fetchIntakeTargets();
+
         if (!mealsInitialized) {
             initializeMeals();
             mealsInitialized = true;
@@ -159,13 +163,50 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         return view;
     }
 
+    private void fetchIntakeTargets() {
+        String userId = mAuth.getCurrentUser().getUid();
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> intake = (Map<String, Object>) documentSnapshot.get("intake");
+                        if (intake != null) {
+                            TARGET_PROTEINS = ((Number) intake.get("proteins")).intValue();
+                            TARGET_FATS = ((Number) intake.get("fats")).intValue();
+                            TARGET_CARBS = ((Number) intake.get("carbs")).intValue();
+                            TARGET_CALORIES = ((Number) intake.get("calories")).intValue();
+                        }
+                        updateNutrientViews();
+                    } else {
+                        Log.d("HomeFragment", "No intake data found for this user.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("HomeFragment", "Error fetching intake data", e);
+                    Toast.makeText(getContext(), "Failed to load intake targets", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void updateNutrientViews() {
+        tvProtein.setText(currentProteins + " / " + TARGET_PROTEINS);
+        progressBarProteins.setProgress((int) ((float) currentProteins / TARGET_PROTEINS * 100));
+
+        tvFats.setText(currentFats + " / " + TARGET_FATS);
+        progressBarFats.setProgress((int) ((float) currentFats / TARGET_FATS * 100));
+
+        tvCarbs.setText(currentCarbs + " / " + TARGET_CARBS);
+        progressBarCarbs.setProgress((int) ((float) currentCarbs / TARGET_CARBS * 100));
+
+        tvCalories.setText(currentCalories + " / " + TARGET_CALORIES);
+        progressBarCalories.setProgress((int) ((float) currentCalories / TARGET_CALORIES * 100));
+    }
+
     private void loadUsername() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String savedUsername = documentSnapshot.getString("username");
                 if (savedUsername != null) {
-                    username.setText(savedUsername); // Set the TextView to the user's saved username
+                    username.setText(savedUsername);
                 }
             } else {
                 Log.d("HomeFragment", "No such document");
@@ -270,28 +311,6 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                 .show();
     }
 
-    private void updateNutrientViews() {
-        tvProtein.setText(currentProteins + " / " + TARGET_PROTEINS);
-        progressBarProteins.setProgress((int) ((float) currentProteins / TARGET_PROTEINS * 100));
-
-        tvFats.setText(currentFats + " / " + TARGET_FATS);
-        progressBarFats.setProgress((int) ((float) currentFats / TARGET_FATS * 100));
-
-        tvCarbs.setText(currentCarbs + " / " + TARGET_CARBS);
-        progressBarCarbs.setProgress((int) ((float) currentCarbs / TARGET_CARBS * 100));
-
-        tvCalories.setText(currentCalories + " / " + TARGET_CALORIES);
-        progressBarCalories.setProgress((int) ((float) currentCalories / TARGET_CALORIES * 100));
-    }
-
-    private void addMeal(Meal meal) {
-        currentProteins += meal.getProteins();
-        currentFats += meal.getFats();
-        currentCarbs += meal.getCarbs();
-        currentCalories += meal.getCalories();
-        updateNutrientViews();
-    }
-
     private void initializeMeals() {
         for (Meal meal : mealList) {
             addMeal(meal);
@@ -306,14 +325,20 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         updateNutrientViews();
     }
 
+    private void addMeal(Meal meal) {
+        currentProteins += meal.getProteins();
+        currentFats += meal.getFats();
+        currentCarbs += meal.getCarbs();
+        currentCalories += meal.getCalories();
+        updateNutrientViews();
+    }
+
     private void editMeal(Meal oldMeal, Meal newMeal) {
-        // Subtract old meal values
         currentProteins -= oldMeal.getProteins();
         currentFats -= oldMeal.getFats();
         currentCarbs -= oldMeal.getCarbs();
         currentCalories -= oldMeal.getCalories();
 
-        // Add new meal values
         currentProteins += newMeal.getProteins();
         currentFats += newMeal.getFats();
         currentCarbs += newMeal.getCarbs();
@@ -321,8 +346,4 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         updateNutrientViews();
     }
-
-
 }
-
-

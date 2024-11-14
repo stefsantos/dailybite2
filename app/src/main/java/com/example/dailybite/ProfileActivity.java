@@ -1,19 +1,21 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.util.Log;
-
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Locale;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -22,6 +24,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView userImage;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +32,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Initialize Firebase Auth and Firestore
+        // Initialize Firebase Auth, Firestore, and SharedPreferences
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
 
         // Initialize the views from the layout
         backButton = findViewById(R.id.backbutton2);
@@ -42,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
         calorieIntake = findViewById(R.id.CalorieCount2);
         toProfileButton = findViewById(R.id.toProfile);
 
-        // Load the user's username and email
+        // Load the user's username, email, and calorie intake
         loadUserProfile();
 
         backButton.setOnClickListener(v -> finish());
@@ -58,8 +62,11 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.Logout).setOnClickListener(v -> {
-            // Sign out the user
+            // Sign out the user from Firebase
             mAuth.signOut();
+
+            // Update SharedPreferences to reflect the logout state
+            sharedPreferences.edit().putBoolean("isLoggedIn", false).apply();
 
             // Navigate to the login screen (MainActivity)
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
@@ -67,10 +74,9 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
             finish(); // Close the ProfileActivity
         });
-
     }
 
-    // Load user's profile information from Firestore
+    // Load user's profile information and calorie intake from Firestore
     private void loadUserProfile() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
@@ -78,11 +84,18 @@ public class ProfileActivity extends AppCompatActivity {
                 String username = documentSnapshot.getString("username");
                 String email = documentSnapshot.getString("email");
 
+                // Retrieve calorie intake from Firestore
+                Double calories = documentSnapshot.getDouble("intake.calories");
+
                 if (username != null) {
                     profileTitle.setText(username);
                 }
                 if (email != null) {
                     profileEmail.setText(email);
+                }
+                if (calories != null) {
+                    // Display the calories in the TextView with "cal" suffix
+                    calorieIntake.setText(String.format(Locale.getDefault(), "%.0f cal", calories));
                 }
             } else {
                 Log.d("ProfileActivity", "No such document");

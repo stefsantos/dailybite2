@@ -2,6 +2,7 @@ package com.example.dailybite;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,11 +14,22 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
+
 public class CalorieIntakeActivity extends AppCompatActivity {
 
     private TextView caloriesText, proteinsText, fatsText, carbsText, waterText;
     private Button saveButton;
     private ImageButton backButton;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
+    private static final String TAG = "CalorieIntakeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +37,9 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calorie_intake);
 
+        // Initialize Firebase Auth and Firestore
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         caloriesText = findViewById(R.id.caloriesText);
         proteinsText = findViewById(R.id.proteinsText);
@@ -36,13 +51,8 @@ public class CalorieIntakeActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(v -> finish());
 
-        // Set default values (hardcoded for now later can be fetched from a database or API)
-        caloriesText.setText("3400 cal");
-        proteinsText.setText("225 g");
-        fatsText.setText("118 g");
-        carbsText.setText("340 g");
-        waterText.setText("2500 ml");
-
+        // Fetch intake data from Firestore and display it
+        fetchIntakeData();
 
         caloriesText.setOnClickListener(v -> showEditDialog("Edit Calories", caloriesText, "cal"));
         proteinsText.setOnClickListener(v -> showEditDialog("Edit Proteins", proteinsText, "g"));
@@ -51,9 +61,31 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         waterText.setOnClickListener(v -> showEditDialog("Edit Water", waterText, "ml"));
 
         saveButton.setOnClickListener(v -> {
-
             Toast.makeText(CalorieIntakeActivity.this, "Information saved!", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void fetchIntakeData() {
+        String userId = mAuth.getCurrentUser().getUid();
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> intake = (Map<String, Object>) documentSnapshot.get("intake");
+                        if (intake != null) {
+                            caloriesText.setText(intake.get("calories") + " cal");
+                            proteinsText.setText(intake.get("proteins") + " g");
+                            fatsText.setText(intake.get("fats") + " g");
+                            carbsText.setText(intake.get("carbs") + " g");
+                            waterText.setText("2500 ml"); // Default value, could be customized if needed
+                        }
+                    } else {
+                        Log.d(TAG, "No intake data found for this user.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error fetching intake data", e);
+                    Toast.makeText(CalorieIntakeActivity.this, "Failed to load intake data", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void showEditDialog(String title, TextView textViewToUpdate, String unit) {

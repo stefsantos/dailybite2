@@ -1,6 +1,8 @@
 package com.example.dailybite;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
@@ -15,12 +17,27 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+
+        // Check if user is logged in
+        if (sharedPreferences.getBoolean("isLoggedIn", false)) {
+            // User is logged in, redirect to HomeActivity
+            Intent intent = new Intent(MainActivity.this, Homepage.class);
+            startActivity(intent);
+            finish(); // Close MainActivity so it doesn't stay in the back stack
+            return;
+        }
+
         setContentView(R.layout.activity_main);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Adjust padding based on system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -34,7 +51,10 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to LoginActivity
+                // Set login state in SharedPreferences
+                sharedPreferences.edit().putBoolean("isLoggedIn", true).apply();
+
+                // Navigate to WeightgoalActivity
                 Intent intent = new Intent(MainActivity.this, WeightgoalActivity.class);
                 startActivity(intent);
             }
@@ -45,7 +65,10 @@ public class MainActivity extends AppCompatActivity {
         signInText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to LoginActivity (same as Start button functionality)
+                // Set login state in SharedPreferences
+                sharedPreferences.edit().putBoolean("isLoggedIn", true).apply();
+
+                // Navigate to SignInActivity
                 Intent intent = new Intent(MainActivity.this, SignInActivity.class);
                 startActivity(intent);
             }

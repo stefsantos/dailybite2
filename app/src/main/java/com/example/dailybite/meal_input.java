@@ -117,6 +117,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         carbsText.setText(String.valueOf(totalCarbs));
     }
 
+
     public void onFoodItemDeleted() {
         calculateTotalNutrients();
     }

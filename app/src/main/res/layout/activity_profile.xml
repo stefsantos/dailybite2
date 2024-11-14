@@ -96,8 +96,8 @@
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="88dp"
-                android:layout_height="36dp"
+                android:layout_width="259dp"
+                android:layout_height="29dp"
                 android:text="user"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
