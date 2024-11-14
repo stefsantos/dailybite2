@@ -88,6 +88,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         SharedPreferences agePrefs = getSharedPreferences("AgePrefs", Context.MODE_PRIVATE);
         SharedPreferences genderPrefs = getSharedPreferences("GenderPrefs", Context.MODE_PRIVATE);
         SharedPreferences activityPrefs = getSharedPreferences("ActivityLevelPrefs", Context.MODE_PRIVATE);
+        SharedPreferences pfcPrefs = getSharedPreferences("PFCValues", Context.MODE_PRIVATE);
 
         // Retrieve saved values from shared preferences
         String weight = weightPrefs.getString("Weight", "");
@@ -99,6 +100,12 @@ public class CreateAccountActivity extends AppCompatActivity {
         String age = agePrefs.getString("Age", "");
         String gender = genderPrefs.getString("SelectedGender", "");
         String activityLevel = activityPrefs.getString("SelectedActivityLevel", "");
+
+        // Retrieve calculated PFC values from SharedPreferences
+        float calories = pfcPrefs.getFloat("Calories", 0);
+        float proteins = pfcPrefs.getFloat("Proteins", 0);
+        float fats = pfcPrefs.getFloat("Fats", 0);
+        float carbs = pfcPrefs.getFloat("Carbs", 0);
 
         // Create a user object to store in Firestore
         Map<String, Object> user = new HashMap<>();
@@ -116,6 +123,16 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         // Add userInfo as a nested field within the user map
         user.put("user_info", userInfo);
+
+        // Organize PFC values under an "intake" nested map
+        Map<String, Object> intake = new HashMap<>();
+        intake.put("calories", calories);
+        intake.put("proteins", proteins);
+        intake.put("fats", fats);
+        intake.put("carbs", carbs);
+
+        // Add intake to the user map
+        user.put("intake", intake);
 
         // Add user document to Firestore in the "users" collection with the UID as the document ID
         db.collection("users").document(userId).set(user)
