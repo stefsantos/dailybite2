@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import com.example.dailybite.CircularProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,6 +58,9 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
 
         // Display target step count
         stepCountTargetTextView.setText("Step Goal: " + stepCountTarget);
+
+        // Set maximum progress for the circular progress bar
+        progressBar.setMaxProgress(stepCountTarget);
 
         // Initialize SensorManager and sensors
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -120,18 +122,9 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     }
 
     private void updateProgressBar() {
-        // Calculate progress as a percentage of the step count target
-        int progressPercentage = (int) ((stepCount / (float) stepCountTarget) * 100);
-
-        // Cap the progress at 100% to avoid overflow if stepCount exceeds stepCountTarget
-        if (progressPercentage > 100) {
-            progressPercentage = 100;
-        }
-
-        // Update the circular progress bar with the calculated percentage
-        progressBar.setProgress(progressPercentage);
+        // Update the circular progress bar directly with the step count
+        progressBar.setProgress(stepCount);
     }
-
 
     private void updateStopwatch() {
         long elapsedTime = isPaused ? timePaused : (System.currentTimeMillis() - startTime);

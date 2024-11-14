@@ -11,7 +11,7 @@ public class CircularProgressBar extends View {
     private Paint backgroundPaint;
     private Paint foregroundPaint;
     private int progress = 0;
-    private int maxProgress = 10000; // Maximum progress (e.g. step goal)
+    private int maxProgress = 1000; // Default max progress (can be updated dynamically)
 
     public CircularProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -63,11 +63,11 @@ public class CircularProgressBar extends View {
 
     // Method to set progress
     public void setProgress(int progress) {
-        this.progress = progress;
+        this.progress = Math.min(progress, maxProgress); // Ensure progress doesn't exceed maxProgress
         invalidate(); // Redraw the view when progress is updated
     }
 
-    // Method to set max progress (optional)
+    // Method to set max progress (total step count target)
     public void setMaxProgress(int maxProgress) {
         this.maxProgress = maxProgress;
         invalidate();

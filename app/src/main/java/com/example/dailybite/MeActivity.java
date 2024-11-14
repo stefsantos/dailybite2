@@ -15,17 +15,33 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class MeActivity extends AppCompatActivity {
 
     private TextView goalText, ageText, heightText, weightText, genderText, lifestyleText;
     private Button saveButton;
     private ImageButton backButton;
 
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
+    private Map<String, Object> updatedData; // Store all values for Firebase
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_me);
+
+        // Initialize Firebase Auth and Firestore
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // Initialize views
         goalText = findViewById(R.id.goalText);
@@ -37,44 +53,85 @@ public class MeActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
         backButton = findViewById(R.id.back_button_me);
 
-        // Set default values
-        goalText.setText("Gain weight");
-        ageText.setText("17 years");
-        heightText.setText("184 cm");
-        weightText.setText("88 kg");
-        genderText.setText("Male");
-        lifestyleText.setText("Active");
+        updatedData = new HashMap<>();
+
+        // Load user data from Firestore
+        loadUserData();
 
         // Set click listeners for editable fields
-        goalText.setOnClickListener(v -> showSelectionDialog("Edit Goal", goalText, new String[]{"Lose weight", "Keep weight", "Gain weight"}));
-        ageText.setOnClickListener(v -> showEditDialog("Edit Age", ageText));
-        heightText.setOnClickListener(v -> showEditDialog("Edit Height", heightText));
-        weightText.setOnClickListener(v -> showEditDialog("Edit Weight", weightText));
-        lifestyleText.setOnClickListener(v -> showSelectionDialog("Edit Lifestyle", lifestyleText, new String[]{"Sedentary", "Low Active", "Active", "Very Active"}));
+        goalText.setOnClickListener(v -> showSelectionDialog("Edit Goal", goalText, "goal", new String[]{"Lose weight", "Keep weight", "Gain weight"}));
+        ageText.setOnClickListener(v -> showEditDialog("Edit Age", ageText, "age"));
+        heightText.setOnClickListener(v -> showEditDialog("Edit Height", heightText, "height"));
+        weightText.setOnClickListener(v -> showEditDialog("Edit Weight", weightText, "weight"));
+        lifestyleText.setOnClickListener(v -> showSelectionDialog("Edit Lifestyle", lifestyleText, "activity_level", new String[]{"Sedentary", "Low Active", "Active", "Very Active"}));
 
         // Handle back button click
         backButton.setOnClickListener(v -> finish());
 
-        // Handle save button click
-        saveButton.setOnClickListener(v -> {
-            Toast.makeText(MeActivity.this, "Information saved!", Toast.LENGTH_SHORT).show();
-        });
+        // Handle save button click to update Firestore
+        saveButton.setOnClickListener(v -> saveChangesToFirestore());
     }
 
-    // Show dialog for input fields (age, height, weight)
-    private void showEditDialog(String title, TextView textViewToUpdate) {
+    // Load user data from Firestore and store all values in updatedData
+    private void loadUserData() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Map<String, Object> userInfo = (Map<String, Object>) documentSnapshot.get("user_info");
+
+                            // Set values to TextViews if userInfo is not null and store in updatedData
+                            if (userInfo != null) {
+                                String goal = userInfo.get("goal") != null ? userInfo.get("goal").toString() : "Keep weight";
+                                goalText.setText(goal);
+                                updatedData.put("goal", goal);
+
+                                String age = userInfo.get("age") != null ? userInfo.get("age").toString() + " years" : "N/A";
+                                ageText.setText(age);
+                                updatedData.put("age", userInfo.get("age"));
+
+                                String height = userInfo.get("height") != null ? userInfo.get("height").toString() : "N/A";
+                                heightText.setText(height);
+                                updatedData.put("height", height);
+
+                                String weight = userInfo.get("weight") != null ? userInfo.get("weight").toString() : "N/A";
+                                weightText.setText(weight + " kg"); // Display " kg" suffix
+                                updatedData.put("weight", weight); // Store without " kg"
+
+                                String gender = userInfo.get("gender") != null ? userInfo.get("gender").toString() : "N/A";
+                                genderText.setText(gender);
+                                updatedData.put("gender", gender);
+
+                                String activityLevel = userInfo.get("activity_level") != null ? userInfo.get("activity_level").toString() : "N/A";
+                                lifestyleText.setText(activityLevel);
+                                updatedData.put("activity_level", activityLevel);
+                            }
+                        } else {
+                            Toast.makeText(MeActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(MeActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    // Show dialog for input fields (age, height, weight) and update locally
+    private void showEditDialog(String title, TextView textViewToUpdate, String fieldKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MeActivity.this);
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.edit_value, null);  // The layout for input dialog
+        View dialogView = inflater.inflate(R.layout.edit_value, null);
         builder.setView(dialogView);
 
         EditText valueInput = dialogView.findViewById(R.id.editValueInput);
-        valueInput.setText(textViewToUpdate.getText().toString());
+        valueInput.setText(textViewToUpdate.getText().toString().replace(" kg", "").replace(" years", ""));
 
         builder.setTitle(title)
                 .setPositiveButton("Done", (dialog, id) -> {
                     String newValue = valueInput.getText().toString();
-                    textViewToUpdate.setText(newValue);
+                    textViewToUpdate.setText(fieldKey.equals("weight") ? newValue + " kg" : newValue); // Only add " kg" to display
+                    updatedData.put(fieldKey, newValue); // Save updated value without suffix
                     Toast.makeText(MeActivity.this, title + " updated to: " + newValue, Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
@@ -83,11 +140,11 @@ public class MeActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Show dialog for selection fields (goal, lifestyle)
-    private void showSelectionDialog(String title, TextView textViewToUpdate, String[] options) {
+    // Show dialog for selection fields (goal, lifestyle) and update locally
+    private void showSelectionDialog(String title, TextView textViewToUpdate, String fieldKey, String[] options) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MeActivity.this);
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.select_value, null);  // The layout for selection dialog
+        View dialogView = inflater.inflate(R.layout.select_value, null);
         builder.setView(dialogView);
 
         RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroup);
@@ -109,12 +166,30 @@ public class MeActivity extends AppCompatActivity {
             int selectedId = radioGroup.getCheckedRadioButtonId();
             if (selectedId != -1) {
                 RadioButton selectedOption = dialogView.findViewById(selectedId);
-                textViewToUpdate.setText(selectedOption.getText().toString());
-                Toast.makeText(MeActivity.this, title + " updated to: " + selectedOption.getText().toString(), Toast.LENGTH_SHORT).show();
+                String selectedText = selectedOption.getText().toString();
+                textViewToUpdate.setText(selectedText);
+                updatedData.put(fieldKey, selectedText); // Save updated value locally
+                Toast.makeText(MeActivity.this, title + " updated to: " + selectedText, Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();
             }
         });
 
         alertDialog.show();
+    }
+
+    // Save all changes to Firestore
+    private void saveChangesToFirestore() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+
+            // Update the user_info nested document in Firestore with all fields
+            db.collection("users").document(userId)
+                    .update("user_info", updatedData)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(MeActivity.this, "Changes saved successfully!", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(MeActivity.this, "Failed to save changes", Toast.LENGTH_SHORT).show());
+        }
     }
 }
