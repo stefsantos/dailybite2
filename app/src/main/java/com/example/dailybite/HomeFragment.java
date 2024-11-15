@@ -32,6 +32,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
+
 public class HomeFragment extends Fragment implements MealAdapter.OnMealClickListener, MealAdapter.OnMealLongClickListener {
     private TextView tvProtein, tvFats, tvCarbs, tvCalories;
     private ProgressBar progressBarProteins, progressBarFats, progressBarCarbs, progressBarCalories;
@@ -65,6 +72,12 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
+    private static final String SHARED_PREFS = "dailyBitePrefs";
+    private static final String MEALS_KEY = "meals";
+    private SharedPreferences sharedPreferences;
+    private Gson gson;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -73,43 +86,39 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        // Initialize SharedPreferences and Gson
+        sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        gson = new Gson();
+
+        // Load meals from SharedPreferences
+        mealList = loadMeals();
+        mealAdapter = new MealAdapter(mealList, this, this);
+        recyclerView = view.findViewById(R.id.recyclerView_meals);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(mealAdapter);
+
         // Initialize username TextView
         username = view.findViewById(R.id.username);
-
-        // Fetch and display username
         loadUsername();
-
         username.setOnClickListener(v -> navigateToUserProfile());
 
-        // Initialize the calendar icon for date selection
+        // Initialize other UI elements and listeners, e.g., water tracking, calendar
         ImageView calendarIcon = view.findViewById(R.id.calendar_icon);
         calendarIcon.setOnClickListener(v -> openCalendar());
 
-        // Initialize the plus icon for navigating to meal input
         ImageView plusIconMeal = view.findViewById(R.id.plus_icon_meal);
         plusIconMeal.setOnClickListener(v -> navigateToMealInputWithoutDate());
 
-        // Initialize views and set up click listeners
-        recyclerView = view.findViewById(R.id.recyclerView_meals);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        // Initialize water tracking UI and functionality
         waterBackg = view.findViewById(R.id.water_backg);
         waterPercent = view.findViewById(R.id.water_drank);
-        ImageView plusIcon = view.findViewById(R.id.plus_icon);
-        ImageView minusIcon = view.findViewById(R.id.minus_icon);
-
-        mealList = new ArrayList<>();
-        mealList.add(new Meal("Breakfast", "10:45 AM", 431, 20, 10, 50));
-        mealList.add(new Meal("Lunch", "03:45 PM", 900, 20, 20, 90));
-
-        mealAdapter = new MealAdapter(mealList, this, this);
-        recyclerView.setAdapter(mealAdapter);
-
         glassesOfWater = 0;
         litersWaterTextView = view.findViewById(R.id.liters_water);
         updateWaterDisplay();
         lastTimeTextView = view.findViewById(R.id.last_time_1);
 
+        ImageView plusIcon = view.findViewById(R.id.plus_icon);
+        ImageView minusIcon = view.findViewById(R.id.minus_icon);
         plusIcon.setOnClickListener(v -> addGlass());
         minusIcon.setOnClickListener(v -> minusGlass());
 
@@ -135,31 +144,32 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                         String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
 
                         if (editPosition != -1) {
-                            deleteMeal(mealList.get(editPosition));
                             Meal existingMeal = mealList.get(editPosition);
                             existingMeal.updateMeal(mealName, currentTime, mealCalories, mealProteins, mealFats, mealCarbs);
                             mealAdapter.notifyItemChanged(editPosition);
-                            addMeal(existingMeal);
                             editPosition = -1;
                         } else {
                             Meal newMeal = new Meal(mealName, currentTime, mealCalories, mealProteins, mealFats, mealCarbs);
                             addMeal(newMeal);
-                            mealList.add(newMeal);
                             mealAdapter.notifyItemInserted(mealList.size() - 1);
                         }
+                        // Recalculate nutrient totals and update views
+                        initializeMeals();
+                        updateNutrientViews();
                     }
                 }
         );
 
-        // Fetch intake targets from Firestore
-        fetchIntakeTargets();
 
+
+        // Fetch intake targets from Firestore and update views
+        fetchIntakeTargets();
         if (!mealsInitialized) {
             initializeMeals();
             mealsInitialized = true;
         }
-
         updateNutrientViews();
+
         return view;
     }
 
@@ -263,7 +273,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private void minusGlass() {
         if (glassesOfWater > 0) {
             glassesOfWater--;
-            waterHeight -= waterHeight;
+            waterHeight -= GLASS_HEIGHT_DP;
             updateWaterDisplay();
             updateLastTime();
         }
@@ -287,14 +297,21 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     @Override
     public void onMealClick(Meal meal) {
         editPosition = mealList.indexOf(meal);
-        Intent intent = new Intent(getActivity(), meal_input.class);
-        intent.putExtra("MEAL_NAME", meal.getName());
-        intent.putExtra("MEAL_CALORIES", String.valueOf(meal.getCalories()));
-        intent.putExtra("MEAL_PROTEINS", String.valueOf(meal.getProteins()));
-        intent.putExtra("MEAL_FATS", String.valueOf(meal.getFats()));
-        intent.putExtra("MEAL_CARBS", String.valueOf(meal.getCarbs()));
-        mealInputLauncher.launch(intent);
+
+        if (editPosition != -1) { // Check if the meal exists in the list
+            Intent intent = new Intent(getActivity(), meal_input.class);
+            intent.putExtra("MEAL_NAME", meal.getName());
+            intent.putExtra("MEAL_CALORIES", String.valueOf(meal.getCalories()));
+            intent.putExtra("MEAL_PROTEINS", String.valueOf(meal.getProteins()));
+            intent.putExtra("MEAL_FATS", String.valueOf(meal.getFats()));
+            intent.putExtra("MEAL_CARBS", String.valueOf(meal.getCarbs()));
+            mealInputLauncher.launch(intent);
+        } else {
+            Log.e("HomeFragment", "Meal not found in mealList. Position invalid.");
+            Toast.makeText(getContext(), "Error: Meal not found", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     @Override
     public void onMealLongClick(int position) {
@@ -312,38 +329,81 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void initializeMeals() {
+        // Reset nutrient totals to avoid double-counting
+        currentProteins = 0;
+        currentFats = 0;
+        currentCarbs = 0;
+        currentCalories = 0;
+
+        // Calculate totals from the entire mealList
         for (Meal meal : mealList) {
-            addMeal(meal);
+            currentProteins += meal.getProteins();
+            currentFats += meal.getFats();
+            currentCarbs += meal.getCarbs();
+            currentCalories += meal.getCalories();
+        }
+        // Update the nutrient views after recalculation
+        updateNutrientViews();
+    }
+
+    private void saveMeals() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String mealListJson = gson.toJson(mealList);
+        editor.putString(MEALS_KEY, mealListJson);
+        editor.apply();
+    }
+
+    private List<Meal> loadMeals() {
+        String mealListJson = sharedPreferences.getString(MEALS_KEY, null);
+        if (mealListJson != null) {
+            Type type = new TypeToken<List<Meal>>() {}.getType();
+            return gson.fromJson(mealListJson, type);
+        } else {
+            return new ArrayList<>(); // Return empty list if no meals are saved
         }
     }
 
+    private void editMeal(Meal oldMeal, Meal newMeal) {
+        currentProteins = currentProteins - oldMeal.getProteins() + newMeal.getProteins();
+        currentFats = currentFats - oldMeal.getFats() + newMeal.getFats();
+        currentCarbs = currentCarbs - oldMeal.getCarbs() + newMeal.getCarbs();
+        currentCalories = currentCalories - oldMeal.getCalories() + newMeal.getCalories();
+        updateNutrientViews();
+
+        int index = mealList.indexOf(oldMeal);
+        if (index != -1) {
+            mealList.set(index, newMeal);
+            saveMeals(); // Save to SharedPreferences
+        }
+    }
+
+
+
     private void deleteMeal(Meal meal) {
+        // Update the current totals by subtracting the meal's values
         currentProteins -= meal.getProteins();
         currentFats -= meal.getFats();
         currentCarbs -= meal.getCarbs();
         currentCalories -= meal.getCalories();
+
+        // Remove the meal from the list and save
+        mealList.remove(meal);
+        saveMeals(); // Save to SharedPreferences
         updateNutrientViews();
     }
 
+
     private void addMeal(Meal meal) {
+        // Update the current totals
         currentProteins += meal.getProteins();
         currentFats += meal.getFats();
         currentCarbs += meal.getCarbs();
         currentCalories += meal.getCalories();
+
+        // Add the meal to the list and save
+        mealList.add(meal);
+        saveMeals(); // Save to SharedPreferences
         updateNutrientViews();
     }
 
-    private void editMeal(Meal oldMeal, Meal newMeal) {
-        currentProteins -= oldMeal.getProteins();
-        currentFats -= oldMeal.getFats();
-        currentCarbs -= oldMeal.getCarbs();
-        currentCalories -= oldMeal.getCalories();
-
-        currentProteins += newMeal.getProteins();
-        currentFats += newMeal.getFats();
-        currentCarbs += newMeal.getCarbs();
-        currentCalories += newMeal.getCalories();
-
-        updateNutrientViews();
-    }
 }

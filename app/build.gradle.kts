@@ -37,6 +37,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
     implementation("com.google.android.gms:play-services-auth:20.5.0")
 
+    implementation ("com.google.code.gson:gson:2.8.9")
+
+
     // Firebase and Google Sign-In dependencies
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")

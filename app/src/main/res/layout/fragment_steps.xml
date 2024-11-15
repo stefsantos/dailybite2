@@ -15,7 +15,7 @@
         android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="55dp" />
 
     <!-- Steps TextView -->
     <TextView
@@ -27,7 +27,7 @@
         android:textStyle="bold"
         android:layout_below="@id/step_target"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="12dp" />
 
     <!-- Circular ProgressBar using custom drawable -->
     <com.example.dailybite.CircularProgressBar

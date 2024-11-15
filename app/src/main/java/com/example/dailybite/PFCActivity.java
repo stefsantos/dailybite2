@@ -100,12 +100,22 @@ public class PFCActivity extends AppCompatActivity {
         double TDEE = calculateTDEE(age, weight, heightInCm, gender, activityLevel);
         Map<String, Double> macros = calculateMacros(TDEE);
 
+        // Save calculated values to SharedPreferences
+        SharedPreferences pfcPrefs = getSharedPreferences("PFCValues", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pfcPrefs.edit();
+        editor.putFloat("Calories", (float) TDEE);
+        editor.putFloat("Proteins", macros.get("Proteins").floatValue());
+        editor.putFloat("Fats", macros.get("Fats").floatValue());
+        editor.putFloat("Carbs", macros.get("Carbs").floatValue());
+        editor.apply();
+
         // Update the UI with calculated values
         proteinsButton.setText("Proteins: " + String.format("%.0f", macros.get("Proteins")) + "g");
         fatsButton.setText("Fats: " + String.format("%.0f", macros.get("Fats")) + "g");
         carbsButton.setText("Carbs: " + String.format("%.0f", macros.get("Carbs")) + "g");
         caloriesButton.setText("Calories: " + String.format("%.0f", macros.get("Calories")));
     }
+
 
     private double calculateTDEE(int age, double weightKg, int heightCm, String gender, String activityLevel) {
         double BMR;
