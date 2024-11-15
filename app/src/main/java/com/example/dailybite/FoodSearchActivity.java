@@ -7,14 +7,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,7 +44,6 @@ public class FoodSearchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_search);
 
@@ -67,9 +64,7 @@ public class FoodSearchActivity extends AppCompatActivity {
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         foodItems = new ArrayList<>();
-
-        // Initialize adapter with isBranded flag set to false for common foods
-        foodAdapter = new SearchAdapter(this, foodItems, false);
+        foodAdapter = new SearchAdapter(this, foodItems);
         foodRecyclerView.setAdapter(foodAdapter);
 
         // Handle back button click
@@ -120,7 +115,7 @@ public class FoodSearchActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<NutritionixResponse> call, Response<NutritionixResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    foodItems = response.body().getCommonFoods(); // Use common or branded as needed
+                    foodItems = response.body().getCommonFoods();
                     if (foodItems != null && !foodItems.isEmpty()) {
                         foodAdapter.updateFoodList(foodItems);
                         updateEmptyView();

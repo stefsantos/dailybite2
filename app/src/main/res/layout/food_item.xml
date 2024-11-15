@@ -5,80 +5,18 @@
     android:padding="16dp"
     android:gravity="center_vertical">
 
-    <!-- Left section: Food details -->
-    <LinearLayout
+    <!-- Left section: Food name only -->
+    <TextView
+        android:id="@+id/foodNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:text="Food Name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#000000" />
 
-        <!-- Food name -->
-        <TextView
-            android:id="@+id/foodNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Food Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#000000" />
-
-        <!-- Calories and serving size -->
-        <TextView
-            android:id="@+id/foodCaloriesTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="160 cal / 100 g"
-            android:textSize="14sp"
-            android:textColor="#757575" />
-
-        <!-- Proteins, Carbs, and Fats -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
-
-            <TextView
-                android:id="@+id/foodProteinsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Proteins: 6g"
-                android:textSize="14sp"
-                android:textColor="#757575" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" | "
-                android:textSize="14sp"
-                android:textColor="#757575" />
-
-            <TextView
-                android:id="@+id/foodCarbsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Carbs: 20g"
-                android:textSize="14sp"
-                android:textColor="#757575" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" | "
-                android:textSize="14sp"
-                android:textColor="#757575" />
-
-            <TextView
-                android:id="@+id/foodFatsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fats: 10g"
-                android:textSize="14sp"
-                android:textColor="#757575" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Right section: Delete button -->
+    <!-- Right section: Delete button (optional) -->
     <ImageButton
         android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
@@ -87,5 +25,4 @@
         android:contentDescription="Delete"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp" />
-
 </LinearLayout>

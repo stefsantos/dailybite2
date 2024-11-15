@@ -23,6 +23,19 @@ public class NutritionixResponse {
         @SerializedName("food_name")
         private String foodName;
 
+        @SerializedName("nf_calories")
+        private int calories;
+
+        @SerializedName("nf_protein")
+        private int proteins;
+
+        @SerializedName("nf_total_carbohydrate")
+        private int carbs;
+
+        @SerializedName("nf_total_fat")
+        private int fats;
+
+        // Optional fields if needed in the UI for serving size
         @SerializedName("serving_qty")
         private int servingQty;
 
@@ -32,10 +45,28 @@ public class NutritionixResponse {
         @SerializedName("photo")
         private Photo photo;
 
+        // Getters for nutrients
         public String getFoodName() {
             return foodName;
         }
 
+        public int getCalories() {
+            return calories;
+        }
+
+        public int getProteins() {
+            return proteins;
+        }
+
+        public int getCarbs() {
+            return carbs;
+        }
+
+        public int getFats() {
+            return fats;
+        }
+
+        // Getters for optional serving information
         public int getServingQty() {
             return servingQty;
         }

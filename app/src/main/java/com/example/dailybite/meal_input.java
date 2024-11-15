@@ -6,7 +6,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,19 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodItemDeletedListener{
+public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodItemDeletedListener {
 
-    private TextView caloriesText, proteinsText, fatsText, carbsText;
+    private TextView caloriesText, proteinsText, fatsText, carbsText, meal_title;
     private RecyclerView foodRecyclerView;
     private foodAdapter foodAdapter;
     private Button saveButton;
     private ImageButton addButton, closeButton;
     private String mealName;
-    private TextView meal_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_input);
 
@@ -39,32 +36,33 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         saveButton = findViewById(R.id.saveButton);
         addButton = findViewById(R.id.add_button);
         closeButton = findViewById(R.id.close_button);
-        mealName = getIntent().getStringExtra("MEAL_NAME");
         meal_title = findViewById(R.id.meal_title);
 
+        // Get meal name from the intent
+        mealName = getIntent().getStringExtra("MEAL_NAME");
         if (mealName == null || mealName.trim().isEmpty()) {
             mealName = "New Meal";
-            meal_title.setText(mealName);
-
-        } else {
-            meal_title.setText(mealName);
         }
+        meal_title.setText(mealName);
+
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        foodAdapter = new foodAdapter(this, getSampleFoodItems(), this);  // Correct instance with Context, List, and boolean
-
+        foodAdapter = new foodAdapter(this, getSampleFoodItems(), this); // Pass the sample food items and context
         foodRecyclerView.setAdapter(foodAdapter);
 
+        // Add button click opens FoodSearchActivity
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(meal_input.this, FoodSearchActivity.class);
             startActivity(intent);
         });
 
-        // Set up click listeners (for adding new food or closing)
+        // Close button to finish activity
         closeButton.setOnClickListener(v -> finish());
 
-        // Example logic for the save button
-        saveButton.setOnClickListener(v -> saveMeal() );
+        // Save button logic
+        saveButton.setOnClickListener(v -> saveMeal());
+
+        // Calculate total nutrients
         calculateTotalNutrients();
     }
 
@@ -74,6 +72,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         String fats = fatsText.getText().toString();
         String carbs = carbsText.getText().toString();
         String newMealName = meal_title.getText().toString();
+
         // Create an Intent to hold the meal data
         Intent resultIntent = new Intent();
         resultIntent.putExtra("MEAL_NAME", newMealName);
@@ -84,20 +83,21 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
 
         // Set the result and finish the activity
         setResult(RESULT_OK, resultIntent);
-        Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories + " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
+                " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
         finish();
     }
 
-
-    // Sample data for the food items
+    // Sample data for food items
     private List<foodItem> getSampleFoodItems() {
         List<foodItem> foodItems = new ArrayList<>();
-        foodItems.add(new foodItem("Fried eggs", 100, 6, 1, 20));  // 100g serving, 6g proteins, 1g carbs, 20g fats
-        foodItems.add(new foodItem("Apple", 116, 1, 30, 0));       // 200g serving, 1g proteins, 30g carbs, 0g fats
-        foodItems.add(new foodItem("Banana", 90, 1, 22, 0));       // Another example item
+        foodItems.add(new foodItem("Fried eggs", 100, 6, 1, 20));
+        foodItems.add(new foodItem("Apple", 116, 1, 30, 0));
+        foodItems.add(new foodItem("Banana", 90, 1, 22, 0));
         return foodItems;
     }
 
+    // Calculate total nutrients
     private void calculateTotalNutrients() {
         int totalCalories = 0;
         int totalProteins = 0;
@@ -117,9 +117,9 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         carbsText.setText(String.valueOf(totalCarbs));
     }
 
-
+    // Callback when food item is deleted
+    @Override
     public void onFoodItemDeleted() {
         calculateTotalNutrients();
     }
-
 }

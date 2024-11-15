@@ -43,6 +43,7 @@
         <activity android:name=".FoodSearchActivity" android:exported="false" />
         <activity android:name=".MeActivity" />
         <activity android:name=".CalorieIntakeActivity" />
+        <activity android:name=".FoodDetailActivity" />
 
     </application>
 
