@@ -31,10 +31,10 @@
 
 
             <TextView
-                android:id="@+id/today"
-                android:layout_width="50dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="290dp"
+                android:id="@+id/date"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="200dp"
                 android:layout_marginTop="60dp"
                 android:gravity="top"
                 android:lineSpacingExtra="0sp"

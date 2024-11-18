@@ -85,6 +85,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         setResult(RESULT_OK, resultIntent);
         Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
+
         finish();
     }
 
@@ -100,9 +101,9 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     // Calculate total nutrients
     private void calculateTotalNutrients() {
         int totalCalories = 0;
-        int totalProteins = 0;
-        int totalFats = 0;
-        int totalCarbs = 0;
+        float totalProteins = 0;
+        float totalFats = 0;
+        float totalCarbs = 0;
 
         for (foodItem item : foodAdapter.getFoodList()) {
             totalCalories += item.getCalories();
@@ -122,4 +123,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     public void onFoodItemDeleted() {
         calculateTotalNutrients();
     }
+
+
 }

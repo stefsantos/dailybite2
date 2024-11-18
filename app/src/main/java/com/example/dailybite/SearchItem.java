@@ -2,12 +2,12 @@ package com.example.dailybite;
 
 public class SearchItem {
     private String name;
-    private int calories;
-    private int proteins;
-    private int carbs;
-    private int fats;
+    private float calories;
+    private float proteins;
+    private float carbs;
+    private float fats;
 
-    public SearchItem(String name, int calories, int proteins, int carbs, int fats) {
+    public SearchItem(String name, float calories, float proteins, float carbs, float fats) {
         this.name = name;
         this.calories = calories;
         this.proteins = proteins;
@@ -19,19 +19,19 @@ public class SearchItem {
         return name;
     }
 
-    public int getCalories() {
+    public float getCalories() {
         return calories;
     }
 
-    public int getProteins() {
+    public float getProteins() {
         return proteins;
     }
 
-    public int getCarbs() {
+    public float getCarbs() {
         return carbs;
     }
 
-    public int getFats() {
+    public float getFats() {
         return fats;
     }
 }

@@ -88,4 +88,8 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
             mealCalories.setText(String.valueOf(meal.getCalories()));
         }
     }
+    public void setMealList(List<Meal> newMealList) {
+        this.mealList = newMealList;
+        notifyDataSetChanged();  // Notify adapter about data change
+    }
 }

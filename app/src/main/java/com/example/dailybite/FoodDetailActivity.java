@@ -21,10 +21,10 @@ public class FoodDetailActivity extends AppCompatActivity {
 
         // Get data from intent and display
         String foodName = getIntent().getStringExtra("foodName");
-        int calories = getIntent().getIntExtra("calories", 0);
-        int proteins = getIntent().getIntExtra("proteins", 0);
-        int carbs = getIntent().getIntExtra("carbs", 0);
-        int fats = getIntent().getIntExtra("fats", 0);
+        float calories = getIntent().getFloatExtra("calories", 0);
+        float proteins = getIntent().getFloatExtra("proteins", 0);
+        float carbs = getIntent().getFloatExtra("carbs", 0);
+        float fats = getIntent().getFloatExtra("fats", 0);
 
         foodNameTextView.setText(foodName);
         caloriesTextView.setText("Calories: " + calories + " kcal");

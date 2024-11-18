@@ -58,15 +58,16 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private TextView litersWaterTextView;
     private TextView lastTimeTextView;
     private TextView username;
+    private TextView selectedDate;
     private int editPosition = -1;
-    private int TARGET_PROTEINS = 150;
-    private int TARGET_FATS = 50;
-    private int TARGET_CARBS = 190;
-    private int TARGET_CALORIES = 2000;
-    private int currentProteins = 0;
-    private int currentFats = 0;
-    private int currentCarbs = 0;
-    private int currentCalories = 0;
+    private float TARGET_PROTEINS = 150;
+    private float TARGET_FATS = 50;
+    private float TARGET_CARBS = 190;
+    private float TARGET_CALORIES = 2000;
+    private float currentProteins = 0;
+    private float currentFats = 0;
+    private float currentCarbs = 0;
+    private float currentCalories = 0;
     private boolean mealsInitialized = false;
 
     private FirebaseFirestore db;
@@ -74,7 +75,10 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
     private static final String SHARED_PREFS = "dailyBitePrefs";
     private static final String MEALS_KEY = "meals";
+    private static final String WATER_KEY = "water";
+    private static final String NUTRIENTS_KEY = "nutrients";
     private SharedPreferences sharedPreferences;
+    private String currentDate;
     private Gson gson;
 
 
@@ -91,11 +95,6 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         gson = new Gson();
 
         // Load meals from SharedPreferences
-        mealList = loadMeals();
-        mealAdapter = new MealAdapter(mealList, this, this);
-        recyclerView = view.findViewById(R.id.recyclerView_meals);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(mealAdapter);
 
         // Initialize username TextView
         username = view.findViewById(R.id.username);
@@ -132,15 +131,24 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         progressBarCarbs = view.findViewById(R.id.progressBarDeterminate_Carbs);
         progressBarCalories = view.findViewById(R.id.progressBarDeterminate_calories);
 
+        selectedDate = view.findViewById(R.id.date);
+        currentDate = getCurrentDate();
+        loadDataForDate(currentDate);
+        mealAdapter = new MealAdapter(mealList, this, this);
+        recyclerView = view.findViewById(R.id.recyclerView_meals);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(mealAdapter);
+
+
         mealInputLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         String mealName = result.getData().getStringExtra("MEAL_NAME");
-                        int mealCalories = Integer.parseInt(result.getData().getStringExtra("MEAL_CALORIES"));
-                        int mealProteins = Integer.parseInt(result.getData().getStringExtra("MEAL_PROTEINS"));
-                        int mealFats = Integer.parseInt(result.getData().getStringExtra("MEAL_FATS"));
-                        int mealCarbs = Integer.parseInt(result.getData().getStringExtra("MEAL_CARBS"));
+                        float mealCalories = Float.parseFloat(result.getData().getStringExtra("MEAL_CALORIES"));
+                        float mealProteins = Float.parseFloat(result.getData().getStringExtra("MEAL_PROTEINS"));
+                        float mealFats = Float.parseFloat(result.getData().getStringExtra("MEAL_FATS"));
+                        float mealCarbs = Float.parseFloat(result.getData().getStringExtra("MEAL_CARBS"));
                         String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
 
                         if (editPosition != -1) {
@@ -180,10 +188,10 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                     if (documentSnapshot.exists()) {
                         Map<String, Object> intake = (Map<String, Object>) documentSnapshot.get("intake");
                         if (intake != null) {
-                            TARGET_PROTEINS = ((Number) intake.get("proteins")).intValue();
-                            TARGET_FATS = ((Number) intake.get("fats")).intValue();
-                            TARGET_CARBS = ((Number) intake.get("carbs")).intValue();
-                            TARGET_CALORIES = ((Number) intake.get("calories")).intValue();
+                            TARGET_PROTEINS = ((Number) intake.get("proteins")).floatValue();
+                            TARGET_FATS = ((Number) intake.get("fats")).floatValue();
+                            TARGET_CARBS = ((Number) intake.get("carbs")).floatValue();
+                            TARGET_CALORIES = ((Number) intake.get("calories")).floatValue();
                         }
                         updateNutrientViews();
                     } else {
@@ -198,16 +206,16 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
     private void updateNutrientViews() {
         tvProtein.setText(currentProteins + " / " + TARGET_PROTEINS);
-        progressBarProteins.setProgress((int) ((float) currentProteins / TARGET_PROTEINS * 100));
+        progressBarProteins.setProgress((int) (currentProteins / TARGET_PROTEINS * 100));
 
         tvFats.setText(currentFats + " / " + TARGET_FATS);
-        progressBarFats.setProgress((int) ((float) currentFats / TARGET_FATS * 100));
+        progressBarFats.setProgress((int) ( currentFats / TARGET_FATS * 100));
 
         tvCarbs.setText(currentCarbs + " / " + TARGET_CARBS);
-        progressBarCarbs.setProgress((int) ((float) currentCarbs / TARGET_CARBS * 100));
+        progressBarCarbs.setProgress((int) (currentCarbs / TARGET_CARBS * 100));
 
         tvCalories.setText(currentCalories + " / " + TARGET_CALORIES);
-        progressBarCalories.setProgress((int) ((float) currentCalories / TARGET_CALORIES * 100));
+        progressBarCalories.setProgress((int) ( currentCalories / TARGET_CALORIES * 100));
     }
 
     private void loadUsername() {
@@ -224,6 +232,14 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         }).addOnFailureListener(e -> Log.d("HomeFragment", "Error fetching document", e));
     }
 
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+    private void updateSelectedDate() {
+        selectedDate.setText(currentDate);
+    }
+
     private void openCalendar() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -232,11 +248,70 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getActivity(),
-                (view, selectedYear, selectedMonth, selectedDay) -> {},
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Store the selected date in SharedPreferences
+                    String newDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
+                    saveSelectedDate(newDate);
+                    loadDataForDate(newDate);
+                    currentDate=newDate;
+                    updateSelectedDate();
+                },
                 year, month, day
         );
 
         datePickerDialog.show();
+    }
+
+    private void saveSelectedDate(String date) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("SELECTED_DATE", date);
+        editor.apply();
+    }
+
+
+    private void loadDataForDate(String date) {
+        // Load nutrients and water data
+        String nutrientsJson = sharedPreferences.getString(NUTRIENTS_KEY + "_" + date, null);
+        if (nutrientsJson != null) {
+            NutrientData nutrientData = gson.fromJson(nutrientsJson, NutrientData.class);
+            currentProteins = nutrientData.proteins;
+            currentFats = nutrientData.fats;
+            currentCarbs = nutrientData.carbs;
+            currentCalories = nutrientData.calories;
+        } else {
+            currentProteins = 0;
+            currentFats = 0;
+            currentCarbs = 0;
+            currentCalories = 0;
+        }
+
+        // Load water intake data
+        int waterConsumed = sharedPreferences.getInt(WATER_KEY + "_" + date, 0);
+        glassesOfWater = waterConsumed;
+
+        // Update the UI
+        updateNutrientViews();
+        updateWaterDisplay();
+        loadMealsForDate(date);
+    }
+
+    private void saveDataForDate(String date) {
+        // Save meals, nutrients, and water data to SharedPreferences for the given date
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Save meals list
+        String mealsJson = gson.toJson(mealList);
+        editor.putString(MEALS_KEY + "_" + date, mealsJson);
+
+        // Save nutrients data
+        NutrientData nutrientData = new NutrientData(currentProteins, currentFats, currentCarbs, currentCalories);
+        String nutrientsJson = gson.toJson(nutrientData);
+        editor.putString(NUTRIENTS_KEY + "_" + date, nutrientsJson);
+
+        // Save water intake
+        editor.putInt(WATER_KEY + "_" + date, glassesOfWater);
+
+        editor.apply();
     }
 
     private void navigateToMealInputWithoutDate() {
@@ -266,6 +341,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             glassesOfWater++;
             waterHeight += GLASS_HEIGHT_DP;
             updateWaterDisplay();
+            saveDataForDate(currentDate);
             updateLastTime();
         }
     }
@@ -275,6 +351,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             glassesOfWater--;
             waterHeight -= GLASS_HEIGHT_DP;
             updateWaterDisplay();
+            saveDataForDate(currentDate);
             updateLastTime();
         }
     }
@@ -347,21 +424,32 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void saveMeals() {
+        // Save meals for the current date using the correct key format
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String mealListJson = gson.toJson(mealList);
-        editor.putString(MEALS_KEY, mealListJson);
+        editor.putString(MEALS_KEY + "_" + currentDate, mealListJson);
         editor.apply();
     }
 
-    private List<Meal> loadMeals() {
-        String mealListJson = sharedPreferences.getString(MEALS_KEY, null);
+    private void loadMealsForDate(String date) {
+        // Load meals for specific date using the correct key format
+        String mealListJson = sharedPreferences.getString(MEALS_KEY + "_" + date, null);
         if (mealListJson != null) {
             Type type = new TypeToken<List<Meal>>() {}.getType();
-            return gson.fromJson(mealListJson, type);
+            mealList = gson.fromJson(mealListJson, type);
         } else {
-            return new ArrayList<>(); // Return empty list if no meals are saved
+            mealList = new ArrayList<>();
         }
+
+        // Set the updated list to the adapter
+        if (mealAdapter != null) {
+            mealAdapter.setMealList(mealList);
+        }
+
+        // Recalculate and update UI
+        initializeMeals();
     }
+
 
     private void editMeal(Meal oldMeal, Meal newMeal) {
         currentProteins = currentProteins - oldMeal.getProteins() + newMeal.getProteins();
@@ -373,7 +461,8 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         int index = mealList.indexOf(oldMeal);
         if (index != -1) {
             mealList.set(index, newMeal);
-            saveMeals(); // Save to SharedPreferences
+            saveMeals(); // This now saves with the correct date-specific key
+            saveDataForDate(currentDate);
         }
     }
 
@@ -388,10 +477,10 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         // Remove the meal from the list and save
         mealList.remove(meal);
-        saveMeals(); // Save to SharedPreferences
+        saveMeals(); // This now saves with the correct date-specific key
+        saveDataForDate(currentDate);
         updateNutrientViews();
     }
-
 
     private void addMeal(Meal meal) {
         // Update the current totals
@@ -403,6 +492,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         // Add the meal to the list and save
         mealList.add(meal);
         saveMeals(); // Save to SharedPreferences
+        saveDataForDate(currentDate);
         updateNutrientViews();
     }
 

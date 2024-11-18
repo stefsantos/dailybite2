@@ -1,15 +1,17 @@
 package com.example.dailybite;
 
+import java.sql.Timestamp;
+
 public class Meal {
     private String name;
     private String time;
-    private int calories;
-    private int proteins;
-    private int fats;
-    private int carbs;
+    private float calories;
+    private float proteins;
+    private float fats;
+    private float carbs;
 
     // Constructor to initialize proteins, fats, and carbs
-    public Meal(String name, String time, int calories, int proteins, int fats, int carbs) {
+    public Meal(String name, String time, float calories, float proteins, float fats, float carbs) {
         this.name = name;
         this.time = time;
         this.calories = calories;
@@ -18,6 +20,11 @@ public class Meal {
         this.carbs = carbs;
     }
 
+    public Meal() {
+        // This  is required for Firestore deserialization
+    }
+
+    public void setTime(String currentSelectedDate){currentSelectedDate = time;}
     public String getName() {
         return name;
     }
@@ -26,24 +33,24 @@ public class Meal {
         return time;
     }
 
-    public int getCalories() {
+    public float getCalories() {
         return calories;
     }
 
-    public int getProteins() {
+    public float getProteins() {
         return proteins;
     }
 
-    public int getFats() {
+    public float getFats() {
         return fats;
     }
 
-    public int getCarbs() {
+    public float getCarbs() {
         return carbs;
     }
 
     // Update meal method, if you want to update protein, fat, and carb values as well
-    public void updateMeal(String name, String time, int calories, int proteins, int fats, int carbs) {
+    public void updateMeal(String name, String time,  float calories, float proteins, float fats, float carbs) {
         this.name = name;
         this.time = time;
         this.calories = calories;
