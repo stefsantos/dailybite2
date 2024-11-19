@@ -5,7 +5,7 @@
     android:padding="16dp"
     android:gravity="center_vertical">
 
-    <!-- Left section: Food name only -->
+    <!-- Left section: Food name -->
     <TextView
         android:id="@+id/foodNameTextView"
         android:layout_width="0dp"
@@ -15,6 +15,16 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="#000000" />
+
+    <!-- Calories TextView (Initially hidden) -->
+    <TextView
+        android:id="@+id/foodCaloriesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100 Cal"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:visibility="gone" /> <!-- Default is hidden -->
 
     <!-- Right section: Delete button (optional) -->
     <ImageButton

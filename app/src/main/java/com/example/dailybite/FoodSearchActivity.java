@@ -64,7 +64,7 @@ public class FoodSearchActivity extends AppCompatActivity {
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         foodItems = new ArrayList<>();
-        foodAdapter = new SearchAdapter(this, foodItems);
+        foodAdapter = new SearchAdapter(this, foodItems, false); // hide calories in search
         foodRecyclerView.setAdapter(foodAdapter);
 
         // Handle back button click

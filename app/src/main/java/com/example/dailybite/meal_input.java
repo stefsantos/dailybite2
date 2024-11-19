@@ -47,7 +47,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
 
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        foodAdapter = new foodAdapter(this, getSampleFoodItems(), this); // Pass the sample food items and context
+        foodAdapter = new foodAdapter(this, getSampleFoodItems(), true, this); // Show calories for saved meals
         foodRecyclerView.setAdapter(foodAdapter);
 
         // Add button click opens FoodSearchActivity
@@ -118,11 +118,8 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         carbsText.setText(String.valueOf(totalCarbs));
     }
 
-    // Callback when food item is deleted
     @Override
     public void onFoodItemDeleted() {
         calculateTotalNutrients();
     }
-
-
 }

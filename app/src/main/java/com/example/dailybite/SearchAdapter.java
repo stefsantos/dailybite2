@@ -14,10 +14,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
 
     private Context context;
     private List<NutritionixResponse.FoodItem> foodList;
+    private boolean showCalories;
 
-    public SearchAdapter(Context context, List<NutritionixResponse.FoodItem> foodList) {
+    public SearchAdapter(Context context, List<NutritionixResponse.FoodItem> foodList, boolean showCalories) {
         this.context = context;
         this.foodList = foodList;
+        this.showCalories = showCalories;
     }
 
     @NonNull
@@ -31,6 +33,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
         NutritionixResponse.FoodItem foodItem = foodList.get(position);
         holder.foodNameTextView.setText(foodItem.getFoodName());
+
+        // Show or hide calories based on the 'showCalories' flag
+        if (showCalories) {
+            holder.foodCaloriesTextView.setVisibility(View.VISIBLE);
+            holder.foodCaloriesTextView.setText(foodItem.getCalories() + " Calories");
+        } else {
+            holder.foodCaloriesTextView.setVisibility(View.GONE);
+        }
 
         // Set click listener to open FoodDetailActivity with food nutrient details
         holder.itemView.setOnClickListener(v -> {
@@ -56,10 +66,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         TextView foodNameTextView;
+        TextView foodCaloriesTextView;
 
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
+            foodCaloriesTextView = itemView.findViewById(R.id.foodCaloriesTextView);
         }
     }
 }

@@ -1,23 +1,28 @@
 package com.example.dailybite;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class FoodDetailActivity extends AppCompatActivity {
 
     private TextView foodNameTextView, caloriesTextView, proteinsTextView, carbsTextView, fatsTextView;
+    private ImageButton backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_detail);
 
+
+
         foodNameTextView = findViewById(R.id.foodNameTextView);
         caloriesTextView = findViewById(R.id.caloriesTextView);
         proteinsTextView = findViewById(R.id.proteinsTextView);
         carbsTextView = findViewById(R.id.carbsTextView);
         fatsTextView = findViewById(R.id.fatsTextView);
+        backButton = findViewById(R.id.back_button);
 
         // Get data from intent and display
         String foodName = getIntent().getStringExtra("foodName");
@@ -25,6 +30,8 @@ public class FoodDetailActivity extends AppCompatActivity {
         float proteins = getIntent().getFloatExtra("proteins", 0);
         float carbs = getIntent().getFloatExtra("carbs", 0);
         float fats = getIntent().getFloatExtra("fats", 0);
+
+        backButton.setOnClickListener(v -> finish());
 
         foodNameTextView.setText(foodName);
         caloriesTextView.setText("Calories: " + calories + " kcal");

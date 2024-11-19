@@ -15,11 +15,13 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
 
     private Context context;
     private List<foodItem> foodList;
+    private boolean showCalories; // Flag to determine whether to show calories
     private OnFoodItemDeletedListener deleteListener;
 
-    public foodAdapter(Context context, List<foodItem> foodList, OnFoodItemDeletedListener deleteListener) {
+    public foodAdapter(Context context, List<foodItem> foodList, boolean showCalories, OnFoodItemDeletedListener deleteListener) {
         this.context = context;
         this.foodList = foodList;
+        this.showCalories = showCalories; // Initialize the flag
         this.deleteListener = deleteListener;
     }
 
@@ -35,7 +37,15 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
         foodItem foodItem = foodList.get(position);
         holder.foodNameTextView.setText(foodItem.getName());
 
-        // Set click listener to open FoodDetailActivity with food nutrient details
+        // Show or hide calories based on the `showCalories` flag
+        if (showCalories) {
+            holder.foodCaloriesTextView.setVisibility(View.VISIBLE);
+            holder.foodCaloriesTextView.setText(String.format("%.1f Cal", foodItem.getCalories()));
+        } else {
+            holder.foodCaloriesTextView.setVisibility(View.GONE);
+        }
+
+        // Open FoodDetailActivity on item click
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, FoodDetailActivity.class);
             intent.putExtra("foodName", foodItem.getName());
@@ -46,13 +56,13 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
             context.startActivity(intent);
         });
 
-        // Optional delete button logic, if needed
+        // Delete button logic
         holder.deleteButton.setOnClickListener(v -> {
             foodList.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, foodList.size());
 
-            // Notify listener of the deletion
+            // Notify the listener
             if (deleteListener != null) {
                 deleteListener.onFoodItemDeleted();
             }
@@ -70,12 +80,14 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         TextView foodNameTextView;
-        ImageButton deleteButton; // Assuming you want a delete button for each item
+        TextView foodCaloriesTextView; // Added TextView for calories
+        ImageButton deleteButton;
 
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
-            deleteButton = itemView.findViewById(R.id.deleteButton); // Ensure deleteButton exists in food_item.xml
+            foodCaloriesTextView = itemView.findViewById(R.id.foodCaloriesTextView); // Calories TextView
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 
