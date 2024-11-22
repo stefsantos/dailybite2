@@ -1,6 +1,9 @@
 package com.example.dailybite;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,8 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 public class PedometerFragment extends Fragment implements SensorEventListener {
@@ -36,10 +43,8 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     private final float stepLengthInMeters = 0.762f; // Approximate step length
     private final int stepCountTarget = 5000; // Target step count
 
-    // Accelerometer variables for motion detection
-    private float accelerationThreshold = 12.0f; // Sensitivity for motion detection
-    private float lastX, lastY, lastZ;
-    private boolean isFirstShake = true;
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 100;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
 
     @Nullable
     @Override
@@ -77,22 +82,69 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
             stepsTextView.setText("No accelerometer available for motion detection");
         }
 
+        // Check permissions
+        checkAndRequestPermissions();
+
         // Start/Stop button listener
         startStopButton.setOnClickListener(v -> {
             if (isWalking) {
                 stopWalking();
+                stopPedometerService();
             } else {
-                startWalking();
+                if (hasPermissions()) {
+                    startWalking();
+                    startPedometerService();
+                } else {
+                    Toast.makeText(requireContext(), "Permissions are required to start the pedometer.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         return view;
     }
 
+    private void checkAndRequestPermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_REQUEST_CODE);
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private boolean hasPermissions() {
+        boolean hasNotificationPermission = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+
+        boolean hasLocationPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+
+        return hasNotificationPermission && hasLocationPermission;
+    }
+
+    private void startPedometerService() {
+        Intent serviceIntent = new Intent(requireActivity(), PedometerService.class);
+        requireActivity().startForegroundService(serviceIntent);
+    }
+
+    private void stopPedometerService() {
+        Intent serviceIntent = new Intent(requireActivity(), PedometerService.class);
+        requireActivity().stopService(serviceIntent);
+    }
+
     private void startWalking() {
         isWalking = true;
         startStopButton.setText("Stop");
-        startTime = System.currentTimeMillis() - timePaused; // Continue from paused time if paused
+        startTime = System.currentTimeMillis() - timePaused;
         isPaused = false;
 
         runnable = new Runnable() {
@@ -101,7 +153,7 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
                 if (isWalking) {
                     updateStopwatch();
                     updateStats();
-                    handler.postDelayed(this, 1000); // Update every second
+                    handler.postDelayed(this, 1000);
                 }
             }
         };
@@ -111,7 +163,7 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     private void stopWalking() {
         isWalking = false;
         startStopButton.setText("Start");
-        timePaused = System.currentTimeMillis() - startTime; // Capture paused time
+        timePaused = System.currentTimeMillis() - startTime;
         isPaused = true;
         handler.removeCallbacks(runnable);
     }
@@ -122,7 +174,6 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     }
 
     private void updateProgressBar() {
-        // Update the circular progress bar directly with the step count
         progressBar.setProgress(stepCount);
     }
 
@@ -151,54 +202,34 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         durationTextView.setText(String.format("%dh %dm", hours, minutes));
     }
 
-    // Shake detection using accelerometer
-    private void detectShake(float x, float y, float z) {
-        if (isFirstShake) {
-            lastX = x;
-            lastY = y;
-            lastZ = z;
-            isFirstShake = false;
-            return;
-        }
-
-        float deltaX = Math.abs(x - lastX);
-        float deltaY = Math.abs(y - lastY);
-        float deltaZ = Math.abs(z - lastZ);
-
-        if (deltaX > accelerationThreshold || deltaY > accelerationThreshold || deltaZ > accelerationThreshold) {
-            stepCount++; // Increment step count for each shake detected
-            updateStepCount();
-        }
-
-        lastX = x;
-        lastY = y;
-        lastZ = z;
-    }
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             int totalSteps = (int) event.values[0];
 
-            // Calculate steps for this session only
             if (stepCount == 0) {
-                stepCount = totalSteps; // Initialize step count on first reading
+                stepCount = totalSteps;
             } else {
-                stepCount += (totalSteps - stepCount); // Accumulate step count based on counter sensor
+                stepCount += (totalSteps - stepCount);
             }
             updateStepCount();
-        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            // Shake detection based on accelerometer
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-            detectShake(x, y, z);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Handle accuracy changes if necessary
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE || requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(requireContext(), "Permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Permission denied. Cannot start the pedometer.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
