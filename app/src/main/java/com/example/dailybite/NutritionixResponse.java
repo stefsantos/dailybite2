@@ -11,31 +11,40 @@ public class NutritionixResponse {
     @SerializedName("branded")
     private List<BrandedFoodItem> branded;
 
+    @SerializedName("foods")
+    private List<FoodItem> foods; // Used for /v2/natural/nutrients
+
+    // Getters for the "common" and "branded" fields (used in /v2/search/instant)
     public List<FoodItem> getCommonFoods() {
-        return common;
+        return common != null ? common : List.of();
     }
 
     public List<BrandedFoodItem> getBrandedFoods() {
-        return branded;
+        return branded != null ? branded : List.of();
     }
 
+    // Getter for the "foods" field (used in /v2/natural/nutrients)
+    public List<FoodItem> getFoods() {
+        return foods != null ? foods : List.of();
+    }
+
+    // FoodItem class to handle common foods and natural nutrient responses
     public static class FoodItem {
         @SerializedName("food_name")
         private String foodName;
 
         @SerializedName("nf_calories")
-        private int calories;
+        private float calories;
 
         @SerializedName("nf_protein")
-        private int proteins;
+        private float proteins;
 
         @SerializedName("nf_total_carbohydrate")
-        private int carbs;
+        private float carbs;
 
         @SerializedName("nf_total_fat")
-        private int fats;
+        private float fats;
 
-        // Optional fields if needed in the UI for serving size
         @SerializedName("serving_qty")
         private int servingQty;
 
@@ -45,28 +54,27 @@ public class NutritionixResponse {
         @SerializedName("photo")
         private Photo photo;
 
-        // Getters for nutrients
+        // Getters for food details
         public String getFoodName() {
             return foodName;
         }
 
-        public int getCalories() {
+        public float getCalories() {
             return calories;
         }
 
-        public int getProteins() {
+        public float getProteins() {
             return proteins;
         }
 
-        public int getCarbs() {
+        public float getCarbs() {
             return carbs;
         }
 
-        public int getFats() {
+        public float getFats() {
             return fats;
         }
 
-        // Getters for optional serving information
         public int getServingQty() {
             return servingQty;
         }
@@ -89,6 +97,7 @@ public class NutritionixResponse {
         }
     }
 
+    // BrandedFoodItem class to handle branded foods
     public static class BrandedFoodItem {
         @SerializedName("food_name")
         private String foodName;

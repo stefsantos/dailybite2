@@ -3,7 +3,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground">
 
     <!-- Left section: Food details -->
     <LinearLayout
@@ -20,7 +21,9 @@
             android:text="Food Name"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
         <!-- Calories and serving size -->
         <TextView
@@ -29,7 +32,9 @@
             android:layout_height="wrap_content"
             android:text="160 cal / 100 g"
             android:textSize="14sp"
-            android:textColor="#757575" />
+            android:textColor="#757575"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
         <!-- Proteins, Carbs, and Fats -->
         <LinearLayout
@@ -81,11 +86,10 @@
     <!-- Right section: Delete button -->
     <ImageButton
         android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/close"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:contentDescription="Delete"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="8dp" />
-
+        android:padding="8dp"
+        android:layout_marginStart="8dp" />
 </LinearLayout>

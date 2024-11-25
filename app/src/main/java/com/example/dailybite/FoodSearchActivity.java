@@ -1,5 +1,6 @@
 package com.example.dailybite;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,7 +39,6 @@ public class FoodSearchActivity extends AppCompatActivity {
 
     private NutritionixApiService apiService;
 
-    // Handler for managing search delays
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
 
@@ -61,16 +61,16 @@ public class FoodSearchActivity extends AppCompatActivity {
                 .build();
         apiService = retrofit.create(NutritionixApiService.class);
 
-        // Set up RecyclerView
+        // Setup RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         foodItems = new ArrayList<>();
-        foodAdapter = new SearchAdapter(this, foodItems, false); // hide calories in search
+        foodAdapter = new SearchAdapter(this, foodItems, false);
         foodRecyclerView.setAdapter(foodAdapter);
 
-        // Handle back button click
+        // Back button functionality
         backButton.setOnClickListener(v -> finish());
 
-        // Set up search listener with throttling
+        // Add a text change listener to the search bar with a debounce mechanism
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -91,20 +91,49 @@ public class FoodSearchActivity extends AppCompatActivity {
                         updateEmptyView();
                     }
                 };
-                handler.postDelayed(searchRunnable, 500); // 500ms delay
+                handler.postDelayed(searchRunnable, 500);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {}
         });
 
-        // Set up filter spinner
+        // Setup filter spinner (optional)
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.filter_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(adapter);
 
-        // Show empty message if no food items
+        // Handle item click for food details
+        foodAdapter.setOnItemClickListener(foodItem -> {
+            NutritionixRequest request = new NutritionixRequest(foodItem.getFoodName());
+            apiService.getNutrients(request).enqueue(new Callback<NutritionixResponse>() {
+                @Override
+                public void onResponse(Call<NutritionixResponse> call, Response<NutritionixResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        // Retrieve the first food item details
+                        NutritionixResponse.FoodItem detailedFood = response.body().getFoods().get(0);
+
+                        // Pass data to FoodDetailActivity
+                        Intent intent = new Intent(FoodSearchActivity.this, FoodDetailActivity.class);
+                        intent.putExtra("foodName", detailedFood.getFoodName());
+                        intent.putExtra("calories", detailedFood.getCalories());
+                        intent.putExtra("proteins", detailedFood.getProteins());
+                        intent.putExtra("carbs", detailedFood.getCarbs());
+                        intent.putExtra("fats", detailedFood.getFats());
+                        startActivity(intent);
+                    } else {
+                        Log.d("FoodSearchActivity", "Error fetching food details: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NutritionixResponse> call, Throwable t) {
+                    Log.e("FoodSearchActivity", "Error fetching food details", t);
+                }
+            });
+        });
+
         updateEmptyView();
     }
 

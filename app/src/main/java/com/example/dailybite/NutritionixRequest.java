@@ -11,7 +11,4 @@ public class NutritionixRequest {
         return query;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
-    }
 }

@@ -1,25 +1,38 @@
 package com.example.dailybite;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHolder> {
 
-    private Context context;
+    private final Context context;
     private List<NutritionixResponse.FoodItem> foodList;
-    private boolean showCalories;
+    private final boolean showCalories;
+    private OnItemClickListener listener;
 
+    // Constructor
     public SearchAdapter(Context context, List<NutritionixResponse.FoodItem> foodList, boolean showCalories) {
         this.context = context;
         this.foodList = foodList;
         this.showCalories = showCalories;
+    }
+
+    // Interface for handling item clicks
+    public interface OnItemClickListener {
+        void onItemClick(NutritionixResponse.FoodItem foodItem);
+    }
+
+    // Setter for the click listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -34,7 +47,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
         NutritionixResponse.FoodItem foodItem = foodList.get(position);
         holder.foodNameTextView.setText(foodItem.getFoodName());
 
-        // Show or hide calories based on the 'showCalories' flag
+        // Show or hide calories based on the `showCalories` flag
         if (showCalories) {
             holder.foodCaloriesTextView.setVisibility(View.VISIBLE);
             holder.foodCaloriesTextView.setText(foodItem.getCalories() + " Calories");
@@ -42,15 +55,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
             holder.foodCaloriesTextView.setVisibility(View.GONE);
         }
 
-        // Set click listener to open FoodDetailActivity with food nutrient details
+        // Set click listener for the item
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, FoodDetailActivity.class);
-            intent.putExtra("foodName", foodItem.getFoodName());
-            intent.putExtra("calories", foodItem.getCalories());
-            intent.putExtra("proteins", foodItem.getProteins());
-            intent.putExtra("carbs", foodItem.getCarbs());
-            intent.putExtra("fats", foodItem.getFats());
-            context.startActivity(intent);
+            if (listener != null) {
+                listener.onItemClick(foodItem);
+            }
         });
     }
 
@@ -59,11 +68,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
         return foodList.size();
     }
 
+    // Update the food list dynamically
     public void updateFoodList(List<NutritionixResponse.FoodItem> newFoodList) {
         this.foodList = newFoodList;
         notifyDataSetChanged();
     }
 
+    // ViewHolder class for holding item views
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         TextView foodNameTextView;
         TextView foodCaloriesTextView;
