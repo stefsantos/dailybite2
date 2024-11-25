@@ -241,7 +241,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void openCalendar() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(); // Current date
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -249,18 +249,40 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getActivity(),
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Store the selected date in SharedPreferences
-                    String newDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
-                    saveSelectedDate(newDate);
-                    loadDataForDate(newDate);
-                    currentDate=newDate;
+                    // Get the selected date
+                    Calendar selectedCalendar = Calendar.getInstance();
+                    selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
+
+                    // Compare selected date with the current date
+                    if (isSameDay(selectedCalendar, calendar)) {
+                        saveSelectedDate("Today");
+                        loadDataForDate("Today");
+                        currentDate = "Today";
+                    } else {
+                        String newDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
+                        saveSelectedDate(newDate);
+                        loadDataForDate(newDate);
+                        currentDate = newDate;
+                    }
+
                     updateSelectedDate();
                 },
                 year, month, day
         );
 
+        // Restrict the calendar to only allow selecting dates up to today
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
         datePickerDialog.show();
     }
+
+    private boolean isSameDay(Calendar c1, Calendar c2) {
+        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+                c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH) &&
+                c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH);
+    }
+
+
 
     private void saveSelectedDate(String date) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
