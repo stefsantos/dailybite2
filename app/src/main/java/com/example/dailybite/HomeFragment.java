@@ -2,7 +2,10 @@ package com.example.dailybite;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -21,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -73,6 +77,9 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
+
+    private String userId;
+
     private static final String SHARED_PREFS = "dailyBitePrefs";
     private static final String MEALS_KEY = "meals";
     private static final String WATER_KEY = "water";
@@ -80,7 +87,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private SharedPreferences sharedPreferences;
     private String currentDate;
     private Gson gson;
-
+    private DBHelper dbHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,11 +96,11 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
+        userId = mAuth.getCurrentUser().getUid();
         // Initialize SharedPreferences and Gson
         sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         gson = new Gson();
-
+        dbHelper = new DBHelper(requireContext());
         // Load meals from SharedPreferences
 
         // Initialize username TextView
@@ -133,12 +140,12 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         selectedDate = view.findViewById(R.id.date);
         currentDate = getCurrentDate();
-        loadDataForDate(currentDate);
+        //loadDataForDate(currentDate);
         mealAdapter = new MealAdapter(mealList, this, this);
         recyclerView = view.findViewById(R.id.recyclerView_meals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mealAdapter);
-
+        loadMealsFromDatabase(currentDate);
 
         mealInputLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -177,12 +184,12 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             mealsInitialized = true;
         }
         updateNutrientViews();
-
+        dumpDatabaseContents();
         return view;
     }
 
     private void fetchIntakeTargets() {
-        String userId = mAuth.getCurrentUser().getUid();
+
         db.collection("users").document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -219,7 +226,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void loadUsername() {
-        String userId = mAuth.getCurrentUser().getUid();
+        userId = mAuth.getCurrentUser().getUid();
         db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String savedUsername = documentSnapshot.getString("username");
@@ -252,7 +259,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                     // Store the selected date in SharedPreferences
                     String newDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
                     saveSelectedDate(newDate);
-                    loadDataForDate(newDate);
+                    loadMealsFromDatabase(newDate);
                     currentDate=newDate;
                     updateSelectedDate();
                 },
@@ -268,7 +275,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         editor.apply();
     }
 
-
+/* DEPRECATED SHARED PREF
     private void loadDataForDate(String date) {
         // Load nutrients and water data
         String nutrientsJson = sharedPreferences.getString(NUTRIENTS_KEY + "_" + date, null);
@@ -292,8 +299,11 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         // Update the UI
         updateNutrientViews();
         updateWaterDisplay();
-        loadMealsForDate(date);
+        //loadMealsForDate(date);
+
     }
+
+
 
     private void saveDataForDate(String date) {
         // Save meals, nutrients, and water data to SharedPreferences for the given date
@@ -313,6 +323,8 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         editor.apply();
     }
+
+ */
 
     private void navigateToMealInputWithoutDate() {
         Intent intent = new Intent(getActivity(), meal_input.class);
@@ -341,7 +353,8 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             glassesOfWater++;
             waterHeight += GLASS_HEIGHT_DP;
             updateWaterDisplay();
-            saveDataForDate(currentDate);
+            dbHelper.updateGeneralForWater(currentDate, userId, glassesOfWater);
+            //saveDataForDate(currentDate);
             updateLastTime();
         }
     }
@@ -351,7 +364,8 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             glassesOfWater--;
             waterHeight -= GLASS_HEIGHT_DP;
             updateWaterDisplay();
-            saveDataForDate(currentDate);
+            dbHelper.updateGeneralForWater(currentDate, userId, glassesOfWater);
+            //saveDataForDate(currentDate);
             updateLastTime();
         }
     }
@@ -382,6 +396,9 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             intent.putExtra("MEAL_PROTEINS", String.valueOf(meal.getProteins()));
             intent.putExtra("MEAL_FATS", String.valueOf(meal.getFats()));
             intent.putExtra("MEAL_CARBS", String.valueOf(meal.getCarbs()));
+
+            //int mealId = dbHelper.getmealid(meal.getName(), currentDate, userId);
+            //intent.putExtra("MEAL_ID",mealId);
             mealInputLauncher.launch(intent);
         } else {
             Log.e("HomeFragment", "Meal not found in mealList. Position invalid.");
@@ -423,14 +440,25 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         updateNutrientViews();
     }
 
-    private void saveMeals() {
+    //DEPRECATED: saveMealToDatabase
+    /*private void saveMeals() {
         // Save meals for the current date using the correct key format
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String mealListJson = gson.toJson(mealList);
         editor.putString(MEALS_KEY + "_" + currentDate, mealListJson);
         editor.apply();
+    }*/
+
+    private void saveMealToDatabase(Meal meal, String date) {
+        long mealId = dbHelper.addMeal(meal, date,userId);
+        if (mealId != -1) {
+            Toast.makeText(requireContext(), "Meal added successfully!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(requireContext(), "Failed to add meal!", Toast.LENGTH_SHORT).show();
+        }
     }
 
+    /*
     private void loadMealsForDate(String date) {
         // Load meals for specific date using the correct key format
         String mealListJson = sharedPreferences.getString(MEALS_KEY + "_" + date, null);
@@ -448,6 +476,35 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         // Recalculate and update UI
         initializeMeals();
+    }*/
+
+    private void loadMealsFromDatabase(String date) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] columns = {"Meal_Name", "Total_Calories", "Total_Proteins", "Total_Fats", "Total_Carbs", "time"};
+        String selection = "date = ?";
+        String[] selectionArgs = {date};
+
+        Cursor cursor = db.query("meals", columns, selection, selectionArgs, null, null, null);
+
+        mealList = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+            float calories = cursor.getFloat(cursor.getColumnIndexOrThrow("calories"));
+            float proteins = cursor.getFloat(cursor.getColumnIndexOrThrow("proteins"));
+            float fats = cursor.getFloat(cursor.getColumnIndexOrThrow("fats"));
+            float carbs = cursor.getFloat(cursor.getColumnIndexOrThrow("carbs"));
+            String time = cursor.getString(cursor.getColumnIndexOrThrow("time"));
+
+            mealList.add(new Meal(name, time, calories, proteins, fats, carbs));
+        }
+        glassesOfWater = dbHelper.getGlassesWater(userId, date);
+        updateWaterDisplay();
+        cursor.close();
+        db.close();
+
+        mealAdapter.setMealList(mealList);
+        initializeMeals();
     }
 
 
@@ -461,8 +518,11 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         int index = mealList.indexOf(oldMeal);
         if (index != -1) {
             mealList.set(index, newMeal);
-            saveMeals(); // This now saves with the correct date-specific key
-            saveDataForDate(currentDate);
+            int mealId = dbHelper.getmealid(oldMeal.getName(), currentDate, userId);
+            dbHelper.editMeal(mealId, newMeal);
+            //saveMealToDatabase(newMeal,currentDate);
+            //saveMeals();
+            //saveDataForDate(currentDate);
         }
     }
 
@@ -477,8 +537,10 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         // Remove the meal from the list and save
         mealList.remove(meal);
-        saveMeals(); // This now saves with the correct date-specific key
-        saveDataForDate(currentDate);
+        //saveMeals(); // This now saves with the correct date-specific key
+        //saveDataForDate(currentDate);
+        int mealId = dbHelper.getmealid(meal.getName(), currentDate, userId);
+        dbHelper.deleteMeal(mealId);
         updateNutrientViews();
     }
 
@@ -491,9 +553,79 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         // Add the meal to the list and save
         mealList.add(meal);
-        saveMeals(); // Save to SharedPreferences
-        saveDataForDate(currentDate);
+        //saveMeals(); // Save to SharedPreferences
+        //saveDataForDate(currentDate);
+        saveMealToDatabase(meal, currentDate);
+
         updateNutrientViews();
     }
+
+    public void dumpDatabaseContents() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Query the GENERAL table
+        Cursor generalCursor = db.rawQuery("SELECT * FROM General", null);
+        if (generalCursor != null && generalCursor.moveToFirst()) {
+            do {
+                String username = generalCursor.getString(generalCursor.getColumnIndex("Username"));
+                String date = generalCursor.getString(generalCursor.getColumnIndex("Date"));
+                double totalCalories = generalCursor.getDouble(generalCursor.getColumnIndex("Total_Calories"));
+                double totalProteins = generalCursor.getDouble(generalCursor.getColumnIndex("Total_Proteins"));
+                double totalFats = generalCursor.getDouble(generalCursor.getColumnIndex("Total_Fats"));
+                double totalCarbs = generalCursor.getDouble(generalCursor.getColumnIndex("Total_Carbs"));
+                int glassesWater = generalCursor.getInt(generalCursor.getColumnIndex("Glasses_Water"));
+
+                Log.d("DatabaseDump", "General - Username: " + username + ", Date: " + date +
+                        ", Calories: " + totalCalories + ", Proteins: " + totalProteins +
+                        ", Fats: " + totalFats + ", Carbs: " + totalCarbs +
+                        ", Glasses of Water: " + glassesWater);
+            } while (generalCursor.moveToNext());
+        }
+        generalCursor.close();
+
+        // Query the MEALS table
+        Cursor mealsCursor = db.rawQuery("SELECT * FROM Meals", null);
+        if (mealsCursor != null && mealsCursor.moveToFirst()) {
+            do {
+                int mealId = mealsCursor.getInt(mealsCursor.getColumnIndex("Meal_ID"));
+                String username = mealsCursor.getString(mealsCursor.getColumnIndex("Username"));
+                String date = mealsCursor.getString(mealsCursor.getColumnIndex("Date"));
+                String mealTime = mealsCursor.getString(mealsCursor.getColumnIndex("Time"));
+                String mealName = mealsCursor.getString(mealsCursor.getColumnIndex("Meal_Name"));
+                double mealCalories = mealsCursor.getDouble(mealsCursor.getColumnIndex("Total_Calories"));
+                double mealProteins = mealsCursor.getDouble(mealsCursor.getColumnIndex("Total_Proteins"));
+                double mealFats = mealsCursor.getDouble(mealsCursor.getColumnIndex("Total_Fats"));
+                double mealCarbs = mealsCursor.getDouble(mealsCursor.getColumnIndex("Total_Carbs"));
+
+                Log.d("DatabaseDump", "Meal - ID: " + mealId + ", Username: " + username +
+                        ", Date: " + date + ", Time: " + mealTime + ", Meal Name: " + mealName +
+                        ", Calories: " + mealCalories + ", Proteins: " + mealProteins +
+                        ", Fats: " + mealFats + ", Carbs: " + mealCarbs);
+            } while (mealsCursor.moveToNext());
+        }
+        mealsCursor.close();
+
+        // Query the FOODS table
+        Cursor foodsCursor = db.rawQuery("SELECT * FROM Foods", null);
+        if (foodsCursor != null && foodsCursor.moveToFirst()) {
+            do {
+                int foodId = foodsCursor.getInt(foodsCursor.getColumnIndex("Food_ID"));
+                int mealId = foodsCursor.getInt(foodsCursor.getColumnIndex("Meal_ID"));
+                String foodName = foodsCursor.getString(foodsCursor.getColumnIndex("Food_Name"));
+                double foodCalories = foodsCursor.getDouble(foodsCursor.getColumnIndex("Calories"));
+                double foodProteins = foodsCursor.getDouble(foodsCursor.getColumnIndex("Proteins"));
+                double foodFats = foodsCursor.getDouble(foodsCursor.getColumnIndex("Fats"));
+                double foodCarbs = foodsCursor.getDouble(foodsCursor.getColumnIndex("Carbs"));
+
+                Log.d("DatabaseDump", "Food - ID: " + foodId + ", Meal ID: " + mealId +
+                        ", Food Name: " + foodName + ", Calories: " + foodCalories +
+                        ", Proteins: " + foodProteins + ", Fats: " + foodFats +
+                        ", Carbs: " + foodCarbs);
+            } while (foodsCursor.moveToNext());
+        }
+        foodsCursor.close();
+    }
+
+
 
 }

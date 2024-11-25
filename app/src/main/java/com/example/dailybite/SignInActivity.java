@@ -52,7 +52,9 @@ public class SignInActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
 
+// Ensure the user is prompted to select an account
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut(); // Ensures no cached account is selected automatically
 
         // Initialize views
         backButton = findViewById(R.id.back_button);
