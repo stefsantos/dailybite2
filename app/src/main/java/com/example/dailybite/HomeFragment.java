@@ -265,7 +265,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
                     // Compare selected date with the current date
                     if (isSameDay(selectedCalendar, calendar)) {
-                        saveSelectedDate("Today");
+                        saveSelectedDate(getCurrentDate());
                         loadDataForDate(getCurrentDate());
                         currentDate = getCurrentDate();
                     } else {
