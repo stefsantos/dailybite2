@@ -224,17 +224,17 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void updateNutrientViews() {
-        tvProtein.setText(currentProteins + " / " + TARGET_PROTEINS);
+        tvProtein.setText(String.format(Locale.getDefault(), "%.1f / %.1f", currentProteins, TARGET_PROTEINS));
         progressBarProteins.setProgress((int) (currentProteins / TARGET_PROTEINS * 100));
 
-        tvFats.setText(currentFats + " / " + TARGET_FATS);
-        progressBarFats.setProgress((int) ( currentFats / TARGET_FATS * 100));
+        tvFats.setText(String.format(Locale.getDefault(), "%.1f / %.1f", currentFats, TARGET_FATS));
+        progressBarFats.setProgress((int) (currentFats / TARGET_FATS * 100));
 
-        tvCarbs.setText(currentCarbs + " / " + TARGET_CARBS);
+        tvCarbs.setText(String.format(Locale.getDefault(), "%.1f / %.1f", currentCarbs, TARGET_CARBS));
         progressBarCarbs.setProgress((int) (currentCarbs / TARGET_CARBS * 100));
 
-        tvCalories.setText(currentCalories + " / " + TARGET_CALORIES);
-        progressBarCalories.setProgress((int) ( currentCalories / TARGET_CALORIES * 100));
+        tvCalories.setText(String.format(Locale.getDefault(), "%.1f / %.1f", currentCalories, TARGET_CALORIES));
+        progressBarCalories.setProgress((int) (currentCalories / TARGET_CALORIES * 100));
     }
 
     private void loadUsername() {
