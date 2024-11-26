@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Internet permission for network access -->
-
-
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -49,15 +47,15 @@
         <activity android:name=".Homepage" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".FoodSearchActivity" android:exported="false" />
-        <activity android:name=".MeActivity" />
-        <activity android:name=".CalorieIntakeActivity" />
-        <activity android:name=".FoodDetailActivity" />
+        <activity android:name=".MeActivity" android:exported="false" />
+        <activity android:name=".CalorieIntakeActivity" android:exported="false" />
+        <activity android:name=".FoodDetailActivity" android:exported="false" />
 
+        <!-- Pedometer Service -->
         <service
             android:name=".PedometerService"
             android:exported="false"
             android:foregroundServiceType="location" />
-
 
     </application>
 
