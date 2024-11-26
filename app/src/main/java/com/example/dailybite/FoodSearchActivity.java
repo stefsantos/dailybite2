@@ -1,5 +1,6 @@
 package com.example.dailybite;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,8 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +39,7 @@ public class FoodSearchActivity extends AppCompatActivity {
     private SearchAdapter foodAdapter;
     private List<NutritionixResponse.FoodItem> foodItems;
     private Spinner filterSpinner;
-
+    private ActivityResultLauncher<Intent> foodDetailLauncher;
     private NutritionixApiService apiService;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -98,7 +101,34 @@ public class FoodSearchActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {}
         });
 
-        // Setup filter spinner (optional)
+        foodDetailLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        // Handle the result from FoodDetailActivity
+                        Intent data = result.getData();
+                        String foodName = data.getStringExtra("foodName");
+                        float calories = data.getFloatExtra("calories", -1);
+                        float proteins = data.getFloatExtra("proteins", -1);
+                        float carbs = data.getFloatExtra("carbs", -1);
+                        float fats = data.getFloatExtra("fats", -1);
+
+                        // Pass data back to MealInputActivity
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("foodName", foodName);
+                        resultIntent.putExtra("calories", calories);
+                        resultIntent.putExtra("proteins", proteins);
+                        resultIntent.putExtra("carbs", carbs);
+                        resultIntent.putExtra("fats", fats);
+                        setResult(RESULT_OK, resultIntent);
+
+                        // Finish FoodSearchActivity
+                        finish();
+                    }
+                }
+        );
+
+        // Setup filter spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.filter_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -121,7 +151,7 @@ public class FoodSearchActivity extends AppCompatActivity {
                         intent.putExtra("proteins", detailedFood.getProteins());
                         intent.putExtra("carbs", detailedFood.getCarbs());
                         intent.putExtra("fats", detailedFood.getFats());
-                        startActivity(intent);
+                        foodDetailLauncher.launch(intent);
                     } else {
                         Log.d("FoodSearchActivity", "Error fetching food details: " + response.code());
                     }

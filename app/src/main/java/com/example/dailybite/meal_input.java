@@ -1,11 +1,15 @@
 package com.example.dailybite;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,7 +25,10 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     private Button saveButton;
     private ImageButton addButton, closeButton;
     private String mealName;
-
+    private ActivityResultLauncher<Intent> foodSearchLauncher;
+    private float foodCal,foodPro,foodFat,foodCar;
+    private String foodName;
+    private List<foodItem> foodItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,16 +51,35 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
             mealName = "New Meal";
         }
         meal_title.setText(mealName);
-
+        if (foodItems == null) {
+            foodItems = new ArrayList<>();
+        }
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        foodAdapter = new foodAdapter(this, getSampleFoodItems(), true, this); // Show calories for saved meals
+        foodAdapter = new foodAdapter(this, foodItems, true, this); // Show calories for saved meals
         foodRecyclerView.setAdapter(foodAdapter);
 
+        foodSearchLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        // Handle the result from FoodSearchActivity
+                        Intent data = result.getData();
+                        String foodName = data.getStringExtra("foodName");
+                        float foodCal = data.getFloatExtra("calories", -1);
+                        float foodPro = data.getFloatExtra("proteins", -1);
+                        float foodCar = data.getFloatExtra("carbs", -1);
+                        float foodFat = data.getFloatExtra("fats", -1);
+                        foodItems.add(new foodItem(foodName, foodCal, foodPro, foodFat, foodCar));
+                        calculateTotalNutrients();
+                        foodAdapter.notifyDataSetChanged();
+                    }
+                }
+        );
         // Add button click opens FoodSearchActivity
         addButton.setOnClickListener(v -> {
-            Intent intent = new Intent(meal_input.this, FoodSearchActivity.class);
-            startActivity(intent);
+            Intent intent = new Intent(this, FoodSearchActivity.class);
+            foodSearchLauncher.launch(intent);
         });
 
         // Close button to finish activity
@@ -87,15 +113,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
 
         finish();
-    }
-
-    // Sample data for food items
-    private List<foodItem> getSampleFoodItems() {
-        List<foodItem> foodItems = new ArrayList<>();
-        foodItems.add(new foodItem("Fried eggs", 100, 6, 1, 20));
-        foodItems.add(new foodItem("Apple", 116, 1, 30, 0));
-        foodItems.add(new foodItem("Banana", 90, 1, 22, 0));
-        return foodItems;
     }
 
     // Calculate total nutrients
