@@ -82,26 +82,48 @@ public class PFCActivity extends AppCompatActivity {
     }
 
     private void calculateAndDisplayPFC() {
-        // Retrieve data from shared preferences for weight, height, age, etc.
         SharedPreferences weightPrefs = getSharedPreferences("WeightPrefs", Context.MODE_PRIVATE);
         SharedPreferences heightPrefs = getSharedPreferences("HeightPrefs", Context.MODE_PRIVATE);
         SharedPreferences agePrefs = getSharedPreferences("AgePrefs", Context.MODE_PRIVATE);
         SharedPreferences genderPrefs = getSharedPreferences("GenderPrefs", Context.MODE_PRIVATE);
         SharedPreferences activityPrefs = getSharedPreferences("ActivityLevelPrefs", Context.MODE_PRIVATE);
 
+        // Retrieve and convert weight
         double weight = Double.parseDouble(weightPrefs.getString("Weight", "0"));
-        int heightMeters = heightPrefs.getInt("HeightMeters", 0);
-        int heightCentimeters = heightPrefs.getInt("HeightCentimeters", 0);
-        int heightInCm = heightMeters * 100 + heightCentimeters; // Convert to cm
-        int age = Integer.parseInt(agePrefs.getString("Age", "0"));
-        String gender = genderPrefs.getString("SelectedGender", "");
-        String activityLevel = activityPrefs.getString("SelectedActivityLevel", "sedentary");
+        boolean isKg = weightPrefs.getBoolean("Unit", true); // True = kg, False = lbs
+        if (!isKg) {
+            weight *= 0.453592; // Convert lbs to kg
+        }
 
-        // Calculate TDEE
+        // Retrieve and convert height
+        int heightMeters = heightPrefs.getInt("HeightMeters", 0); // Whole number meters (if metric)
+        int heightCentimeters = heightPrefs.getInt("HeightCentimeters", 0); // Additional centimeters
+        boolean isMetric = heightPrefs.getBoolean("HeightUnit", true); // True = metric, False = imperial
+
+        int heightInCm;
+        if (isMetric) {
+            // Validate heightMeters to ensure it's realistic
+            if (heightMeters > 3) {
+                heightMeters = 1; // Default to 1 meter if the value is incorrect
+            }
+            heightInCm = (heightMeters * 100) + heightCentimeters; // Proper metric height in cm
+        } else {
+            // Proper imperial height calculation (e.g., 5 feet 8 inches -> 68 inches -> cm)
+            int totalInches = (heightMeters * 12) + heightCentimeters; // Convert feet & inches to inches
+            heightInCm = (int) (totalInches * 2.54); // Convert inches to cm
+        }
+
+
+        // Retrieve age, gender, and activity level
+        int age = Integer.parseInt(agePrefs.getString("Age", "0"));
+        String gender = genderPrefs.getString("SelectedGender", "").toLowerCase();
+        String activityLevel = activityPrefs.getString("SelectedActivityLevel", "sedentary").toLowerCase();
+
+        // Calculate TDEE and macros
         double TDEE = calculateTDEE(age, weight, heightInCm, gender, activityLevel);
         Map<String, Double> macros = calculateMacros(TDEE);
 
-        // Save calculated values to SharedPreferences
+        // Store results in SharedPreferences
         SharedPreferences pfcPrefs = getSharedPreferences("PFCValues", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pfcPrefs.edit();
         editor.putFloat("Calories", (float) TDEE);
@@ -110,24 +132,29 @@ public class PFCActivity extends AppCompatActivity {
         editor.putFloat("Carbs", macros.get("Carbs").floatValue());
         editor.apply();
 
-        // Update the UI with calculated values
+        // Display calculated PFC values
         proteinsButton.setText("Proteins: " + String.format("%.0f", macros.get("Proteins")) + "g");
         fatsButton.setText("Fats: " + String.format("%.0f", macros.get("Fats")) + "g");
         carbsButton.setText("Carbs: " + String.format("%.0f", macros.get("Carbs")) + "g");
-        caloriesButton.setText("Calories: " + String.format("%.0f", macros.get("Calories")));
+        caloriesButton.setText("Calories: " + String.format("%.0f", TDEE));
     }
 
 
     private double calculateTDEE(int age, double weightKg, int heightCm, String gender, String activityLevel) {
         double BMR;
-        if (gender.equalsIgnoreCase("male")) {
+
+        // Calculate BMR using the Mifflin-St Jeor equation
+        if (gender.equals("male")) {
             BMR = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5;
-        } else {
+        } else if (gender.equals("female")) {
             BMR = (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
+        } else {
+            throw new IllegalArgumentException("Invalid gender value: " + gender);
         }
 
+        // Determine activity multiplier
         double activityMultiplier;
-        switch (activityLevel.toLowerCase()) {
+        switch (activityLevel) {
             case "sedentary":
                 activityMultiplier = 1.2;
                 break;
@@ -144,19 +171,36 @@ public class PFCActivity extends AppCompatActivity {
                 activityMultiplier = 1.9;
                 break;
             default:
-                activityMultiplier = 1.2;
+                activityMultiplier = 1.2; // Default to sedentary
                 break;
         }
 
-        return BMR * activityMultiplier;
+        // Calculate TDEE
+        double TDEE = BMR * activityMultiplier;
+        Log.d(TAG, "Activity Multiplier: " + activityMultiplier);
+        Log.d(TAG, "TDEE: " + TDEE);
+        return TDEE;
     }
 
     private Map<String, Double> calculateMacros(double TDEE) {
         Map<String, Double> macros = new HashMap<>();
-        double proteinGrams = (TDEE * 0.20) / 4;
-        double fatGrams = (TDEE * 0.25) / 9;
-        double carbGrams = (TDEE * 0.55) / 4;
 
+        // Set macro percentages
+        double proteinPercentage = 0.20; // 20% of TDEE
+        double fatPercentage = 0.25; // 25% of TDEE
+        double carbPercentage = 0.55; // 55% of TDEE
+
+        // Calculate macro calorie contributions
+        double proteinCalories = TDEE * proteinPercentage;
+        double fatCalories = TDEE * fatPercentage;
+        double carbCalories = TDEE * carbPercentage;
+
+        // Convert calories to grams
+        double proteinGrams = proteinCalories / 4.0; // 1g protein = 4 kcal
+        double fatGrams = fatCalories / 9.0; // 1g fat = 9 kcal
+        double carbGrams = carbCalories / 4.0; // 1g carb = 4 kcal
+
+        // Store macros in the map
         macros.put("Proteins", proteinGrams);
         macros.put("Fats", fatGrams);
         macros.put("Carbs", carbGrams);
@@ -164,6 +208,7 @@ public class PFCActivity extends AppCompatActivity {
 
         return macros;
     }
+
 
     private void signInWithGoogle() {
         mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
