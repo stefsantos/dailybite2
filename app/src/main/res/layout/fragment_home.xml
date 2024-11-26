@@ -330,10 +330,10 @@
             <View
                 android:id="@+id/water_backg"
                 android:layout_width="40dp"
-                android:layout_height="20dp"
+                android:layout_height="128dp"
                 android:layout_alignParentBottom="true"
                 android:layout_marginStart="318dp"
-                android:layout_marginTop="445dp"
+                android:layout_marginTop="350dp"
                 android:background="@drawable/water_backg"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

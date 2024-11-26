@@ -49,9 +49,9 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private View waterBackg;
     private TextView waterPercent;
     private int waterHeight;
-    private static final int MAX_MARGIN_TOP_DP = 468;
+    private static final int MAX_MARGIN_TOP_DP = 478;
     private static final int MIN_MARGIN_TOP_DP = 345;
-    private static final int GLASS_HEIGHT_DP = (1 + MAX_MARGIN_TOP_DP - MIN_MARGIN_TOP_DP) / 8;
+    private static final int GLASS_HEIGHT_DP = (MAX_MARGIN_TOP_DP - MIN_MARGIN_TOP_DP) / 8;
     private static final double DAILY_GOAL_LITERS = 2.8;
     private static final double GLASS_VOLUME_LITERS = 0.35;
     private int glassesOfWater;
@@ -344,7 +344,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
     private void updateWaterDisplay() {
         float waterHeightDp = glassesOfWater * GLASS_HEIGHT_DP;
-        float marginTopDp = MAX_MARGIN_TOP_DP - (glassesOfWater * (MAX_MARGIN_TOP_DP - MIN_MARGIN_TOP_DP) / 8);
+        float marginTopDp = MAX_MARGIN_TOP_DP - (glassesOfWater * GLASS_HEIGHT_DP);
 
         int waterHeightPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, waterHeightDp, getResources().getDisplayMetrics());
         int marginTopPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginTopDp, getResources().getDisplayMetrics());
