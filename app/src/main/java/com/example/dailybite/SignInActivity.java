@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -30,7 +31,7 @@ public class SignInActivity extends AppCompatActivity {
     private EditText emailInput;
     private EditText passwordInput;
     private Button loginButton;
-    private Button googleSignInButton;
+    private RelativeLayout googleSignInButton;
 
     // Firebase Authentication instance
     private FirebaseAuth mAuth;
@@ -38,9 +39,8 @@ public class SignInActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
         // Initialize Firebase Auth
@@ -52,9 +52,7 @@ public class SignInActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
 
-// Ensure the user is prompted to select an account
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mGoogleSignInClient.signOut(); // Ensures no cached account is selected automatically
 
         // Initialize views
         backButton = findViewById(R.id.back_button);
@@ -66,43 +64,43 @@ public class SignInActivity extends AppCompatActivity {
         // Set OnClickListener for the back button
         backButton.setOnClickListener(v -> onBackPressed());
 
-        // Set OnClickListener for the login button
-        loginButton.setOnClickListener(v -> {
-            String email = emailInput.getText().toString().trim();
-            String password = passwordInput.getText().toString().trim();
+        // Set OnClickListener for Google Sign-In button
+        googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
-            // Validate inputs
-            if (email.isEmpty()) {
-                emailInput.setError("Email is required");
-                emailInput.requestFocus();
-                return;
-            }
+        // Set OnClickListener for Login Button (Sign In with Email and Password)
+        loginButton.setOnClickListener(v -> signInWithEmail());
+    }
 
-            if (password.isEmpty()) {
-                passwordInput.setError("Password is required");
-                passwordInput.requestFocus();
-                return;
-            }
+    private void signInWithEmail() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
 
-            // Sign in with Firebase Authentication
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            // Sign-in success, navigate to the Homepage
-                            FirebaseUser user = mAuth.getCurrentUser();
+        if (email.isEmpty()) {
+            emailInput.setError("Email is required");
+            emailInput.requestFocus();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            passwordInput.setError("Password is required");
+            passwordInput.requestFocus();
+            return;
+        }
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
                             Toast.makeText(SignInActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(SignInActivity.this, Homepage.class);
                             startActivity(intent);
                             finish();
-                        } else {
-                            // Sign-in failure, display a message to the user
-                            Toast.makeText(SignInActivity.this, "Authentication failed. Please check your credentials.", Toast.LENGTH_SHORT).show();
                         }
-                    });
-        });
-
-        // Set OnClickListener for the Google sign-in button
-        googleSignInButton.setOnClickListener(v -> signInWithGoogle());
+                    } else {
+                        Toast.makeText(SignInActivity.this, "Authentication failed. Check your credentials.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void signInWithGoogle() {
