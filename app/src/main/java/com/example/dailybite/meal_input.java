@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -31,14 +33,17 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     private ImageButton addButton, closeButton;
     private String mealName;
     private ActivityResultLauncher<Intent> foodSearchLauncher;
-    private float foodCal,foodPro,foodFat,foodCar;
-    private String foodName;
     private List<foodItem> foodItems;
     private String date;
+    private FirebaseFirestore db; // Firestore instance
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_input);
+
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
 
         // Initialize views
         caloriesText = findViewById(R.id.caloriesText);
@@ -56,8 +61,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         date = getIntent().getStringExtra("CURRENT_DATE");
         if (mealName == null || mealName.trim().isEmpty()) {
             mealName = "New Meal";
-        }
-        else{
+        } else {
             meal_title.setText(mealName);
             loadMealList(date, mealName);
         }
@@ -65,6 +69,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         if (foodItems == null) {
             foodItems = new ArrayList<>();
         }
+
         // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         foodAdapter = new foodAdapter(this, foodItems, true, this); // Show calories for saved meals
@@ -87,6 +92,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
                     }
                 }
         );
+
         // Add button click opens FoodSearchActivity
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, FoodSearchActivity.class);
@@ -110,6 +116,10 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         String carbs = carbsText.getText().toString();
         String newMealName = meal_title.getText().toString();
 
+        float cal = Float.parseFloat(calories);
+        float pro = Float.parseFloat(proteins);
+        float fat = Float.parseFloat(fats);
+        float carb = Float.parseFloat(carbs);
         // Create an Intent to hold the meal data
         Intent resultIntent = new Intent();
         resultIntent.putExtra("MEAL_NAME", newMealName);
@@ -123,6 +133,24 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
         saveMealList(date);
+
+        Meal meal = new Meal(newMealName, date, cal, pro, fat, carb);
+
+
+        // Save the meal to Firestore
+        db .collection("users")
+                .document(FirebaseAuth.getInstance().getCurrentUser ().getUid())
+                .collection("meals")
+                .document(meal.getName())
+                .set(meal)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Meal saved successfully", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error saving meal: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
         finish();
     }
 
@@ -148,7 +176,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
             foodItems = new ArrayList<>();
         }
     }
-
 
     // Calculate total nutrients
     private void calculateTotalNutrients() {
