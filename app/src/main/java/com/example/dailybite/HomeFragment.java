@@ -22,12 +22,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +41,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+
 
 
 public class HomeFragment extends Fragment implements MealAdapter.OnMealClickListener, MealAdapter.OnMealLongClickListener {
@@ -72,7 +77,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-
+    private DatabaseReference mDatabase;
     private static final String SHARED_PREFS = "dailyBitePrefs";
     private static final String MEALS_KEY = "meals";
     private static final String WATER_KEY = "water";
@@ -80,6 +85,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     private SharedPreferences sharedPreferences;
     private String currentDate;
     private Gson gson;
+    private String userId;
 
 
     @Override
@@ -89,10 +95,14 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        userId = currentUser.getUid();
         // Initialize SharedPreferences and Gson
         sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         gson = new Gson();
+
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Load meals from SharedPreferences
 
@@ -296,10 +306,10 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         String nutrientsJson = sharedPreferences.getString(NUTRIENTS_KEY + "_" + date, null);
         if (nutrientsJson != null) {
             NutrientData nutrientData = gson.fromJson(nutrientsJson, NutrientData.class);
-            currentProteins = nutrientData.proteins;
-            currentFats = nutrientData.fats;
-            currentCarbs = nutrientData.carbs;
-            currentCalories = nutrientData.calories;
+            currentProteins = nutrientData.getProteins();
+            currentFats = nutrientData.getFats();
+            currentCarbs = nutrientData.getCarbs();
+            currentCalories = nutrientData.getCalories();
         } else {
             currentProteins = 0;
             currentFats = 0;
@@ -318,7 +328,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void saveDataForDate(String date) {
-        // Save meals, nutrients, and water data to SharedPreferences for the given date
+        // Save to SharedPreferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Save meals list
@@ -334,7 +344,27 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         editor.putInt(WATER_KEY + "_" + date, glassesOfWater);
 
         editor.apply();
+
+        // Save to Firebase
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("meals", mealList); // Assuming mealList is serializable
+        dataMap.put("nutrients", nutrientData);
+        dataMap.put("waterIntake", glassesOfWater);
+
+        mDatabase.child("users")
+                .child(userId) // Replace with the current user ID
+                .child("data")
+                .child(date)
+                .setValue(dataMap)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("FirebaseSave", "Data saved successfully for date: " + date);
+                    } else {
+                        Log.e("FirebaseSave", "Failed to save data for date: " + date, task.getException());
+                    }
+                });
     }
+
 
     private void navigateToMealInputWithoutDate() {
         Intent intent = new Intent(getActivity(), meal_input.class);

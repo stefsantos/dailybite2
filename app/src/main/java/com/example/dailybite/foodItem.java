@@ -14,7 +14,9 @@ public class foodItem {
         this.carbs = carbs;
         this.fats = fats;
     }
+    public foodItem(){
 
+    }
     public String getName() {
         return name;
     }
