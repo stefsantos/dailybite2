@@ -69,14 +69,13 @@
         android:layout_marginTop="40dp"
         android:elevation="4dp" />
 
-    <!-- Google Sign-In Button -->
     <RelativeLayout
         android:id="@+id/google_sign_in_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/login_button"
         android:layout_marginTop="20dp"
-        android:background="@drawable/border_button"> <!-- Use border drawable -->
+        android:background="@drawable/border_button">
 
         <!-- Google Icon -->
         <ImageView
