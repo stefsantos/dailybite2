@@ -30,11 +30,6 @@
         android:textSize="14sp" />
 
     <!-- Proteins Button -->
-
-    <!-- Fats Button -->
-
-    <!-- Carbs Button -->
-
     <Button
         android:id="@+id/proteins_button"
         android:layout_width="158dp"
@@ -49,10 +44,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <!-- Calories Button -->
-
-    <!-- Continue with Google Button -->
-
+    <!-- Fats Button -->
     <Button
         android:id="@+id/fats_button"
         android:layout_width="146dp"
@@ -68,6 +60,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
+    <!-- Carbs Button -->
     <Button
         android:id="@+id/carbs_button"
         android:layout_width="155dp"
@@ -82,8 +75,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <!-- Continue with Email Button -->
-
+    <!-- Calories Button -->
     <Button
         android:id="@+id/calories_button"
         android:layout_width="wrap_content"
@@ -99,43 +91,75 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/continue_with_google"
-        android:layout_width="243dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/calories_button"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="81dp"
-        android:layout_marginEnd="40dp"
-        android:backgroundTint="#FFFFFF"
-        android:drawableStart="@drawable/baseline_cloud_24"
-        android:drawablePadding="10dp"
-        android:elevation="4dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp"
-        android:text="Continue with Google"
-        android:textColor="#000000"
-        android:textSize="16sp" />
+    <!-- Continue with Google Button -->
 
-    <Button
-        android:id="@+id/continue_with_email"
-        android:layout_width="243dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/continue_with_google"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="20dp"
+    <!-- Continue with Email Button -->
+
+    <RelativeLayout
+        android:id="@+id/continue_with_google"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/continue_with_email"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="40dp"
-        android:backgroundTint="#FFFFFF"
-        android:drawableStart="@drawable/ic_email"
-        android:drawablePadding="10dp"
-        android:elevation="4dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp"
-        android:text="Continue with Email"
-        android:textColor="#000000"
-        android:textSize="16sp" />
+        android:background="@drawable/border_button">
+
+        <!-- Google Icon -->
+        <ImageView
+            android:id="@+id/google_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:contentDescription="Google Icon"
+            android:src="@drawable/google" />
+
+        <!-- Button Text -->
+        <TextView
+            android:id="@+id/google_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="Continue with Google"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/continue_with_email"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/calories_button"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/border_button">
+
+        <!-- Email Icon -->
+        <ImageView
+            android:id="@+id/email_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:contentDescription="Email Icon"
+            android:src="@drawable/ic_email" />
+
+        <!-- Button Text -->
+        <TextView
+            android:id="@+id/email_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="Continue with Email"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/back_button"

@@ -96,7 +96,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         int heightMeters = heightPrefs.getInt("HeightMeters", 0);
         int heightCentimeters = heightPrefs.getInt("HeightCentimeters", 0);
         boolean isMetric = heightPrefs.getBoolean("UnitSystem", true);
-        String height = isMetric ? heightMeters + "m " + heightCentimeters + "cm" : heightMeters + "ft " + heightCentimeters + "in";
+        String height = convertHeightToCentimeters(heightMeters, heightCentimeters, isMetric);
         String age = agePrefs.getString("Age", "");
         String gender = genderPrefs.getString("SelectedGender", "");
         String activityLevel = activityPrefs.getString("SelectedActivityLevel", "");
@@ -146,5 +146,16 @@ public class CreateAccountActivity extends AppCompatActivity {
                     // Display an error if saving details fails
                     Toast.makeText(CreateAccountActivity.this, "Failed to save user details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+    private String convertHeightToCentimeters(int heightMeters, int heightCentimeters, boolean isMetric) {
+        float h;
+        if (isMetric) {
+            // If the input is in metric
+            h =  heightMeters * 100 + heightCentimeters; // Convert to centimeters
+        } else {
+            // If the input is in imperial
+            h =  (heightMeters * 30.48f) + (heightCentimeters * 2.54f); // Convert feet and inches to centimeters
+        }
+        return String.valueOf(h);
     }
 }
