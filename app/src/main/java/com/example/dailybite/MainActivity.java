@@ -15,6 +15,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
@@ -28,8 +31,10 @@ public class MainActivity extends AppCompatActivity {
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         // Check if user is logged in
-        if (sharedPreferences.getBoolean("isLoggedIn", false)) {
+        if (sharedPreferences.getBoolean("isLoggedIn", false) && currentUser != null) {
             // User is logged in, redirect to HomeActivity
             Intent intent = new Intent(MainActivity.this, Homepage.class);
             startActivity(intent);

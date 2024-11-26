@@ -95,7 +95,16 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // if user is not logged in/authenticated by firebase redirect to login/signup
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            return view;
+        }
+
         userId = currentUser.getUid();
         // Initialize SharedPreferences and Gson
         sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
@@ -229,18 +238,30 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void loadUsername() {
-        String userId = mAuth.getCurrentUser().getUid();
-        db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String savedUsername = documentSnapshot.getString("username");
-                if (savedUsername != null) {
-                    username.setText(savedUsername);
+        String savedUsername = sharedPreferences.getString("username", null);
+
+        if (savedUsername != null) {
+            username.setText(savedUsername);
+        } else {
+            String userId = mAuth.getCurrentUser().getUid();
+            db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String fetchedUsername = documentSnapshot.getString("username");
+                    if (fetchedUsername != null) {
+                        username.setText(fetchedUsername);
+
+                        // Save the username to SharedPreferences
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("username", fetchedUsername);
+                        editor.apply();
+                    }
+                } else {
+                    Log.d("HomeFragment", "No such document");
                 }
-            } else {
-                Log.d("HomeFragment", "No such document");
-            }
-        }).addOnFailureListener(e -> Log.d("HomeFragment", "Error fetching document", e));
+            }).addOnFailureListener(e -> Log.d("HomeFragment", "Error fetching document", e));
+        }
     }
+
 
     private String getCurrentDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
