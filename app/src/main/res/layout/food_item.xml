@@ -47,45 +47,45 @@
                 android:id="@+id/foodProteinsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Proteins: 6g"
+                android:text=" "
                 android:textSize="14sp"
                 android:textColor="#757575" />
 
-            <TextView
-                android:id="@+id/foodCarbsTextViewSpacer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" | "
-                android:textSize="14sp"
-                android:textColor="#757575" />
+        <!--<TextView
+            android:id="@+id/foodCarbsTextViewSpacer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" | "
+            android:textSize="14sp"
+            android:textColor="#757575" />-->
 
             <TextView
                 android:id="@+id/foodCarbsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Carbs: 20g"
+                android:text=""
                 android:textSize="14sp"
                 android:textColor="#757575" />
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/foodFatsTextViewSpacer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" | "
                 android:textSize="14sp"
-                android:textColor="#757575" />
+                android:textColor="#757575" />-->
 
             <TextView
                 android:id="@+id/foodFatsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fats: 10g"
+                android:text=""
                 android:textSize="14sp"
                 android:textColor="#757575" />
-        </LinearLayout>
     </LinearLayout>
+</LinearLayout>
 
-    <!-- Right section: Delete button -->
+<!-- Right section: Delete button -->
     <ImageButton
         android:id="@+id/deleteButton"
         android:layout_width="48dp"

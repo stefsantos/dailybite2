@@ -3,6 +3,7 @@ package com.example.dailybite;
 import android.app.MediaRouteButton;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,23 +38,28 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
         foodItem foodItem = foodList.get(position);
         holder.foodNameTextView.setText(foodItem.getName());
-
+        Log.d("Flag", String.valueOf(showCalories));
         // Show or hide calories based on the `showCalories` flag
         if (showCalories) {
             holder.foodCaloriesTextView.setVisibility(View.VISIBLE);
             holder.foodCaloriesTextView.setText(String.format("%.1f Cal", foodItem.getCalories()));
-            holder.foodFatsTextView.setText(String.format("Fats: %.2f g", foodItem.getFats()));
-            holder.foodCarbsTextView.setText(String.format("Carbs: %.2f g", foodItem.getCarbs()));
-            holder.foodProteinsTextView.setText(String.format("Proteins: %.2f g", foodItem.getProteins()));
+            holder.foodFatsTextView.setVisibility(View.VISIBLE);
+            holder.foodFatsTextView.setText(String.format("Fats: %.2f g ", foodItem.getFats()));
+            holder.foodCarbsTextView.setVisibility(View.VISIBLE);
+            holder.foodCarbsTextView.setText(String.format("Carbs: %.2f g | ", foodItem.getCarbs()));
+            holder.foodProteinsTextView.setVisibility(View.VISIBLE);
+            holder.foodProteinsTextView.setText(String.format("Proteins: %.2f g | ", foodItem.getProteins()));
         } else {
+
             holder.foodCaloriesTextView.setVisibility(View.GONE);
-            holder.foodProteinsTextViewSpacer.setVisibility(View.GONE);
-            holder.foodCarbsTextViewSpacer.setVisibility(View.GONE);
-            holder.foodCaloriesTextView.setVisibility(View.GONE);
+
             holder.foodFatsTextView.setVisibility(View.GONE);
+
             holder.foodCarbsTextView.setVisibility(View.GONE);
+
             holder.foodProteinsTextView.setVisibility(View.GONE);
         }
+
 
         // Open FoodDetailActivity on item click
         holder.itemView.setOnClickListener(v -> {
@@ -99,9 +105,6 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodCaloriesTextView = itemView.findViewById(R.id.foodCaloriesTextView); // Calories TextView
             deleteButton = itemView.findViewById(R.id.deleteButton);
-            foodProteinsTextViewSpacer = itemView.findViewById(R.id.foodFatsTextViewSpacer);
-            foodCarbsTextViewSpacer = itemView.findViewById(R.id.foodCarbsTextViewSpacer);
-            foodProteinsTextViewSpacer = itemView.findViewById(R.id.foodFatsTextViewSpacer);
             foodCarbsTextView = itemView.findViewById(R.id.foodCarbsTextView);
             foodProteinsTextView = itemView.findViewById(R.id.foodProteinsTextView);
             foodFatsTextView = itemView.findViewById(R.id.foodFatsTextView);

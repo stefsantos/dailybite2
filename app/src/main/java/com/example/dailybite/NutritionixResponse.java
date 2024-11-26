@@ -46,7 +46,7 @@ public class NutritionixResponse {
         private float fats;
 
         @SerializedName("serving_qty")
-        private int servingQty;
+        private float servingQty;
 
         @SerializedName("serving_unit")
         private String servingUnit;
@@ -75,7 +75,7 @@ public class NutritionixResponse {
             return fats;
         }
 
-        public int getServingQty() {
+        public float getServingQty() {
             return servingQty;
         }
 
