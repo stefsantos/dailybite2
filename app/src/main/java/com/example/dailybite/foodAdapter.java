@@ -1,5 +1,6 @@
 package com.example.dailybite;
 
+import android.app.MediaRouteButton;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -41,8 +42,17 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
         if (showCalories) {
             holder.foodCaloriesTextView.setVisibility(View.VISIBLE);
             holder.foodCaloriesTextView.setText(String.format("%.1f Cal", foodItem.getCalories()));
+            holder.foodFatsTextView.setText(String.format("Fats: %.2f g", foodItem.getFats()));
+            holder.foodCarbsTextView.setText(String.format("Carbs: %.2f g", foodItem.getCarbs()));
+            holder.foodProteinsTextView.setText(String.format("Proteins: %.2f g", foodItem.getProteins()));
         } else {
             holder.foodCaloriesTextView.setVisibility(View.GONE);
+            holder.foodProteinsTextViewSpacer.setVisibility(View.GONE);
+            holder.foodCarbsTextViewSpacer.setVisibility(View.GONE);
+            holder.foodCaloriesTextView.setVisibility(View.GONE);
+            holder.foodFatsTextView.setVisibility(View.GONE);
+            holder.foodCarbsTextView.setVisibility(View.GONE);
+            holder.foodProteinsTextView.setVisibility(View.GONE);
         }
 
         // Open FoodDetailActivity on item click
@@ -79,6 +89,7 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
     }
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
+        TextView foodCarbsTextViewSpacer,foodProteinsTextViewSpacer, foodCarbsTextView, foodProteinsTextView, foodFatsTextView ;
         TextView foodNameTextView;
         TextView foodCaloriesTextView; // Added TextView for calories
         ImageButton deleteButton;
@@ -88,6 +99,12 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodCaloriesTextView = itemView.findViewById(R.id.foodCaloriesTextView); // Calories TextView
             deleteButton = itemView.findViewById(R.id.deleteButton);
+            foodProteinsTextViewSpacer = itemView.findViewById(R.id.foodFatsTextViewSpacer);
+            foodCarbsTextViewSpacer = itemView.findViewById(R.id.foodCarbsTextViewSpacer);
+            foodProteinsTextViewSpacer = itemView.findViewById(R.id.foodFatsTextViewSpacer);
+            foodCarbsTextView = itemView.findViewById(R.id.foodCarbsTextView);
+            foodProteinsTextView = itemView.findViewById(R.id.foodProteinsTextView);
+            foodFatsTextView = itemView.findViewById(R.id.foodFatsTextView);
         }
     }
 
