@@ -13,6 +13,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
         android:layout_alignParentStart="true"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="16dp" />
 
     <!-- Food Name -->
@@ -77,8 +78,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/fatsTextView"
-        android:layout_marginTop="386dp"
-        android:backgroundTint="#6200EE"
+        android:layout_marginTop="150dp"
+        android:backgroundTint="#35CC8C"
         android:padding="12dp"
         android:text="Save to My Meals"
         android:textColor="#FFFFFF" />
