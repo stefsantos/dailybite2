@@ -2,6 +2,7 @@ package com.example.dailybite;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,6 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +34,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     private float foodCal,foodPro,foodFat,foodCar;
     private String foodName;
     private List<foodItem> foodItems;
+    private String date;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +53,15 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
 
         // Get meal name from the intent
         mealName = getIntent().getStringExtra("MEAL_NAME");
+        date = getIntent().getStringExtra("CURRENT_DATE");
         if (mealName == null || mealName.trim().isEmpty()) {
             mealName = "New Meal";
         }
-        meal_title.setText(mealName);
+        else{
+            meal_title.setText(mealName);
+            loadMealList(date, mealName);
+        }
+
         if (foodItems == null) {
             foodItems = new ArrayList<>();
         }
@@ -111,9 +122,33 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         setResult(RESULT_OK, resultIntent);
         Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
-
+        saveMealList(date);
         finish();
     }
+
+    private void saveMealList(String date) {
+        SharedPreferences sharedPreferences = getSharedPreferences("DailyBitePrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String mealsJson = gson.toJson(foodItems);
+        editor.putString("MEALS_" + meal_title.getText().toString() + "_" + date, mealsJson);
+        editor.apply();
+    }
+
+    private void loadMealList(String date, String mealTitle) {
+        SharedPreferences sharedPreferences = getSharedPreferences("DailyBitePrefs", MODE_PRIVATE);
+        String key = "MEALS_" + mealTitle + "_" + date;
+        String mealsJson = sharedPreferences.getString(key, null);
+
+        if (mealsJson != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<foodItem>>() {}.getType();
+            foodItems = gson.fromJson(mealsJson, type);
+        } else {
+            foodItems = new ArrayList<>();
+        }
+    }
+
 
     // Calculate total nutrients
     private void calculateTotalNutrients() {

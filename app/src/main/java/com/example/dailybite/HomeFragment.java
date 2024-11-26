@@ -338,6 +338,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
     private void navigateToMealInputWithoutDate() {
         Intent intent = new Intent(getActivity(), meal_input.class);
+        intent.putExtra("CURRENT_DATE", currentDate);
         mealInputLauncher.launch(intent);
     }
 
@@ -404,6 +405,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             intent.putExtra("MEAL_PROTEINS", String.valueOf(meal.getProteins()));
             intent.putExtra("MEAL_FATS", String.valueOf(meal.getFats()));
             intent.putExtra("MEAL_CARBS", String.valueOf(meal.getCarbs()));
+            intent.putExtra("CURRENT_DATE", currentDate);
             mealInputLauncher.launch(intent);
         } else {
             Log.e("HomeFragment", "Meal not found in mealList. Position invalid.");
