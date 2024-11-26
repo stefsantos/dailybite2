@@ -96,7 +96,7 @@
     <!-- Continue with Email Button -->
 
     <RelativeLayout
-        android:id="@+id/google_sign_in_button"
+        android:id="@+id/continue_with_google"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/continue_with_email"

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class PFCActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "PFCActivity";
 
-    private Button continueWithGoogleButton, continueWithEmailButton;
+    private RelativeLayout continueWithGoogleButton, continueWithEmailButton;
     private TextView backText, proteinsButton, fatsButton, carbsButton, caloriesButton;
 
     private FirebaseAuth mAuth;
