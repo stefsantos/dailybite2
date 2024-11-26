@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
@@ -49,28 +50,29 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
             holder.foodCarbsTextView.setText(String.format("Carbs: %.2f g | ", foodItem.getCarbs()));
             holder.foodProteinsTextView.setVisibility(View.VISIBLE);
             holder.foodProteinsTextView.setText(String.format("Proteins: %.2f g | ", foodItem.getProteins()));
-        } else {
-
-            holder.foodCaloriesTextView.setVisibility(View.GONE);
-
-            holder.foodFatsTextView.setVisibility(View.GONE);
-
-            holder.foodCarbsTextView.setVisibility(View.GONE);
-
-            holder.foodProteinsTextView.setVisibility(View.GONE);
         }
 
 
         // Open FoodDetailActivity on item click
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, FoodDetailActivity.class);
-            intent.putExtra("foodName", foodItem.getName());
-            intent.putExtra("calories", foodItem.getCalories());
-            intent.putExtra("proteins", foodItem.getProteins());
-            intent.putExtra("carbs", foodItem.getCarbs());
-            intent.putExtra("fats", foodItem.getFats());
-            context.startActivity(intent);
+        holder.itemView.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(context)
+                    .setTitle("Delete Food Item")
+                    .setMessage("Are you sure you want to delete this item?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        foodList.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, foodList.size());
+
+                        if (deleteListener != null) {
+                            deleteListener.onFoodItemDeleted(position);
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+            return true; // Indicate the long press was handled
         });
+
 
         // Delete button logic
         holder.deleteButton.setOnClickListener(v -> {
@@ -80,7 +82,7 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
 
             // Notify the listener
             if (deleteListener != null) {
-                deleteListener.onFoodItemDeleted();
+                deleteListener.onFoodItemDeleted(position);
             }
         });
     }
@@ -112,6 +114,6 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.FoodViewHolder
     }
 
     public interface OnFoodItemDeletedListener {
-        void onFoodItemDeleted();
+        void onFoodItemDeleted(int position);
     }
 }

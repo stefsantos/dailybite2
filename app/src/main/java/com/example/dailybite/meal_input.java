@@ -198,7 +198,8 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     }
 
     @Override
-    public void onFoodItemDeleted() {
+    public void onFoodItemDeleted(int position) {
         calculateTotalNutrients();
+        saveMealList(date);
     }
 }
