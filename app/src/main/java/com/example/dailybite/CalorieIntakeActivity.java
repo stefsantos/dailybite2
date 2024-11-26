@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class CalorieIntakeActivity extends AppCompatActivity {
 
-    private TextView caloriesText, proteinsText, fatsText, carbsText, waterText;
+    private TextView caloriesText, proteinsText, fatsText, carbsText;
     private Button saveButton;
     private ImageButton backButton;
 
@@ -47,7 +47,6 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         proteinsText = findViewById(R.id.proteinsText);
         fatsText = findViewById(R.id.fatsText);
         carbsText = findViewById(R.id.carbsText);
-        waterText = findViewById(R.id.waterText);
         saveButton = findViewById(R.id.saveButton);
         backButton = findViewById(R.id.back_button_calorie_intake);
 
@@ -61,7 +60,6 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         proteinsText.setOnClickListener(v -> showEditDialog("Edit Proteins", proteinsText, "g"));
         fatsText.setOnClickListener(v -> showEditDialog("Edit Fats", fatsText, "g"));
         carbsText.setOnClickListener(v -> showEditDialog("Edit Carbs", carbsText, "g"));
-        waterText.setOnClickListener(v -> showEditDialog("Edit Water", waterText, "ml"));
 
         // Handle back button click
         backButton.setOnClickListener(v -> finish());
@@ -83,14 +81,12 @@ public class CalorieIntakeActivity extends AppCompatActivity {
                             proteinsText.setText(intake.get("proteins") + " g");
                             fatsText.setText(intake.get("fats") + " g");
                             carbsText.setText(intake.get("carbs") + " g");
-                            waterText.setText(intake.get("water") + " ml");
 
                             // Populate the map with the intake data
                             updatedIntakeData.put("calories", intake.get("calories"));
                             updatedIntakeData.put("proteins", intake.get("proteins"));
                             updatedIntakeData.put("fats", intake.get("fats"));
                             updatedIntakeData.put("carbs", intake.get("carbs"));
-                            updatedIntakeData.put("water", intake.get("water"));
                         }
                     } else {
                         Toast.makeText(CalorieIntakeActivity.this, "No intake data found.", Toast.LENGTH_SHORT).show();
