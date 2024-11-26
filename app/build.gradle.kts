@@ -49,6 +49,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    //receiver
+    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.0.0")
+
     // Other dependencies
     implementation(libs.appcompat)
     implementation(libs.material)

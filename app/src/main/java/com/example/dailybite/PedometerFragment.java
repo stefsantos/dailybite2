@@ -3,11 +3,13 @@ package com.example.dailybite;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -30,7 +32,7 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     private CircularProgressBar progressBar;
 
     private SensorManager sensorManager;
-    private Sensor stepCounterSensor, accelerometer;
+    private Sensor stepCounterSensor;
     private int stepCount = 0;
     private boolean isWalking = false;
 
@@ -43,8 +45,10 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     private final float stepLengthInMeters = 0.762f; // Approximate step length
     private final int stepCountTarget = 5000; // Target step count
 
-    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
+    private static final String SHARED_PREFS_NAME = "PedometerPrefs";
+    private static final String KEY_STEP_COUNT = "stepCount";
+    private static final String KEY_START_TIME = "startTime";
+    private static final String KEY_IS_WALKING = "isWalking";
 
     @Nullable
     @Override
@@ -61,31 +65,14 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         startStopButton = view.findViewById(R.id.start_stop_button);
         progressBar = view.findViewById(R.id.progressBar);
 
-        // Display target step count
         stepCountTargetTextView.setText("Step Goal: " + stepCountTarget);
-
-        // Set maximum progress for the circular progress bar
         progressBar.setMaxProgress(stepCountTarget);
 
-        // Initialize SensorManager and sensors
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        // Register sensor listeners
-        if (stepCounterSensor != null) {
-            sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_UI);
-        }
-        if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        } else {
-            stepsTextView.setText("No accelerometer available for motion detection");
-        }
+        restoreState();
 
-        // Check permissions
-        checkAndRequestPermissions();
-
-        // Start/Stop button listener
         startStopButton.setOnClickListener(v -> {
             if (isWalking) {
                 stopWalking();
@@ -103,48 +90,12 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         return view;
     }
 
-    private void checkAndRequestPermissions() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(),
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        NOTIFICATION_PERMISSION_REQUEST_CODE);
-            }
-        }
-
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    private boolean hasPermissions() {
-        boolean hasNotificationPermission = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
-
-        boolean hasLocationPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-
-        return hasNotificationPermission && hasLocationPermission;
-    }
-
-    private void startPedometerService() {
-        Intent serviceIntent = new Intent(requireActivity(), PedometerService.class);
-        requireActivity().startForegroundService(serviceIntent);
-    }
-
-    private void stopPedometerService() {
-        Intent serviceIntent = new Intent(requireActivity(), PedometerService.class);
-        requireActivity().stopService(serviceIntent);
-    }
-
     private void startWalking() {
         isWalking = true;
         startStopButton.setText("Stop");
-        startTime = System.currentTimeMillis() - timePaused;
+        if (startTime == 0L) {
+            startTime = System.currentTimeMillis() - timePaused;
+        }
         isPaused = false;
 
         runnable = new Runnable() {
@@ -153,6 +104,8 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
                 if (isWalking) {
                     updateStopwatch();
                     updateStats();
+                    saveState(); // Save the current state
+                    sendStepDataToService(); // Send updated data to service
                     handler.postDelayed(this, 1000);
                 }
             }
@@ -166,20 +119,34 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         timePaused = System.currentTimeMillis() - startTime;
         isPaused = true;
         handler.removeCallbacks(runnable);
+        saveState(); // Save the state when stopped
     }
 
-    private void updateStepCount() {
-        stepsTextView.setText("Steps: " + stepCount);
-        updateProgressBar();
+    private void sendStepDataToService() {
+        Intent intent = new Intent("com.example.dailybite.UPDATE_PEDOMETER");
+        intent.putExtra("steps", stepCount);
+        intent.putExtra("distance", calculateDistance(stepCount));
+        intent.putExtra("calories", calculateCalories(stepCount));
+        intent.putExtra("time", System.currentTimeMillis() - startTime); // Elapsed time
+        requireActivity().sendBroadcast(intent);
     }
 
-    private void updateProgressBar() {
-        progressBar.setProgress(stepCount);
+    private void startPedometerService() {
+        Intent serviceIntent = new Intent(requireActivity(), PedometerService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().startForegroundService(serviceIntent);
+        } else {
+            requireActivity().startService(serviceIntent);
+        }
+    }
+
+    private void stopPedometerService() {
+        Intent serviceIntent = new Intent(requireActivity(), PedometerService.class);
+        requireActivity().stopService(serviceIntent);
     }
 
     private void updateStopwatch() {
         long elapsedTime = isPaused ? timePaused : (System.currentTimeMillis() - startTime);
-
         int seconds = (int) (elapsedTime / 1000) % 60;
         int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
         int hours = (int) ((elapsedTime / (1000 * 60 * 60)) % 24);
@@ -189,17 +156,47 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     }
 
     private void updateStats() {
-        double miles = stepCount * stepLengthInMeters / 1609.34;
-        double kcal = stepCount * 0.04;
+        double miles = calculateDistance(stepCount);
+        double kcal = calculateCalories(stepCount);
 
         mileTextView.setText(String.format("%.2f Mile", miles));
         kcalTextView.setText(String.format("%.1f Kcal", kcal));
+    }
 
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
-        int hours = (int) ((elapsedTime / (1000 * 60 * 60)) % 24);
+    private double calculateDistance(int steps) {
+        return steps * stepLengthInMeters / 1000;
+    }
 
-        durationTextView.setText(String.format("%dh %dm", hours, minutes));
+    private double calculateCalories(int steps) {
+        return steps * 0.04;
+    }
+
+    private void saveState() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_STEP_COUNT, stepCount);
+        editor.putLong(KEY_START_TIME, startTime);
+        editor.putBoolean(KEY_IS_WALKING, isWalking);
+        editor.apply();
+    }
+
+    private void restoreState() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        stepCount = prefs.getInt(KEY_STEP_COUNT, 0);
+        startTime = prefs.getLong(KEY_START_TIME, 0L);
+        isWalking = prefs.getBoolean(KEY_IS_WALKING, false);
+
+        stepsTextView.setText(String.valueOf(stepCount));
+        updateStopwatch();
+        updateStats();
+
+        if (isWalking) {
+            startWalking();
+        }
+    }
+
+    private boolean hasPermissions() {
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -212,24 +209,12 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
             } else {
                 stepCount += (totalSteps - stepCount);
             }
-            updateStepCount();
+            updateStats();
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE || requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "Permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(requireContext(), "Permission denied. Cannot start the pedometer.", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
