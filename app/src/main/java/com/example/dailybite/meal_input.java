@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,9 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+
 
 public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodItemDeletedListener {
 
@@ -38,9 +43,10 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     private String date;
     private FirebaseFirestore db; // Firestore instance
 
+    private RadioGroup sortOrderGroup;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_input);
 
@@ -57,6 +63,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         addButton = findViewById(R.id.add_button);
         closeButton = findViewById(R.id.close_button);
         meal_title = findViewById(R.id.meal_title);
+        sortOrderGroup = findViewById(R.id.sortOrderGroup);
 
         // Get meal name from the intent
         mealName = getIntent().getStringExtra("MEAL_NAME");
@@ -107,7 +114,48 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         // Save button logic
         saveButton.setOnClickListener(v -> saveMeal());
 
+        // Set up the sorting options for RadioGroup
+        setUpSortingOptions();
+
         // Calculate total nutrients
+        calculateTotalNutrients();
+    }
+
+    private void setUpSortingOptions() {
+        sortOrderGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radioCalories) {
+                sortByCalories();
+            } else if (checkedId == R.id.radioProtein) {
+                sortByProtein();
+            } else if (checkedId == R.id.radioFats) {
+                sortByFats();
+            } else if (checkedId == R.id.radioCarbs) {
+                sortByCarbs();
+            }
+        });
+    }
+
+    private void sortByCalories() {
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getCalories(), item2.getCalories()));
+        foodAdapter.notifyDataSetChanged();
+        calculateTotalNutrients();
+    }
+
+    private void sortByProtein() {
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getProteins(), item2.getProteins()));
+        foodAdapter.notifyDataSetChanged();
+        calculateTotalNutrients();
+    }
+
+    private void sortByFats() {
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getFats(), item2.getFats()));
+        foodAdapter.notifyDataSetChanged();
+        calculateTotalNutrients();
+    }
+
+    private void sortByCarbs() {
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getCarbs(), item2.getCarbs()));
+        foodAdapter.notifyDataSetChanged();
         calculateTotalNutrients();
     }
 
@@ -116,7 +164,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         String proteins = proteinsText.getText().toString();
         String fats = fatsText.getText().toString();
         String carbs = carbsText.getText().toString();
-
 
         float cal = Float.parseFloat(calories);
         float pro = Float.parseFloat(proteins);
@@ -140,13 +187,11 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
 
-
         Meal meal = new Meal(newMealName, date, cal, pro, fat, carb);
 
-
         // Save the meal to Firestore
-        db .collection("users")
-                .document(FirebaseAuth.getInstance().getCurrentUser ().getUid())
+        db.collection("users")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .collection("meals")
                 .document(meal.getName())
                 .set(meal)
@@ -176,9 +221,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         editor.putString("MEALS_" + modifiedTitle + "_" + date, mealsJson);
         meal_title.setText(modifiedTitle);
         editor.apply();
-
     }
-
 
     private void loadMealList(String date, String mealTitle) {
         SharedPreferences sharedPreferences = getSharedPreferences("DailyBitePrefs", MODE_PRIVATE);
