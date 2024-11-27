@@ -47,6 +47,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_input);
 
