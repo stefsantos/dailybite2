@@ -23,6 +23,14 @@ import androidx.fragment.app.Fragment;
 
 public class PedometerFragment extends Fragment implements SensorEventListener {
 
+    private static final String SHARED_PREFS = "PedometerPrefs";
+    private static final String KEY_STEP_COUNT = "StepCount";
+    private static final String KEY_START_TIME = "StartTime";
+    private static final String KEY_IS_WALKING = "IsWalking";
+    private static final String KEY_TIME_PAUSED = "TimePaused";
+    private static final String KEY_STEP_GOAL = "StepGoal";
+
+
     private TextView stepsTextView, timeTextView, mileTextView, kcalTextView, durationTextView, stepCountTargetTextView;
     private Button startStopButton;
     private CircularProgressBar progressBar;
@@ -40,9 +48,6 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
 
     private final float stepLengthInMeters = 0.762f; // Approximate step length
     private int stepCountTarget = 5000; // Default target step count
-
-    private static final String SHARED_PREFS = "PedometerPrefs";
-    private static final String KEY_STEP_GOAL = "StepGoal";
 
     // Accelerometer variables for motion detection
     private float accelerationThreshold = 12.0f; // Sensitivity for motion detection
@@ -64,10 +69,16 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         startStopButton = view.findViewById(R.id.start_stop_button);
         progressBar = view.findViewById(R.id.progressBar);
 
-        // Load saved step goal
+        // Load saved step goal and stopwatch state
         SharedPreferences prefs = requireContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         stepCountTarget = prefs.getInt(KEY_STEP_GOAL, stepCountTarget);
+        stepCount = prefs.getInt(KEY_STEP_COUNT, 0);
+        startTime = prefs.getLong(KEY_START_TIME, 0L);
+        isWalking = prefs.getBoolean(KEY_IS_WALKING, false);
+        timePaused = prefs.getLong(KEY_TIME_PAUSED, 0L);
+
         updateStepGoalUI();
+        updateStepCount();
 
         // Initialize SensorManager and sensors
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -95,6 +106,11 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
 
         // Step goal click listener
         stepCountTargetTextView.setOnClickListener(v -> showStepGoalDialog());
+
+        // Start the stopwatch if it was running previously
+        if (isWalking) {
+            startWalking();
+        }
 
         return view;
     }
@@ -124,6 +140,7 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         timePaused = System.currentTimeMillis() - startTime; // Capture paused time
         isPaused = true;
         handler.removeCallbacks(runnable);
+        saveState(); // Save state when stopped
     }
 
     private void updateStepCount() {
@@ -172,6 +189,16 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     private void updateStepGoalUI() {
         stepCountTargetTextView.setText("Step Goal: " + stepCountTarget);
         progressBar.setMaxProgress(stepCountTarget);
+    }
+
+    private void saveState() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_STEP_COUNT, stepCount);
+        editor.putLong(KEY_START_TIME, startTime);
+        editor.putBoolean(KEY_IS_WALKING, isWalking);
+        editor.putLong(KEY_TIME_PAUSED, timePaused);
+        editor.apply();
     }
 
     private void showStepGoalDialog() {
@@ -256,11 +283,31 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (isWalking) {
+            stopWalking();  // Ensure pedometer stops if the user navigates away
+        }
+        saveState();  // Save the latest data (step count, start time, etc.)
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (isWalking) {
+            stopWalking();  // Make sure pedometer stops when fragment is not visible
+        }
+        saveState();  // Save the latest data to SharedPreferences
+    }
+
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (sensorManager != null) {
             sensorManager.unregisterListener(this);
         }
         handler.removeCallbacks(runnable);
+        saveState(); // Save the state when the fragment is destroyed
     }
 }
