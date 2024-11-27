@@ -12,6 +12,9 @@ import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private SharedPreferences sharedPreferences;
+    private GoogleSignInClient mGoogleSignInClient; // Add this for Google Sign-In
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +36,15 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Initialize Firebase Auth, Firestore, and SharedPreferences
+        // Initialize Firebase Auth, Firestore, SharedPreferences, and Google Sign-In
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // Initialize the views from the layout
         backButton = findViewById(R.id.backbutton2);
@@ -65,14 +74,17 @@ public class ProfileActivity extends AppCompatActivity {
             // Sign out the user from Firebase
             mAuth.signOut();
 
-            // Update SharedPreferences to reflect the logout state
-            sharedPreferences.edit().putBoolean("isLoggedIn", false).apply();
+            // Sign out the user from Google as well
+            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+                // Update SharedPreferences to reflect the logout state
+                sharedPreferences.edit().putBoolean("isLoggedIn", false).apply();
 
-            // Navigate to the login screen (MainActivity)
-            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear the back stack
-            startActivity(intent);
-            finish(); // Close the ProfileActivity
+                // Navigate to the login screen (MainActivity)
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear the back stack
+                startActivity(intent);
+                finish(); // Close the ProfileActivity
+            });
         });
     }
 
