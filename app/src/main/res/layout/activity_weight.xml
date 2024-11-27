@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Title text -->
+    <!-- title -->
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
@@ -16,7 +16,6 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium" />
 
-    <!-- Subtitle text -->
     <TextView
         android:id="@+id/subtitle_text"
         android:layout_width="wrap_content"
@@ -29,7 +28,7 @@
         android:textColor="#7A7A7A"
         android:textSize="14sp" />
 
-    <!-- Weight input -->
+    <!-- weight input -->
     <EditText
         android:id="@+id/weight_input"
         android:layout_width="100dp"
@@ -42,7 +41,7 @@
         android:textSize="18sp"
         android:inputType="numberDecimal" />
 
-    <!-- Unit toggle button (kg/lbs) -->
+    <!-- toggle button kg/lbs -->
     <TextView
         android:id="@+id/unit_toggle_button"
         android:layout_width="wrap_content"

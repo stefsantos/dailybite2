@@ -9,13 +9,13 @@
     tools:context=".MeActivity"
     android:background="@android:color/white">
 
-    <!-- Top section with back button and centered title -->
+    <!-- top section -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp">
 
-        <!-- Back button -->
+        <!-- back button -->
         <ImageButton
             android:id="@+id/back_button_me"
             android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.5"/>
 
-        <!-- Title in the center -->
+        <!-- title in the center -->
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -44,12 +44,12 @@
             app:layout_constraintVertical_bias="0.5"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Adding spacing between top section and the content -->
+    <!-- spacer -->
     <View
         android:layout_width="match_parent"
         android:layout_height="16dp" />
 
-    <!-- Each row is wrapped inside a CardView to create border and shadow -->
+    <!-- shadow borders -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,8 +84,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-    <!-- Repeat the same CardView structure for the other items -->
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -263,7 +261,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Save Button -->
+    <!-- save button -->
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"

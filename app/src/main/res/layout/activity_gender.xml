@@ -5,7 +5,7 @@
     android:background="#FFFFFF"
     android:padding="16dp">
 
-    <!-- Gender Question Text -->
+    <!-- whats your gender -->
     <TextView
         android:id="@+id/question_text"
         android:layout_width="wrap_content"
@@ -18,7 +18,7 @@
         android:textStyle="bold"
         android:textColor="#000000" />
 
-    <!-- Subtext -->
+    <!-- subtext -->
     <TextView
         android:id="@+id/subtext"
         android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
         android:textColor="#7A7A7A"
         android:textSize="14sp" />
 
-    <!-- Male TextView (Highlighted) -->
+    <!-- male -->
     <TextView
         android:id="@+id/male_button"
         android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
         android:textColor="#000000"
         android:textSize="18sp" />
 
-    <!-- Female TextView -->
+    <!-- female -->
     <TextView
         android:id="@+id/female_button"
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
         android:textColor="#000000"
         android:textSize="18sp" />
 
-    <!-- Back Text -->
+    <!-- back -->
     <ImageButton
         android:id="@+id/proceed_button"
         android:layout_width="60dp"

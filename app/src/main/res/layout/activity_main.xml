@@ -5,7 +5,7 @@
     android:background="#FFFFFF"
     android:id="@+id/main">
 
-    <!-- Apple icon or logo -->
+    <!-- logo -->
     <ImageView
         android:id="@+id/apple_logo"
         android:layout_width="100dp"
@@ -15,7 +15,7 @@
         android:contentDescription="App Logo"
         android:src="@drawable/apple_icon"/>
 
-    <!-- Welcome text -->
+    <!-- welcome text -->
     <TextView
         android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"/>
 
-    <!-- Subtext: Start or sign in to your account -->
+    <!-- subtext -->
     <TextView
         android:id="@+id/welcome_subtext"
         android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"/>
 
-    <!-- Start button -->
+    <!-- start button -->
     <Button
         android:id="@+id/start_button"
         android:layout_width="250dp"
@@ -53,7 +53,7 @@
         android:layout_centerHorizontal="true"
         android:elevation="4dp"/>
 
-    <!-- Sign in link -->
+    <!-- sign in link -->
     <TextView
         android:id="@+id/sign_in_text"
         android:layout_width="wrap_content"

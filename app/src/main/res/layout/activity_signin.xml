@@ -5,7 +5,7 @@
     android:background="@android:color/white"
     android:padding="16dp">
 
-    <!-- Back button icon (left arrow) -->
+    <!-- back button -->
     <ImageView
         android:id="@+id/back_button"
         android:layout_width="24dp"
@@ -15,7 +15,7 @@
         android:src="@drawable/ic_back"
         android:contentDescription="Back"/>
 
-    <!-- Title: Login -->
+    <!-- title -->
     <TextView
         android:id="@+id/signin_title"
         android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_marginTop="16dp"
         android:textColor="@android:color/black"/>
 
-    <!-- Email Input Field -->
+    <!-- email input field -->
     <EditText
         android:id="@+id/email_input"
         android:layout_width="match_parent"
@@ -42,7 +42,7 @@
         android:textColor="@android:color/black"
         android:textSize="16sp"/>
 
-    <!-- Password Input Field -->
+    <!-- password input field -->
     <EditText
         android:id="@+id/password_input"
         android:layout_width="match_parent"
@@ -57,7 +57,7 @@
         android:textColor="@android:color/black"
         android:textSize="16sp"/>
 
-    <!-- Login Button -->
+    <!-- login button -->
     <Button
         android:id="@+id/login_button"
         android:layout_width="match_parent"
@@ -77,7 +77,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/border_button">
 
-        <!-- Google Icon -->
+        <!-- google icon -->
         <ImageView
             android:id="@+id/google_icon"
             android:layout_width="30dp"
@@ -88,7 +88,7 @@
             android:src="@drawable/google"
             android:contentDescription="Google Icon" />
 
-        <!-- Button Text -->
+        <!-- sign in with google -->
         <TextView
             android:id="@+id/google_button_text"
             android:layout_width="wrap_content"

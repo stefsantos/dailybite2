@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Question text -->
+    <!-- how active are you -->
     <TextView
         android:id="@+id/question_text"
         android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium"/>
 
-    <!-- Subtext -->
+    <!-- subtext -->
     <TextView
         android:id="@+id/subtext"
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:textColor="#7A7A7A"
         android:textSize="14sp" />
 
-    <!-- Sedentary button -->
+    <!-- sedentary -->
     <TextView
         android:id="@+id/sedentary_text"
         android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
         android:paddingVertical="15dp"
         android:fontFamily="sans-serif"/>
 
-    <!-- Low Active button -->
+    <!-- low active -->
     <TextView
         android:id="@+id/low_active_text"
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
         android:paddingVertical="15dp"
         android:fontFamily="sans-serif"/>
 
-    <!-- Active button -->
+    <!-- active -->
     <TextView
         android:id="@+id/active_text"
         android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
         android:paddingVertical="15dp"
         android:fontFamily="sans-serif"/>
 
-    <!-- Very Active button -->
+    <!-- very active -->
     <TextView
         android:id="@+id/very_active_text"
         android:layout_width="wrap_content"
