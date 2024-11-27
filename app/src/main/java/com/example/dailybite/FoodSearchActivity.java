@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -39,7 +38,6 @@ public class FoodSearchActivity extends AppCompatActivity {
     private RecyclerView foodRecyclerView;
     private SearchAdapter foodAdapter;
     private List<NutritionixResponse.FoodItem> foodItems;
-    private Spinner filterSpinner;
     private ActivityResultLauncher<Intent> foodDetailLauncher;
     private NutritionixApiService apiService;
 
@@ -57,7 +55,6 @@ public class FoodSearchActivity extends AppCompatActivity {
         backButton = findViewById(R.id.back_button);
         emptyTextView = findViewById(R.id.emptyTextView);
         foodRecyclerView = findViewById(R.id.foodRecyclerView);
-        filterSpinner = findViewById(R.id.filterSpinner);
 
         // Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -130,11 +127,6 @@ public class FoodSearchActivity extends AppCompatActivity {
                 }
         );
 
-        // Setup filter spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.filter_options, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        filterSpinner.setAdapter(adapter);
 
         // Handle item click for food details
         foodAdapter.setOnItemClickListener(foodItem -> {
