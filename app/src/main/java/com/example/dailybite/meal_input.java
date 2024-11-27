@@ -136,25 +136,25 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     }
 
     private void sortByCalories() {
-        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getCalories(), item2.getCalories()));
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item2.getCalories(), item1.getCalories()));
         foodAdapter.notifyDataSetChanged();
         calculateTotalNutrients();
     }
 
     private void sortByProtein() {
-        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getProteins(), item2.getProteins()));
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item2.getProteins(), item1.getProteins()));
         foodAdapter.notifyDataSetChanged();
         calculateTotalNutrients();
     }
 
     private void sortByFats() {
-        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getFats(), item2.getFats()));
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item2.getFats(), item1.getFats()));
         foodAdapter.notifyDataSetChanged();
         calculateTotalNutrients();
     }
 
     private void sortByCarbs() {
-        Collections.sort(foodItems, (item1, item2) -> Float.compare(item1.getCarbs(), item2.getCarbs()));
+        Collections.sort(foodItems, (item1, item2) -> Float.compare(item2.getCarbs(), item1.getCarbs()));
         foodAdapter.notifyDataSetChanged();
         calculateTotalNutrients();
     }
