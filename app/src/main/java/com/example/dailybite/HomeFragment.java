@@ -325,7 +325,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
     private void loadDataForDate(String date) {
         // Load nutrients and water data
-        String nutrientsJson = sharedPreferences.getString(NUTRIENTS_KEY + "_" + date, null);
+        String nutrientsJson = sharedPreferences.getString(NUTRIENTS_KEY + "_" + date + "_" + userId, null);
         if (nutrientsJson != null) {
             NutrientData nutrientData = gson.fromJson(nutrientsJson, NutrientData.class);
             currentProteins = nutrientData.getProteins();
@@ -340,7 +340,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         }
 
         // Load water intake data
-        int waterConsumed = sharedPreferences.getInt(WATER_KEY + "_" + date, 0);
+        int waterConsumed = sharedPreferences.getInt(WATER_KEY + "_" + date + "_" + userId,  0);
         glassesOfWater = waterConsumed;
 
         // Update the UI
