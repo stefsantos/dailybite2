@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Back button -->
+    <!-- back button -->
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="16dp" />
 
-    <!-- Food Name -->
+    <!-- food name -->
     <TextView
         android:id="@+id/foodNameTextView"
         android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
         android:textStyle="bold"
         android:textColor="#000000" />
 
-    <!-- Calories -->
+    <!-- calories -->
     <TextView
         android:id="@+id/caloriesTextView"
         android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
         android:textSize="18sp"
         android:textColor="#333333" />
 
-    <!-- Proteins -->
+    <!-- proteins -->
     <TextView
         android:id="@+id/proteinsTextView"
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
         android:textSize="18sp"
         android:textColor="#333333" />
 
-    <!-- Carbs -->
+    <!-- carbs -->
     <TextView
         android:id="@+id/carbsTextView"
         android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
         android:textSize="18sp"
         android:textColor="#333333" />
 
-    <!-- Fats -->
+    <!-- fats -->
     <TextView
         android:id="@+id/fatsTextView"
         android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
         android:textSize="18sp"
         android:textColor="#333333" />
 
-    <!-- Save Button -->
+    <!-- save button -->
     <Button
         android:id="@+id/saveFoodButton"
         android:layout_width="match_parent"

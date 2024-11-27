@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Title for Recommended PFC -->
+    <!-- title -->
     <TextView
         android:id="@+id/recommended_pfc_title"
         android:layout_width="wrap_content"
@@ -16,7 +16,6 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium" />
 
-    <!-- Subtitle for PFC Info -->
     <TextView
         android:id="@+id/pfc_subtitle"
         android:layout_width="wrap_content"
@@ -29,7 +28,7 @@
         android:textColor="#7A7A7A"
         android:textSize="14sp" />
 
-    <!-- Proteins Button -->
+    <!-- proteins -->
     <Button
         android:id="@+id/proteins_button"
         android:layout_width="158dp"
@@ -44,7 +43,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <!-- Fats Button -->
+    <!-- fats -->
     <Button
         android:id="@+id/fats_button"
         android:layout_width="146dp"
@@ -60,7 +59,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <!-- Carbs Button -->
+    <!-- carbs -->
     <Button
         android:id="@+id/carbs_button"
         android:layout_width="155dp"
@@ -75,7 +74,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <!-- Calories Button -->
+    <!-- carloies -->
     <Button
         android:id="@+id/calories_button"
         android:layout_width="wrap_content"
@@ -91,9 +90,7 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 
-    <!-- Continue with Google Button -->
-
-    <!-- Continue with Email Button -->
+    <!-- continue with google -->
 
     <RelativeLayout
         android:id="@+id/continue_with_google"
@@ -105,7 +102,7 @@
         android:layout_marginEnd="40dp"
         android:background="@drawable/border_button">
 
-        <!-- Google Icon -->
+        <!-- google icon -->
         <ImageView
             android:id="@+id/google_icon"
             android:layout_width="30dp"
@@ -116,7 +113,7 @@
             android:contentDescription="Google Icon"
             android:src="@drawable/google" />
 
-        <!-- Button Text -->
+        <!-- continue with google text -->
         <TextView
             android:id="@+id/google_button_text"
             android:layout_width="wrap_content"
@@ -128,6 +125,7 @@
             android:textSize="16sp" />
     </RelativeLayout>
 
+    <!-- continue iwth email -->
     <RelativeLayout
         android:id="@+id/continue_with_email"
         android:layout_width="match_parent"
@@ -138,7 +136,7 @@
         android:layout_marginEnd="40dp"
         android:background="@drawable/border_button">
 
-        <!-- Email Icon -->
+        <!-- email icon -->
         <ImageView
             android:id="@+id/email_icon"
             android:layout_width="30dp"
@@ -149,7 +147,7 @@
             android:contentDescription="Email Icon"
             android:src="@drawable/ic_email" />
 
-        <!-- Button Text -->
+        <!-- continue with email text -->
         <TextView
             android:id="@+id/email_button_text"
             android:layout_width="wrap_content"

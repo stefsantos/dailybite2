@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Title text -->
+    <!-- title -->
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium" />
 
-    <!-- Subtitle text -->
+    <!-- subtext -->
     <TextView
         android:id="@+id/subtitle_text"
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:textColor="#7A7A7A"
         android:textSize="14sp" />
 
-    <!-- Age input -->
+    <!-- age -->
     <EditText
         android:id="@+id/age_input"
         android:layout_width="100dp"
@@ -43,7 +43,7 @@
         android:textSize="18sp"
         android:inputType="number" />
 
-    <!-- Unit label for years -->
+    <!-- years label -->
     <TextView
         android:id="@+id/years_label"
         android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
         android:textSize="18sp"
         android:padding="5dp" />
 
-    <!-- Back Text -->
+    <!-- back -->
     <ImageButton
         android:id="@+id/proceed_button"
         android:layout_width="60dp"

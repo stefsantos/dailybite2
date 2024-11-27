@@ -34,27 +34,22 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createaccount);
 
-        // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize UI elements
         usernameInput = findViewById(R.id.username_input);
         emailInput = findViewById(R.id.email_input);
         passwordInput = findViewById(R.id.password_input);
         loginButton = findViewById(R.id.login_button);
         backButton = findViewById(R.id.back_button);
 
-        // Handle back button press
         backButton.setOnClickListener(v -> finish());
 
-        // Handle login button press (for account creation)
         loginButton.setOnClickListener(v -> {
             String username = usernameInput.getText().toString().trim();
             String email = emailInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
-            // Validate inputs
             if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(CreateAccountActivity.this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
             } else {
@@ -69,20 +64,18 @@ public class CreateAccountActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Show a success toast
+
                             Toast.makeText(CreateAccountActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
-                            // Save additional user details in Firestore
+
                             saveUserDetails(user.getUid(), username, email);
                         }
                     } else {
-                        // Display error message if account creation fails
                         Toast.makeText(CreateAccountActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void saveUserDetails(String userId, String username, String email) {
-        // Retrieve data from shared preferences for weight, height, age, etc.
         SharedPreferences weightPrefs = getSharedPreferences("WeightPrefs", Context.MODE_PRIVATE);
         SharedPreferences heightPrefs = getSharedPreferences("HeightPrefs", Context.MODE_PRIVATE);
         SharedPreferences agePrefs = getSharedPreferences("AgePrefs", Context.MODE_PRIVATE);
@@ -90,7 +83,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         SharedPreferences activityPrefs = getSharedPreferences("ActivityLevelPrefs", Context.MODE_PRIVATE);
         SharedPreferences pfcPrefs = getSharedPreferences("PFCValues", Context.MODE_PRIVATE);
 
-        // Retrieve saved values from shared preferences
         String weight = weightPrefs.getString("Weight", "");
         String weightUnit = weightPrefs.getBoolean("Unit", true) ? "kg" : "lbs";
         int heightMeters = heightPrefs.getInt("HeightMeters", 0);
@@ -101,18 +93,15 @@ public class CreateAccountActivity extends AppCompatActivity {
         String gender = genderPrefs.getString("SelectedGender", "");
         String activityLevel = activityPrefs.getString("SelectedActivityLevel", "");
 
-        // Retrieve calculated PFC values from SharedPreferences
         float calories = pfcPrefs.getFloat("Calories", 0);
         float proteins = pfcPrefs.getFloat("Proteins", 0);
         float fats = pfcPrefs.getFloat("Fats", 0);
         float carbs = pfcPrefs.getFloat("Carbs", 0);
 
-        // Create a user object to store in Firestore
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
         user.put("email", email);
 
-        // Organize additional data under a "user_info" nested map
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("weight", weight);
         userInfo.put("weight_unit", weightUnit);
@@ -121,39 +110,35 @@ public class CreateAccountActivity extends AppCompatActivity {
         userInfo.put("gender", gender);
         userInfo.put("activity_level", activityLevel);
 
-        // Add userInfo as a nested field within the user map
         user.put("user_info", userInfo);
 
-        // Organize PFC values under an "intake" nested map
         Map<String, Object> intake = new HashMap<>();
         intake.put("calories", calories);
         intake.put("proteins", proteins);
         intake.put("fats", fats);
         intake.put("carbs", carbs);
 
-        // Add intake to the user map
         user.put("intake", intake);
 
-        // Add user document to Firestore in the "users" collection with the UID as the document ID
         db.collection("users").document(userId).set(user)
                 .addOnSuccessListener(aVoid -> {
-                    // Show welcome message and navigate to Homepage on success
+
                     Toast.makeText(CreateAccountActivity.this, "Welcome, " + username + "!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(CreateAccountActivity.this, Homepage.class));
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    // Display an error if saving details fails
+
                     Toast.makeText(CreateAccountActivity.this, "Failed to save user details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
     private String convertHeightToCentimeters(int heightMeters, int heightCentimeters, boolean isMetric) {
         float h;
         if (isMetric) {
-            // If the input is in metric
+            // metric input
             h =  heightMeters * 100 + heightCentimeters; // Convert to centimeters
         } else {
-            // If the input is in imperial
+            // imperial input
             h =  (heightMeters * 30.48f) + (heightCentimeters * 2.54f); // Convert feet and inches to centimeters
         }
         return String.valueOf(h);

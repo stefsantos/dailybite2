@@ -6,14 +6,14 @@
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground">
 
-    <!-- Left section: Food details -->
+    <!-- food -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="1">
 
-        <!-- Food name -->
+        <!-- food name -->
         <TextView
             android:id="@+id/foodNameTextView"
             android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:ellipsize="end"
             android:maxLines="1" />
 
-        <!-- Calories and serving size -->
+        <!-- calories/serving size -->
         <TextView
             android:id="@+id/foodCaloriesTextView"
             android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
     </LinearLayout>
 </LinearLayout>
 
-<!-- Right section: Delete button -->
+<!-- delete button -->
     <ImageButton
         android:id="@+id/deleteButton"
         android:layout_width="48dp"

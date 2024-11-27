@@ -5,7 +5,7 @@
     android:padding="16dp"
     android:background="@android:color/white">
 
-    <!-- Step Count Target TextView -->
+    <!-- step goal -->
     <TextView
         android:id="@+id/step_target"
         android:layout_width="wrap_content"
@@ -17,7 +17,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="55dp" />
 
-    <!-- Steps TextView -->
+    <!-- steps -->
     <TextView
         android:id="@+id/steps_text_view"
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp" />
 
-    <!-- Circular ProgressBar using custom drawable -->
+    <!-- progress bar -->
     <com.example.dailybite.CircularProgressBar
         android:id="@+id/progressBar"
         android:layout_width="200dp"
@@ -38,7 +38,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp" />
 
-    <!-- Time TextView (Stopwatch) -->
+    <!-- stopwatch -->
     <TextView
         android:id="@+id/time_text_view"
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp" />
 
-    <!-- Mile, Kcal, and Time Stats Layout -->
+    <!-- miles kcal and time -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
         android:layout_below="@id/time_text_view"
         android:layout_marginTop="24dp">
 
-        <!-- Distance (Mile) -->
+        <!-- distance -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <!-- Calories (Kcal) -->
+        <!-- kcal -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <!-- Time Duration -->
+        <!-- time -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Start/Stop Button -->
+    <!-- start/stop -->
     <Button
         android:id="@+id/start_stop_button"
         android:layout_width="128dp"

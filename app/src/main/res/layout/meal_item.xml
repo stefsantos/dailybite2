@@ -5,14 +5,14 @@
     android:padding="16dp"
     android:gravity="center_vertical">
 
-    <!-- Left section: Food details -->
+    <!-- Food details -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- Food name -->
+        <!-- food name -->
         <TextView
             android:id="@+id/foodNameTextView"
             android:layout_width="wrap_content"
@@ -22,7 +22,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <!-- Calories and serving size -->
+        <!-- calories and serving size -->
         <TextView
             android:id="@+id/foodCaloriesTextView"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
             android:textColor="#757575"
             android:textSize="14sp" />
 
-        <!-- Proteins, Carbs, and Fats -->
+        <!-- proteins carbs and fats -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

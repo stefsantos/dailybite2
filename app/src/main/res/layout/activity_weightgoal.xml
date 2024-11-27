@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Goal question text -->
+    <!-- Goal question -->
     <TextView
         android:id="@+id/goal_question"
         android:layout_width="wrap_content"
@@ -16,7 +16,6 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium"/>
 
-    <!-- Subtext -->
     <TextView
         android:id="@+id/goal_subtext"
         android:layout_width="193dp"
@@ -30,7 +29,7 @@
         android:textColor="#808080"
         android:textSize="14sp" />
 
-    <!-- Lose Weight button -->
+    <!-- lose weight -->
     <TextView
         android:id="@+id/lose_weight"
         android:layout_width="wrap_content"
@@ -45,7 +44,7 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif"/>
 
-    <!-- Keep Weight button -->
+    <!-- keep weight -->
     <TextView
         android:id="@+id/keep_weight"
         android:layout_width="wrap_content"
@@ -60,7 +59,7 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif"/>
 
-    <!-- Gain Weight button (highlighted) -->
+    <!-- gain weight -->
     <TextView
         android:id="@+id/gain_weight"
         android:layout_width="wrap_content"
@@ -75,7 +74,7 @@
         android:textColor="#000000"
         android:textSize="20sp" />
 
-    <!-- Floating Action Button for proceeding -->
+    <!-- proceed -->
     <ImageButton
         android:id="@+id/proceed_button"
         android:layout_width="60dp"

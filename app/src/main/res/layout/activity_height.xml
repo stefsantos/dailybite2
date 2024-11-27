@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Question text -->
+    <!-- how tall are you -->
     <TextView
         android:id="@+id/question_text"
         android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium"/>
 
-    <!-- Subtext -->
+    <!-- subtext -->
     <TextView
         android:id="@+id/subtext"
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:textColor="#7A7A7A"
         android:textSize="14sp" />
 
-    <!-- Toggle for unit switching -->
+    <!-- unit switch -->
     <Switch
         android:id="@+id/unit_switch"
         android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
         android:layout_marginTop="20dp"
         android:text="Switch to Imperial"/>
 
-    <!-- Meters/Feet NumberPicker -->
+    <!-- measurement -->
     <NumberPicker
         android:id="@+id/meter_picker"
         android:layout_width="wrap_content"
@@ -50,9 +50,7 @@
         android:layout_marginStart="100dp"
         android:layout_marginTop="40dp"/>
 
-    <!-- 'm/ft' Label for meters or feet -->
-
-    <!-- Centimeters/Inches NumberPicker -->
+    <!-- label -->
     <TextView
         android:id="@+id/meter_label"
         android:layout_width="wrap_content"
@@ -73,9 +71,6 @@
         android:layout_toEndOf="@id/meter_label"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"/>
-
-    <!-- 'cm/in' Label for centimeters or inches -->
-
 
     <TextView
         android:id="@+id/cm_label"
