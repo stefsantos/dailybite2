@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -37,7 +38,8 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     private List<foodItem> foodItems;
     private String date;
     private FirebaseFirestore db; // Firestore instance
-
+    private FirebaseAuth mAuth;
+    private String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -46,7 +48,9 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
-
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        userId = currentUser.getUid();
         // Initialize views
         caloriesText = findViewById(R.id.caloriesText);
         proteinsText = findViewById(R.id.proteinsText);
@@ -168,12 +172,12 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         String originalTitle = meal_title.getText().toString().trim();
         String modifiedTitle = originalTitle;
         int counter = 1;
-        while (sharedPreferences.contains("MEALS_" + modifiedTitle + "_" + date)) {
+        while (sharedPreferences.contains("MEALS_" + modifiedTitle + "_" + date + "_" + userId)) {
             modifiedTitle = originalTitle + " (" + counter + ")";
             counter++;
         }
         String mealsJson = gson.toJson(foodItems);
-        editor.putString("MEALS_" + modifiedTitle + "_" + date, mealsJson);
+        editor.putString("MEALS_" + modifiedTitle + "_" + date + "_" + userId, mealsJson);
         meal_title.setText(modifiedTitle);
         editor.apply();
 

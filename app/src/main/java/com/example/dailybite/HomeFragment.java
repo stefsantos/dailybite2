@@ -354,15 +354,15 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
         // Save meals list
         String mealsJson = gson.toJson(mealList);
-        editor.putString(MEALS_KEY + "_" + date, mealsJson);
+        editor.putString(MEALS_KEY + "_" + date + "_" + userId, mealsJson);
 
         // Save nutrients data
         NutrientData nutrientData = new NutrientData(currentProteins, currentFats, currentCarbs, currentCalories);
         String nutrientsJson = gson.toJson(nutrientData);
-        editor.putString(NUTRIENTS_KEY + "_" + date, nutrientsJson);
+        editor.putString(NUTRIENTS_KEY + "_" + date + "_" + userId, nutrientsJson);
 
         // Save water intake
-        editor.putInt(WATER_KEY + "_" + date, glassesOfWater);
+        editor.putInt(WATER_KEY + "_" + date + "_" + userId, glassesOfWater);
 
         editor.apply();
 
@@ -502,13 +502,13 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         // Save meals for the current date using the correct key format
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String mealListJson = gson.toJson(mealList);
-        editor.putString(MEALS_KEY + "_" + currentDate, mealListJson);
+        editor.putString(MEALS_KEY + "_" + currentDate + "_" + userId, mealListJson);
         editor.apply();
     }
 
     private void loadMealsForDate(String date) {
         // Load meals for specific date using the correct key format
-        String mealListJson = sharedPreferences.getString(MEALS_KEY + "_" + date, null);
+        String mealListJson = sharedPreferences.getString(MEALS_KEY + "_" + date + "_" + userId, null);
         if (mealListJson != null) {
             Type type = new TypeToken<List<Meal>>() {}.getType();
             mealList = gson.fromJson(mealListJson, type);
