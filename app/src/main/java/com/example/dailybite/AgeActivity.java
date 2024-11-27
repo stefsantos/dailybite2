@@ -32,10 +32,8 @@ public class AgeActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
 
-        // Load saved age preference
         loadAgePreference();
 
-        // Set onClickListener for the next button
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,7 +50,7 @@ public class AgeActivity extends AppCompatActivity {
             }
         });
 
-        // Set onClickListener for the back button
+        // back button
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

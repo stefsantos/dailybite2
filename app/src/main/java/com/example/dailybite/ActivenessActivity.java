@@ -35,7 +35,6 @@ public class ActivenessActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
 
-        // Load the saved activity level
         loadSelectedActivityLevel();
 
         sedentaryText.setOnClickListener(new View.OnClickListener() {
