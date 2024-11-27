@@ -40,6 +40,7 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
     private int stepCount = 0;
     private boolean isWalking = false;
 
+    private int initialStepCount = 0;
     private long startTime = 0L;
     private long timePaused = 0L;
     private boolean isPaused = false;
@@ -120,6 +121,9 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         startStopButton.setText("Stop");
         startTime = System.currentTimeMillis() - timePaused; // Continue from paused time if paused
         isPaused = false;
+
+        // Store the initial step count when walking starts
+        initialStepCount = stepCount; // Initialize initialStepCount to current step count
 
         runnable = new Runnable() {
             @Override
@@ -235,24 +239,27 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            int totalSteps = (int) event.values[0];
+        if (isWalking) {  // Only count steps if the pedometer is running
+            if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+                int totalSteps = (int) event.values[0];
 
-            // Calculate steps for this session only
-            if (stepCount == 0) {
-                stepCount = totalSteps; // Initialize step count on first reading
-            } else {
-                stepCount += (totalSteps - stepCount); // Accumulate step count based on counter sensor
+                // Calculate steps for this session only
+                if (stepCount == 0) {
+                    stepCount = totalSteps; // Initialize step count on first reading
+                } else {
+                    stepCount += (totalSteps - stepCount); // Accumulate step count based on counter sensor
+                }
+                updateStepCount();
+            } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                // Shake detection based on accelerometer (only if walking)
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+                detectShake(x, y, z);
             }
-            updateStepCount();
-        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            // Shake detection based on accelerometer
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-            detectShake(x, y, z);
         }
     }
+
 
     private void detectShake(float x, float y, float z) {
         if (isFirstShake) {
