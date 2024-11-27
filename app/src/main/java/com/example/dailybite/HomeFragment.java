@@ -238,27 +238,28 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void loadUsername() {
-        String savedUsername = sharedPreferences.getString("username", null);
-
-        if (savedUsername != null) {
-            username.setText(savedUsername);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String fetchedUsername = documentSnapshot.getString("username");
+                            if (fetchedUsername != null) {
+                                // Set the username in the TextView
+                                username.setText(fetchedUsername);
+                            } else {
+                                Log.d("HomeFragment", "Username not found in Firestore.");
+                            }
+                        } else {
+                            Log.d("HomeFragment", "No user document found.");
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("HomeFragment", "Error fetching username from Firestore", e);
+                    });
         } else {
-            String userId = mAuth.getCurrentUser().getUid();
-            db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    String fetchedUsername = documentSnapshot.getString("username");
-                    if (fetchedUsername != null) {
-                        username.setText(fetchedUsername);
-
-                        // Save the username to SharedPreferences
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("username", fetchedUsername);
-                        editor.apply();
-                    }
-                } else {
-                    Log.d("HomeFragment", "No such document");
-                }
-            }).addOnFailureListener(e -> Log.d("HomeFragment", "Error fetching document", e));
+            Log.d("HomeFragment", "No current user found.");
         }
     }
 

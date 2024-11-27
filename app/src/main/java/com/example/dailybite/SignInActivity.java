@@ -104,9 +104,11 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle() {
+        // Always prompt the user to select a Google account
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

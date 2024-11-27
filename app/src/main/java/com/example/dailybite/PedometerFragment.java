@@ -3,7 +3,6 @@ package com.example.dailybite;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -24,33 +23,36 @@ import androidx.fragment.app.Fragment;
 
 public class PedometerFragment extends Fragment implements SensorEventListener {
 
-    private TextView stepsTextView, timeTextView, mileTextView, kcalTextView, stepCountTargetTextView;
+    private static final String SHARED_PREFS = "PedometerPrefs";
+    private static final String KEY_STEP_COUNT = "StepCount";
+    private static final String KEY_START_TIME = "StartTime";
+    private static final String KEY_IS_WALKING = "IsWalking";
+    private static final String KEY_TIME_PAUSED = "TimePaused";
+    private static final String KEY_STEP_GOAL = "StepGoal";
+
+
+    private TextView stepsTextView, timeTextView, mileTextView, kcalTextView, durationTextView, stepCountTargetTextView;
     private Button startStopButton;
     private CircularProgressBar progressBar;
 
     private SensorManager sensorManager;
     private Sensor stepCounterSensor, accelerometer;
-
     private int stepCount = 0;
-    private int sessionSteps = 0; // Track steps only for this session
     private boolean isWalking = false;
-    private boolean isShakeStepDetected = false;
 
     private long startTime = 0L;
     private long timePaused = 0L;
+    private boolean isPaused = false;
     private Handler handler = new Handler();
     private Runnable runnable;
 
     private final float stepLengthInMeters = 0.762f; // Approximate step length
-    private int stepCountTarget = 5000; // Default step goal
-
-    private static final String SHARED_PREFS = "PedometerPrefs";
-    private static final String KEY_STEP_GOAL = "StepGoal";
+    private int stepCountTarget = 5000; // Default target step count
 
     // Accelerometer variables for motion detection
+    private float accelerationThreshold = 12.0f; // Sensitivity for motion detection
     private float lastX, lastY, lastZ;
     private boolean isFirstShake = true;
-    private float accelerationThreshold = 12.0f; // Sensitivity for motion detection
 
     @Nullable
     @Override
@@ -62,21 +64,38 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         timeTextView = view.findViewById(R.id.time_text_view);
         mileTextView = view.findViewById(R.id.mile_text_view);
         kcalTextView = view.findViewById(R.id.kcal_text_view);
+        durationTextView = view.findViewById(R.id.duration_text_view);
         stepCountTargetTextView = view.findViewById(R.id.step_target);
         startStopButton = view.findViewById(R.id.start_stop_button);
         progressBar = view.findViewById(R.id.progressBar);
 
-        // Load saved step goal
+        // Load saved step goal and stopwatch state
         SharedPreferences prefs = requireContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         stepCountTarget = prefs.getInt(KEY_STEP_GOAL, stepCountTarget);
-        updateStepGoalUI();
+        stepCount = prefs.getInt(KEY_STEP_COUNT, 0);
+        startTime = prefs.getLong(KEY_START_TIME, 0L);
+        isWalking = prefs.getBoolean(KEY_IS_WALKING, false);
+        timePaused = prefs.getLong(KEY_TIME_PAUSED, 0L);
 
-        // Initialize SensorManager
+        updateStepGoalUI();
+        updateStepCount();
+
+        // Initialize SensorManager and sensors
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        // Start/Stop button logic
+        // Register sensor listeners
+        if (stepCounterSensor != null) {
+            sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_UI);
+        }
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        } else {
+            stepsTextView.setText("No accelerometer available for motion detection");
+        }
+
+        // Start/Stop button listener
         startStopButton.setOnClickListener(v -> {
             if (isWalking) {
                 stopWalking();
@@ -88,80 +107,83 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         // Step goal click listener
         stepCountTargetTextView.setOnClickListener(v -> showStepGoalDialog());
 
+        // Start the stopwatch if it was running previously
+        if (isWalking) {
+            startWalking();
+        }
+
         return view;
     }
 
     private void startWalking() {
         isWalking = true;
         startStopButton.setText("Stop");
-        startTime = System.currentTimeMillis() - timePaused;
+        startTime = System.currentTimeMillis() - timePaused; // Continue from paused time if paused
+        isPaused = false;
 
         runnable = new Runnable() {
             @Override
             public void run() {
                 if (isWalking) {
-                    updateUI();
-                    sendStepDataToService();
+                    updateStopwatch();
+                    updateStats();
                     handler.postDelayed(this, 1000); // Update every second
                 }
             }
         };
         handler.post(runnable);
-
-        // Register accelerometer for shake detection
-        if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        }
-
-        // Start the pedometer service
-        Intent serviceIntent = new Intent(requireContext(), PedometerService.class);
-        requireContext().startForegroundService(serviceIntent);
     }
 
     private void stopWalking() {
         isWalking = false;
         startStopButton.setText("Start");
-        timePaused = System.currentTimeMillis() - startTime;
+        timePaused = System.currentTimeMillis() - startTime; // Capture paused time
+        isPaused = true;
         handler.removeCallbacks(runnable);
-
-        // Unregister accelerometer
-        sensorManager.unregisterListener(this, accelerometer);
-
-        // Stop the pedometer service
-        Intent serviceIntent = new Intent(requireContext(), PedometerService.class);
-        requireContext().stopService(serviceIntent);
+        saveState(); // Save state when stopped
     }
 
-    private void sendStepDataToService() {
-        Intent intent = new Intent("com.example.dailybite.UPDATE_PEDOMETER");
-        intent.putExtra("steps", sessionSteps);
-        intent.putExtra("distance", calculateDistance(sessionSteps));
-        intent.putExtra("calories", calculateCalories(sessionSteps));
-        intent.putExtra("elapsedTime", System.currentTimeMillis() - startTime);
-        requireActivity().sendBroadcast(intent);
-    }
-
-    private void updateUI() {
-        double distance = calculateDistance(sessionSteps);
-        double kcal = calculateCalories(sessionSteps);
-
-        stepsTextView.setText(String.valueOf(sessionSteps));
-        mileTextView.setText(String.format("%.2f Mile", distance));
-        kcalTextView.setText(String.format("%.1f Kcal", kcal));
-
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        int seconds = (int) (elapsedTime / 1000) % 60;
-        int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
-        int hours = (int) ((elapsedTime / (1000 * 60 * 60)) % 24);
-
-        timeTextView.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-
+    private void updateStepCount() {
+        stepsTextView.setText("Steps: " + stepCount);
         updateProgressBar();
     }
 
     private void updateProgressBar() {
-        int progressPercentage = (int) ((sessionSteps / (float) stepCountTarget) * 100);
-        progressBar.setProgress(Math.min(progressPercentage, 100));
+        // Calculate progress as a percentage of the step count target
+        int progressPercentage = (int) ((stepCount / (float) stepCountTarget) * 100);
+
+        // Cap the progress at 100% to avoid overflow if stepCount exceeds stepCountTarget
+        if (progressPercentage > 100) {
+            progressPercentage = 100;
+        }
+
+        // Update the circular progress bar with the calculated percentage
+        progressBar.setProgress(progressPercentage);
+    }
+
+    private void updateStopwatch() {
+        long elapsedTime = isPaused ? timePaused : (System.currentTimeMillis() - startTime);
+
+        int seconds = (int) (elapsedTime / 1000) % 60;
+        int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
+        int hours = (int) ((elapsedTime / (1000 * 60 * 60)) % 24);
+
+        String timeFormatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        timeTextView.setText(timeFormatted);
+    }
+
+    private void updateStats() {
+        double miles = stepCount * stepLengthInMeters / 1609.34;
+        double kcal = stepCount * 0.04;
+
+        mileTextView.setText(String.format("%.2f Mile", miles));
+        kcalTextView.setText(String.format("%.1f Kcal", kcal));
+
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
+        int hours = (int) ((elapsedTime / (1000 * 60 * 60)) % 24);
+
+        durationTextView.setText(String.format("%dh %dm", hours, minutes));
     }
 
     private void updateStepGoalUI() {
@@ -169,12 +191,14 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         progressBar.setMaxProgress(stepCountTarget);
     }
 
-    private double calculateDistance(int steps) {
-        return steps * stepLengthInMeters / 1000; // Distance in km
-    }
-
-    private double calculateCalories(int steps) {
-        return steps * 0.04; // Calories burned
+    private void saveState() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_STEP_COUNT, stepCount);
+        editor.putLong(KEY_START_TIME, startTime);
+        editor.putBoolean(KEY_IS_WALKING, isWalking);
+        editor.putLong(KEY_TIME_PAUSED, timePaused);
+        editor.apply();
     }
 
     private void showStepGoalDialog() {
@@ -211,13 +235,22 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER && isWalking) {
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            int totalSteps = (int) event.values[0];
+
+            // Calculate steps for this session only
             if (stepCount == 0) {
-                stepCount = (int) event.values[0]; // Initialize step count
+                stepCount = totalSteps; // Initialize step count on first reading
+            } else {
+                stepCount += (totalSteps - stepCount); // Accumulate step count based on counter sensor
             }
-            sessionSteps = (int) event.values[0] - stepCount; // Calculate steps for this session
-        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && isWalking) {
-            detectShake(event.values[0], event.values[1], event.values[2]);
+            updateStepCount();
+        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // Shake detection based on accelerometer
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+            detectShake(x, y, z);
         }
     }
 
@@ -234,12 +267,9 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
         float deltaY = Math.abs(y - lastY);
         float deltaZ = Math.abs(z - lastZ);
 
-        if ((deltaX > accelerationThreshold || deltaY > accelerationThreshold || deltaZ > accelerationThreshold) && !isShakeStepDetected) {
-            isShakeStepDetected = true;
-            sessionSteps++;
-            updateUI();
-        } else if (deltaX < accelerationThreshold && deltaY < accelerationThreshold && deltaZ < accelerationThreshold) {
-            isShakeStepDetected = false;
+        if (deltaX > accelerationThreshold || deltaY > accelerationThreshold || deltaZ > accelerationThreshold) {
+            stepCount++; // Increment step count for each shake detected
+            updateStepCount();
         }
 
         lastX = x;
@@ -249,20 +279,35 @@ public class PedometerFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Handle accuracy changes if necessary
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+        if (isWalking) {
+            stopWalking();  // Ensure pedometer stops if the user navigates away
+        }
+        saveState();  // Save the latest data (step count, start time, etc.)
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_UI);
-        if (isWalking && accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+    public void onStop() {
+        super.onStop();
+        if (isWalking) {
+            stopWalking();  // Make sure pedometer stops when fragment is not visible
         }
+        saveState();  // Save the latest data to SharedPreferences
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+        handler.removeCallbacks(runnable);
+        saveState(); // Save the state when the fragment is destroyed
     }
 }

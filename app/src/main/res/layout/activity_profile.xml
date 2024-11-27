@@ -76,43 +76,24 @@
             android:layout_height="340dp">
 
 
-            <ImageView
-                android:id="@+id/user_image"
-                android:layout_width="83dp"
-                android:layout_height="75dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:contentDescription="profile image"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.022"
-                app:srcCompat="@drawable/user_image"
-                tools:ignore="HardcodedText" />
-
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="259dp"
-                android:layout_height="29dp"
+                android:layout_width="277dp"
+                android:layout_height="36dp"
                 android:text="user"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.504"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.296" />
+                app:layout_constraintVertical_bias="0.141" />
 
             <TextView
                 android:id="@+id/textView4"
-                android:layout_width="218dp"
-                android:layout_height="31dp"
+                android:layout_width="276dp"
+                android:layout_height="51dp"
                 android:text="user@email.com"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -123,7 +104,7 @@
                 app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.394"
+                app:layout_constraintVertical_bias="0.271"
                 tools:ignore="HardcodedText,TextContrastCheck" />
 
             <RelativeLayout

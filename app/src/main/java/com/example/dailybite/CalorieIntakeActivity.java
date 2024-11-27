@@ -28,7 +28,7 @@ public class CalorieIntakeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    private Map<String, Object> updatedIntakeData; // Store updated intake values for Firebase
+    private Map<String, Object> updatedIntakeData;
 
     private static final String TAG = "CalorieIntakeActivity";
 
@@ -38,11 +38,9 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calorie_intake);
 
-        // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize views
         caloriesText = findViewById(R.id.caloriesText);
         proteinsText = findViewById(R.id.proteinsText);
         fatsText = findViewById(R.id.fatsText);
@@ -50,25 +48,21 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
         backButton = findViewById(R.id.back_button_calorie_intake);
 
-        updatedIntakeData = new HashMap<>(); // Initialize the map
+        updatedIntakeData = new HashMap<>();
 
-        // Fetch intake data from Firestore and display it
         fetchIntakeData();
 
-        // Set click listeners for editable fields
         caloriesText.setOnClickListener(v -> showEditDialog("Edit Calories", caloriesText, "cal"));
         proteinsText.setOnClickListener(v -> showEditDialog("Edit Proteins", proteinsText, "g"));
         fatsText.setOnClickListener(v -> showEditDialog("Edit Fats", fatsText, "g"));
         carbsText.setOnClickListener(v -> showEditDialog("Edit Carbs", carbsText, "g"));
 
-        // Handle back button click
+
         backButton.setOnClickListener(v -> finish());
 
-        // Handle save button click to update Firestore
         saveButton.setOnClickListener(v -> saveChangesToFirestore());
     }
 
-    // Fetch intake data from Firestore and display it
     private void fetchIntakeData() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("users").document(userId).get()
@@ -76,13 +70,12 @@ public class CalorieIntakeActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         Map<String, Object> intake = (Map<String, Object>) documentSnapshot.get("intake");
                         if (intake != null) {
-                            // Display data
+
                             caloriesText.setText(intake.get("calories") + " cal");
                             proteinsText.setText(intake.get("proteins") + " g");
                             fatsText.setText(intake.get("fats") + " g");
                             carbsText.setText(intake.get("carbs") + " g");
 
-                            // Populate the map with the intake data
                             updatedIntakeData.put("calories", intake.get("calories"));
                             updatedIntakeData.put("proteins", intake.get("proteins"));
                             updatedIntakeData.put("fats", intake.get("fats"));
@@ -97,7 +90,6 @@ public class CalorieIntakeActivity extends AppCompatActivity {
                 });
     }
 
-    // Show dialog for input fields (calories, proteins, fats, etc.) and update locally
     private void showEditDialog(String title, TextView textViewToUpdate, String unit) {
         AlertDialog.Builder builder = new AlertDialog.Builder(CalorieIntakeActivity.this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -115,11 +107,10 @@ public class CalorieIntakeActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Update the text view with the new value and unit
+
                     String formattedValue = newValue + " " + unit;
                     textViewToUpdate.setText(formattedValue);
 
-                    // Update the map with the new value (as a number, not a string with units)
                     updatedIntakeData.put(title.toLowerCase().replace("edit ", ""), Integer.parseInt(newValue));
 
                     Toast.makeText(CalorieIntakeActivity.this, title + " updated to: " + formattedValue, Toast.LENGTH_SHORT).show();
@@ -130,11 +121,10 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Save all changes to Firestore
+
     private void saveChangesToFirestore() {
         String userId = mAuth.getCurrentUser().getUid();
 
-        // Update the "intake" field in Firestore with the updated intake data
         db.collection("users").document(userId)
                 .update("intake", updatedIntakeData)
                 .addOnSuccessListener(aVoid -> {

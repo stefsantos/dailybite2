@@ -123,14 +123,48 @@
             android:text="g Carbs"
             android:textAlignment="center" />
     </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/sortOrderGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioCalories"
+            android:layout_width="103dp"
+            android:layout_height="wrap_content"
+            android:text="Calories" />
+
+        <RadioButton
+            android:id="@+id/radioProtein"
+            android:layout_width="103dp"
+            android:layout_height="wrap_content"
+            android:text="Proteins" />
+
+        <RadioButton
+            android:id="@+id/radioFats"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Fats" />
+
+        <RadioButton
+            android:id="@+id/radioCarbs"
+            android:layout_width="91dp"
+            android:layout_height="wrap_content"
+            android:text="Carbs" />
+    </RadioGroup>
+
+
     <!-- Food Items List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foodRecyclerView"
-        android:layout_width="match_parent"
+        android:layout_width="396dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scrollbars="vertical" />
 
+    <!-- Save Button -->
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
