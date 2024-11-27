@@ -23,7 +23,7 @@ public class WeightActivity extends AppCompatActivity {
     private TextView unitToggleButton;
     private ImageButton nextButton;
     private TextView backText;
-    private boolean isKg = true;  // Default unit is kg
+    private boolean isKg = true;  // default kg
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +37,9 @@ public class WeightActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
 
-        // Load saved preferences
         loadPreferences();
 
-        // Toggle between kg and lbs when unit button is clicked
+        // kg/lbs toggle
         unitToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,7 +49,6 @@ public class WeightActivity extends AppCompatActivity {
             }
         });
 
-        // Set onClickListener for the next button
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +66,7 @@ public class WeightActivity extends AppCompatActivity {
             }
         });
 
-        // Set onClickListener for the back button
+        // back
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

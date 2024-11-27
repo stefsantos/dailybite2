@@ -13,12 +13,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "NutritionTracker.db";
     private static final int DATABASE_VERSION = 1;
 
-    // Table names
     private static final String TABLE_GENERAL = "General";
     private static final String TABLE_MEALS = "Meals";
     private static final String TABLE_FOODS = "Foods";
 
-    // General Table columns
     private static final String COLUMN_USERNAME = "Username";
     private static final String COLUMN_DATE = "Date";
     private static final String COLUMN_TOTAL_CALORIES = "Total_Calories";
@@ -27,12 +25,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_TOTAL_CARBS = "Total_Carbs";
     private static final String COLUMN_GLASSES_WATER = "Glasses_Water";
 
-    // Meals Table columns
     private static final String COLUMN_MEAL_ID = "Meal_ID";
     private static final String COLUMN_TIME = "Time";
     private static final String COLUMN_MEAL_NAME = "Meal_Name";
 
-    // Foods Table columns
     private static final String COLUMN_FOOD_ID = "Food_ID";
     private static final String COLUMN_FOOD_NAME = "Food_Name";
     private static final String COLUMN_CALORIES = "Calories";
@@ -46,7 +42,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create General Table
         db.execSQL("CREATE TABLE " + TABLE_GENERAL + " (" +
                 COLUMN_USERNAME + " TEXT NOT NULL, " +
                 COLUMN_DATE + " TEXT NOT NULL, " +
@@ -57,7 +52,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 COLUMN_GLASSES_WATER + " INTEGER DEFAULT 0, " +
                 "PRIMARY KEY (" + COLUMN_USERNAME + ", " + COLUMN_DATE + "))");
 
-        // Create Meals Table
         db.execSQL("CREATE TABLE " + TABLE_MEALS + " (" +
                 COLUMN_MEAL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_USERNAME + " TEXT NOT NULL, " +
@@ -71,7 +65,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY (" + COLUMN_USERNAME + ", " + COLUMN_DATE + ") REFERENCES " +
                 TABLE_GENERAL + " (" + COLUMN_USERNAME + ", " + COLUMN_DATE + ") ON DELETE CASCADE)");
 
-        // Create Foods Table
         db.execSQL("CREATE TABLE " + TABLE_FOODS + " (" +
                 COLUMN_FOOD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_MEAL_ID + " INTEGER NOT NULL, " +
@@ -92,8 +85,6 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-
-//Meals Table
     public long addMeal(Meal meal, String date, String username) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -186,12 +177,10 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
     }
 
-    // Method to edit a meal's name
     public void editMeal(int mealId, Meal newMeal) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        // Set new meal details
         values.put("name", newMeal.getName());
         values.put("date", newMeal.getTime());
         values.put("username", getUsernameForMeal(mealId));
@@ -200,7 +189,6 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("total_fats", newMeal.getFats());
         values.put("total_carbs", newMeal.getCarbs());
 
-        // Update the row
         int rowsUpdated = db.update("meals", values, "id = ?", new String[]{String.valueOf(mealId)});
         db.close();
     }
@@ -208,7 +196,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    // General Table
     public void updateGeneralForMeals(String date, String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
@@ -244,7 +231,6 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         int glassesWater = 0;
 
-        // Query to fetch the glasses_water value
         String query = "SELECT " + COLUMN_GLASSES_WATER +
                 " FROM " + TABLE_GENERAL +
                 " WHERE " + COLUMN_USERNAME + " = ? AND " + COLUMN_DATE + " = ?";
@@ -261,10 +247,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return glassesWater;
     }
 
-
-
-    //Food Table
-
     public long addFood(long mealId, String foodName, float calories, float proteins, float fats, float carbs) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -280,7 +262,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void deletefood(int foodId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Get meal ID before deletion
         Cursor cursor = db.rawQuery(
                 "SELECT meal_id FROM foods WHERE id = ?",
                 new String[]{String.valueOf(foodId)}
@@ -292,11 +273,9 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        // Delete food
         db = this.getWritableDatabase();
         db.delete("foods", "id = ?", new String[]{String.valueOf(foodId)});
 
-        // Update meal and general totals
         if (mealId != -1) {
             updatemeal(mealId);
             updateGeneralForMeals(getDateForMeal(mealId), getUsernameForMeal(mealId));
@@ -306,7 +285,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void dumpDatabaseContents() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Query the GENERAL table
         Cursor generalCursor = db.rawQuery("SELECT * FROM " + TABLE_GENERAL, null);
         if (generalCursor != null && generalCursor.moveToFirst()) {
             do {
@@ -326,7 +304,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         generalCursor.close();
 
-        // Query the MEALS table
         Cursor mealsCursor = db.rawQuery("SELECT * FROM " + TABLE_MEALS, null);
         if (mealsCursor != null && mealsCursor.moveToFirst()) {
             do {
@@ -348,7 +325,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         mealsCursor.close();
 
-        // Query the FOODS table
         Cursor foodsCursor = db.rawQuery("SELECT * FROM " + TABLE_FOODS, null);
         if (foodsCursor != null && foodsCursor.moveToFirst()) {
             do {

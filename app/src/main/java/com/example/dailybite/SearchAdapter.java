@@ -18,19 +18,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
     private final boolean showCalories;
     private OnItemClickListener listener;
 
-    // Constructor
     public SearchAdapter(Context context, List<NutritionixResponse.FoodItem> foodList, boolean showCalories) {
         this.context = context;
         this.foodList = foodList;
         this.showCalories = showCalories;
     }
 
-    // Interface for handling item clicks
     public interface OnItemClickListener {
         void onItemClick(NutritionixResponse.FoodItem foodItem);
     }
 
-    // Setter for the click listener
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
@@ -47,7 +44,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
         NutritionixResponse.FoodItem foodItem = foodList.get(position);
         holder.foodNameTextView.setText(foodItem.getFoodName());
 
-        // Show or hide calories based on the `showCalories` flag
         if (showCalories) {
             holder.foodCaloriesTextView.setVisibility(View.VISIBLE);
             holder.foodCaloriesTextView.setText(foodItem.getCalories() + " Calories");
@@ -55,7 +51,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
             holder.foodCaloriesTextView.setVisibility(View.GONE);
         }
 
-        // Set click listener for the item
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(foodItem);
@@ -68,13 +63,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.FoodViewHo
         return foodList.size();
     }
 
-    // Update the food list dynamically
     public void updateFoodList(List<NutritionixResponse.FoodItem> newFoodList) {
         this.foodList = newFoodList;
         notifyDataSetChanged();
     }
 
-    // ViewHolder class for holding item views
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         TextView foodNameTextView;
         TextView foodCaloriesTextView;

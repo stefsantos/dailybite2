@@ -31,7 +31,7 @@ public class MeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    private Map<String, Object> updatedData; // Store all values for Firebase
+    private Map<String, Object> updatedData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +39,9 @@ public class MeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_me);
 
-        // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize views
         goalText = findViewById(R.id.goalText);
         ageText = findViewById(R.id.ageText);
         heightText = findViewById(R.id.heightText);
@@ -55,24 +53,19 @@ public class MeActivity extends AppCompatActivity {
 
         updatedData = new HashMap<>();
 
-        // Load user data from Firestore
         loadUserData();
 
-        // Set click listeners for editable fields
         goalText.setOnClickListener(v -> showSelectionDialog("Edit Goal", goalText, "goal", new String[]{"Lose weight", "Keep weight", "Gain weight"}));
         ageText.setOnClickListener(v -> showEditDialog("Edit Age", ageText, "age"));
         heightText.setOnClickListener(v -> showEditDialog("Edit Height", heightText, "height"));
         weightText.setOnClickListener(v -> showEditDialog("Edit Weight", weightText, "weight"));
         lifestyleText.setOnClickListener(v -> showSelectionDialog("Edit Lifestyle", lifestyleText, "activity_level", new String[]{"Sedentary", "Low Active", "Active", "Very Active"}));
 
-        // Handle back button click
         backButton.setOnClickListener(v -> finish());
 
-        // Handle save button click to update Firestore
         saveButton.setOnClickListener(v -> saveChangesToFirestore());
     }
 
-    // Load user data from Firestore and store all values in updatedData
     private void loadUserData() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -83,7 +76,6 @@ public class MeActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             Map<String, Object> userInfo = (Map<String, Object>) documentSnapshot.get("user_info");
 
-                            // Set values to TextViews if userInfo is not null and store in updatedData
                             if (userInfo != null) {
                                 String goal = userInfo.get("goal") != null ? userInfo.get("goal").toString() : "Keep weight";
                                 goalText.setText(goal);
@@ -98,8 +90,8 @@ public class MeActivity extends AppCompatActivity {
                                 updatedData.put("height", height);
 
                                 String weight = userInfo.get("weight") != null ? userInfo.get("weight").toString() : "N/A";
-                                weightText.setText(weight + " kg"); // Display " kg" suffix
-                                updatedData.put("weight", weight); // Store without " kg"
+                                weightText.setText(weight + " kg");
+                                updatedData.put("weight", weight);
 
                                 String gender = userInfo.get("gender") != null ? userInfo.get("gender").toString() : "N/A";
                                 genderText.setText(gender);
@@ -117,7 +109,6 @@ public class MeActivity extends AppCompatActivity {
         }
     }
 
-    // Show dialog for input fields (age, height, weight) and update locally
     private void showEditDialog(String title, TextView textViewToUpdate, String fieldKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MeActivity.this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -130,8 +121,8 @@ public class MeActivity extends AppCompatActivity {
         builder.setTitle(title)
                 .setPositiveButton("Done", (dialog, id) -> {
                     String newValue = valueInput.getText().toString();
-                    textViewToUpdate.setText(fieldKey.equals("weight") ? newValue + " kg" : newValue); // Only add " kg" to display
-                    updatedData.put(fieldKey, newValue); // Save updated value without suffix
+                    textViewToUpdate.setText(fieldKey.equals("weight") ? newValue + " kg" : newValue);
+                    updatedData.put(fieldKey, newValue);
                     Toast.makeText(MeActivity.this, title + " updated to: " + newValue, Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
@@ -140,7 +131,6 @@ public class MeActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Show dialog for selection fields (goal, lifestyle) and update locally
     private void showSelectionDialog(String title, TextView textViewToUpdate, String fieldKey, String[] options) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MeActivity.this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -152,7 +142,6 @@ public class MeActivity extends AppCompatActivity {
         RadioButton option2 = dialogView.findViewById(R.id.radio_option_2);
         RadioButton option3 = dialogView.findViewById(R.id.radio_option_3);
 
-        // Set the radio button text dynamically
         option1.setText(options[0]);
         option2.setText(options[1]);
         option3.setText(options[2]);
@@ -168,7 +157,7 @@ public class MeActivity extends AppCompatActivity {
                 RadioButton selectedOption = dialogView.findViewById(selectedId);
                 String selectedText = selectedOption.getText().toString();
                 textViewToUpdate.setText(selectedText);
-                updatedData.put(fieldKey, selectedText); // Save updated value locally
+                updatedData.put(fieldKey, selectedText);
                 Toast.makeText(MeActivity.this, title + " updated to: " + selectedText, Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();
             }
@@ -177,13 +166,11 @@ public class MeActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Save all changes to Firestore
     private void saveChangesToFirestore() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             String userId = user.getUid();
 
-            // Update the user_info nested document in Firestore with all fields
             db.collection("users").document(userId)
                     .update("user_info", updatedData)
                     .addOnSuccessListener(aVoid -> {

@@ -10,7 +10,7 @@ public class Meal {
     private float fats;
     private float carbs;
 
-    // Constructor to initialize proteins, fats, and carbs
+
     public Meal(String name, String time, float calories, float proteins, float fats, float carbs) {
         this.name = name;
         this.time = time;
@@ -21,7 +21,7 @@ public class Meal {
     }
 
     public Meal() {
-        // This  is required for Firestore deserialization
+
     }
 
     public void setTime(String currentSelectedDate){currentSelectedDate = time;}
@@ -49,7 +49,6 @@ public class Meal {
         return carbs;
     }
 
-    // Update meal method, if you want to update protein, fat, and carb values as well
     public void updateMeal(String name, String time,  float calories, float proteins, float fats, float carbs) {
         this.name = name;
         this.time = time;

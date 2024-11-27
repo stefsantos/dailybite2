@@ -33,7 +33,6 @@ public class GenderActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.proceed_button);
         backText = findViewById(R.id.textView);
 
-        // Load the saved gender selection
         loadSelectedGender();
 
         maleText.setOnClickListener(new View.OnClickListener() {

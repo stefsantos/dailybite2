@@ -50,29 +50,24 @@ public class FoodSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_search);
 
-        // Initialize views
         searchEditText = findViewById(R.id.searchEditText);
         backButton = findViewById(R.id.back_button);
         emptyTextView = findViewById(R.id.emptyTextView);
         foodRecyclerView = findViewById(R.id.foodRecyclerView);
 
-        // Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://trackapi.nutritionix.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(NutritionixApiService.class);
 
-        // Setup RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         foodItems = new ArrayList<>();
         foodAdapter = new SearchAdapter(this, foodItems, false);
         foodRecyclerView.setAdapter(foodAdapter);
 
-        // Back button functionality
         backButton.setOnClickListener(v -> finish());
 
-        // Add a text change listener to the search bar with a debounce mechanism
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -104,7 +99,6 @@ public class FoodSearchActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        // Handle the result from FoodDetailActivity
                         Intent data = result.getData();
                         String foodName = data.getStringExtra("foodName");
                         float calories = data.getFloatExtra("calories", -1);
@@ -112,7 +106,6 @@ public class FoodSearchActivity extends AppCompatActivity {
                         float carbs = data.getFloatExtra("carbs", -1);
                         float fats = data.getFloatExtra("fats", -1);
 
-                        // Pass data back to MealInputActivity
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("foodName", foodName);
                         resultIntent.putExtra("calories", calories);
@@ -121,24 +114,20 @@ public class FoodSearchActivity extends AppCompatActivity {
                         resultIntent.putExtra("fats", fats);
                         setResult(RESULT_OK, resultIntent);
 
-                        // Finish FoodSearchActivity
                         finish();
                     }
                 }
         );
 
 
-        // Handle item click for food details
         foodAdapter.setOnItemClickListener(foodItem -> {
             NutritionixRequest request = new NutritionixRequest(foodItem.getFoodName());
             apiService.getNutrients(request).enqueue(new Callback<NutritionixResponse>() {
                 @Override
                 public void onResponse(Call<NutritionixResponse> call, Response<NutritionixResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        // Retrieve the first food item details
                         NutritionixResponse.FoodItem detailedFood = response.body().getFoods().get(0);
 
-                        // Pass data to FoodDetailActivity
                         Intent intent = new Intent(FoodSearchActivity.this, FoodDetailActivity.class);
                         intent.putExtra("foodName", detailedFood.getFoodName());
                         intent.putExtra("calories", detailedFood.getCalories());

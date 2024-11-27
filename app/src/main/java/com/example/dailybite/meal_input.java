@@ -42,7 +42,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
     private ActivityResultLauncher<Intent> foodSearchLauncher;
     private List<foodItem> foodItems;
     private String date;
-    private FirebaseFirestore db; // Firestore instance
+    private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private String userId;
 
@@ -54,10 +54,8 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_input);
 
-        // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-        // Initialize views
         caloriesText = findViewById(R.id.caloriesText);
         proteinsText = findViewById(R.id.proteinsText);
         fatsText = findViewById(R.id.fatsText);
@@ -69,7 +67,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         meal_title = findViewById(R.id.meal_title);
         sortOrderGroup = findViewById(R.id.sortOrderGroup);
 
-        // Get meal name from the intent
         mealName = getIntent().getStringExtra("MEAL_NAME");
         date = getIntent().getStringExtra("CURRENT_DATE");
         if (mealName == null || mealName.trim().isEmpty()) {
@@ -83,16 +80,14 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
             foodItems = new ArrayList<>();
         }
 
-        // Set up RecyclerView
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        foodAdapter = new foodAdapter(this, foodItems, true, this); // Show calories for saved meals
+        foodAdapter = new foodAdapter(this, foodItems, true, this);
         foodRecyclerView.setAdapter(foodAdapter);
 
         foodSearchLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        // Handle the result from FoodSearchActivity
                         Intent data = result.getData();
                         String foodName = data.getStringExtra("foodName");
                         float foodCal = data.getFloatExtra("calories", -1);
@@ -106,22 +101,17 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
                 }
         );
 
-        // Add button click opens FoodSearchActivity
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, FoodSearchActivity.class);
             foodSearchLauncher.launch(intent);
         });
 
-        // Close button to finish activity
         closeButton.setOnClickListener(v -> finish());
 
-        // Save button logic
         saveButton.setOnClickListener(v -> saveMeal());
 
-        // Set up the sorting options for RadioGroup
         setUpSortingOptions();
 
-        // Calculate total nutrients
         calculateTotalNutrients();
     }
 
@@ -175,11 +165,10 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         float fat = Float.parseFloat(fats);
         float carb = Float.parseFloat(carbs);
 
-        //modify name if needed
         saveMealList(date);
 
         String newMealName = meal_title.getText().toString();
-        // Create an Intent to hold the meal data
+
         Intent resultIntent = new Intent();
         resultIntent.putExtra("MEAL_NAME", newMealName);
         resultIntent.putExtra("MEAL_CALORIES", calories);
@@ -187,7 +176,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         resultIntent.putExtra("MEAL_FATS", fats);
         resultIntent.putExtra("MEAL_CARBS", carbs);
 
-        // Set the result and finish the activity
         setResult(RESULT_OK, resultIntent);
         Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
@@ -196,7 +184,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         Meal meal = new Meal(newMealName, date, cal, pro, fat, carb);
 
 
-        // Save the meal to Firestore
         db.collection("users")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .collection("meals")
@@ -246,7 +233,6 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         }
     }
 
-    // Calculate total nutrients
     private void calculateTotalNutrients() {
         int totalCalories = 0;
         float totalProteins = 0;

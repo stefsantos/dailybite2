@@ -28,52 +28,44 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Check if user is logged in
+        // check if user is logged in
         if (sharedPreferences.getBoolean("isLoggedIn", false) && currentUser != null) {
-            // User is logged in, redirect to HomeActivity
+            // if user is logged in go directly to main activity
             Intent intent = new Intent(MainActivity.this, Homepage.class);
             startActivity(intent);
-            finish(); // Close MainActivity so it doesn't stay in the back stack
+            finish();
             return;
         }
 
         setContentView(R.layout.activity_main);
 
-        // Adjust padding based on system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // Find the Start button and set OnClickListener
         Button startButton = findViewById(R.id.start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Set login state in SharedPreferences
                 sharedPreferences.edit().putBoolean("isLoggedIn", true).apply();
 
-                // Navigate to WeightgoalActivity
                 Intent intent = new Intent(MainActivity.this, WeightgoalActivity.class);
                 startActivity(intent);
             }
         });
 
-        // Find the Sign-in text and set OnClickListener
         TextView signInText = findViewById(R.id.sign_in_text);
         signInText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Set login state in SharedPreferences
                 sharedPreferences.edit().putBoolean("isLoggedIn", true).apply();
 
-                // Navigate to SignInActivity
                 Intent intent = new Intent(MainActivity.this, SignInActivity.class);
                 startActivity(intent);
             }

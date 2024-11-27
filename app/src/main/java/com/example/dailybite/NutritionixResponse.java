@@ -12,9 +12,8 @@ public class NutritionixResponse {
     private List<BrandedFoodItem> branded;
 
     @SerializedName("foods")
-    private List<FoodItem> foods; // Used for /v2/natural/nutrients
+    private List<FoodItem> foods;
 
-    // Getters for the "common" and "branded" fields (used in /v2/search/instant)
     public List<FoodItem> getCommonFoods() {
         return common != null ? common : List.of();
     }
@@ -23,12 +22,10 @@ public class NutritionixResponse {
         return branded != null ? branded : List.of();
     }
 
-    // Getter for the "foods" field (used in /v2/natural/nutrients)
     public List<FoodItem> getFoods() {
         return foods != null ? foods : List.of();
     }
 
-    // FoodItem class to handle common foods and natural nutrient responses
     public static class FoodItem {
         @SerializedName("food_name")
         private String foodName;
@@ -54,7 +51,7 @@ public class NutritionixResponse {
         @SerializedName("photo")
         private Photo photo;
 
-        // Getters for food details
+        // getters for food details
         public String getFoodName() {
             return foodName;
         }
@@ -97,7 +94,6 @@ public class NutritionixResponse {
         }
     }
 
-    // BrandedFoodItem class to handle branded foods
     public static class BrandedFoodItem {
         @SerializedName("food_name")
         private String foodName;

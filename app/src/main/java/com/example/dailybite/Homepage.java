@@ -16,7 +16,6 @@ public class Homepage extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Set the Home item as the default selected item
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -26,18 +25,12 @@ public class Homepage extends AppCompatActivity {
             } else if (item.getItemId() == R.id.navigation_home) {
                 selectedFragment = new HomeFragment();
             }
-            /*else if (item.getItemId() == R.id.navigation_reports) {
-                selectedFragment = new ReportsFragment();
-            }
-             */
 
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
             return true;
         });
 
-        // Check if the activity is being restored from a saved state
         if (savedInstanceState == null) {
-            // If not, set the home fragment as the default fragment on first load
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }
     }

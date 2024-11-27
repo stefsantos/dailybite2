@@ -33,7 +33,6 @@ public class SignInActivity extends AppCompatActivity {
     private Button loginButton;
     private RelativeLayout googleSignInButton;
 
-    // Firebase Authentication instance
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -43,10 +42,8 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Configure Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -54,20 +51,16 @@ public class SignInActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Initialize views
         backButton = findViewById(R.id.back_button);
         emailInput = findViewById(R.id.email_input);
         passwordInput = findViewById(R.id.password_input);
         loginButton = findViewById(R.id.login_button);
         googleSignInButton = findViewById(R.id.google_sign_in_button);
 
-        // Set OnClickListener for the back button
         backButton.setOnClickListener(v -> onBackPressed());
 
-        // Set OnClickListener for Google Sign-In button
         googleSignInButton.setOnClickListener(v -> signInWithGoogle());
 
-        // Set OnClickListener for Login Button (Sign In with Email and Password)
         loginButton.setOnClickListener(v -> signInWithEmail());
     }
 

@@ -28,7 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private SharedPreferences sharedPreferences;
-    private GoogleSignInClient mGoogleSignInClient; // Add this for Google Sign-In
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Initialize Firebase Auth, Firestore, SharedPreferences, and Google Sign-In
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
@@ -46,15 +45,13 @@ public class ProfileActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Initialize the views from the layout
         backButton = findViewById(R.id.backbutton2);
-        profileTitle = findViewById(R.id.textView3); // Username TextView
-        profileEmail = findViewById(R.id.textView4); // Email TextView
+        profileTitle = findViewById(R.id.textView3);
+        profileEmail = findViewById(R.id.textView4);
         goalValue = findViewById(R.id.textView5);
         calorieIntake = findViewById(R.id.CalorieCount2);
         toProfileButton = findViewById(R.id.toProfile);
 
-        // Load the user's username, email, and calorie intake
         loadUserProfile();
 
         backButton.setOnClickListener(v -> finish());
@@ -70,15 +67,15 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.Logout).setOnClickListener(v -> {
-            // Sign out the user from Firebase
+            // sign out user from firebase
             mAuth.signOut();
 
-            // Sign out the user from Google as well
+            // sign out user from google as well
             mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
                 // Update SharedPreferences to reflect the logout state
                 sharedPreferences.edit().putBoolean("isLoggedIn", false).apply();
 
-                // Navigate to the login screen (MainActivity)
+                // navigate back to the login screen (MainActivity)
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear the back stack
                 startActivity(intent);
@@ -87,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Load user's profile information and calorie intake from Firestore
+    // Load user's profile information and calorie intake from firestore
     private void loadUserProfile() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
@@ -95,7 +92,6 @@ public class ProfileActivity extends AppCompatActivity {
                 String username = documentSnapshot.getString("username");
                 String email = documentSnapshot.getString("email");
 
-                // Retrieve calorie intake from Firestore
                 Double calories = documentSnapshot.getDouble("intake.calories");
 
                 if (username != null) {
@@ -105,7 +101,6 @@ public class ProfileActivity extends AppCompatActivity {
                     profileEmail.setText(email);
                 }
                 if (calories != null) {
-                    // Display the calories in the TextView with "cal" suffix
                     calorieIntake.setText(String.format(Locale.getDefault(), "%.0f cal", calories));
                 }
             } else {

@@ -33,7 +33,6 @@ public class PedometerService extends Service {
 
         createNotificationChannel();
 
-        // Register broadcast receiver
         pedometerDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

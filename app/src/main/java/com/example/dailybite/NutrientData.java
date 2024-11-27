@@ -6,11 +6,9 @@ public class NutrientData {
     private float carbs;
     private float calories;
 
-    // Public no-argument constructor required by Firebase
     public NutrientData() {
     }
 
-    // Constructor with parameters (for convenience)
     public NutrientData(float proteins, float fats, float carbs, float calories) {
         this.proteins = proteins;
         this.fats = fats;
@@ -18,7 +16,6 @@ public class NutrientData {
         this.calories = calories;
     }
 
-    // Public getters and setters (required for Firebase serialization)
     public float getProteins() {
         return proteins;
     }

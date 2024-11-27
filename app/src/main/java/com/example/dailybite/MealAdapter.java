@@ -16,20 +16,18 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     private OnMealClickListener listener;
     private OnMealLongClickListener longClickListener;
 
-    // Updated constructor to accept both click and long-click listeners
     public MealAdapter(List<Meal> mealList, OnMealClickListener listener, OnMealLongClickListener longClickListener) {
         this.mealList = mealList;
         this.listener = listener;
         this.longClickListener = longClickListener;
     }
 
-    // Define the interfaces at the top level of the MealAdapter class
     public interface OnMealClickListener {
-        void onMealClick(Meal meal);  // Callback for item clicks
+        void onMealClick(Meal meal);
     }
 
     public interface OnMealLongClickListener {
-        void onMealLongClick(int position);  // Callback for item long-clicks
+        void onMealLongClick(int position);
     }
 
     @NonNull
@@ -64,7 +62,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
             mealCalories = itemView.findViewById(R.id.meal_calories);
             mealClock = itemView.findViewById(R.id.clock_meal);
 
-            // Set up the click listener for the entire layout
             mealLayout.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
@@ -72,7 +69,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
                 }
             });
 
-            // Set up the long click listener for the entire layout
             mealLayout.setOnLongClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
@@ -90,6 +86,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     }
     public void setMealList(List<Meal> newMealList) {
         this.mealList = newMealList;
-        notifyDataSetChanged();  // Notify adapter about data change
+        notifyDataSetChanged();  // notify adapter about data change
     }
 }

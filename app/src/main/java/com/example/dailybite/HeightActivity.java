@@ -40,10 +40,8 @@ public class HeightActivity extends AppCompatActivity {
         backText = findViewById(R.id.textView);
         unitSwitch = findViewById(R.id.unit_switch);
 
-        // Load saved preferences
         loadPreferences();
 
-        // Set listener for the unit switch
         unitSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             isMetric = !isChecked;
             unitSwitch.setText(isMetric ? "Switch to Imperial" : "Switch to Metric");
@@ -55,7 +53,6 @@ public class HeightActivity extends AppCompatActivity {
             savePreferences();
         });
 
-        // Set up listeners to store the selected values
         meterPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             meters = newVal;
             savePreferences();
@@ -92,7 +89,6 @@ public class HeightActivity extends AppCompatActivity {
         meterLabel.setText("m");
         cmLabel.setText("cm");
 
-        // Set the values from the saved state if switching back to metric
         meterPicker.setValue(meters);
         cmPicker.setValue(centimeters);
     }
@@ -108,7 +104,6 @@ public class HeightActivity extends AppCompatActivity {
         meterLabel.setText("ft");
         cmLabel.setText("in");
 
-        // Set the values from the saved state if switching back to imperial
         meterPicker.setValue(meters);
         cmPicker.setValue(centimeters);
     }

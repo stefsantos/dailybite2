@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Initialize Firebase Auth and Firestore
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -106,28 +106,23 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         }
 
         userId = currentUser.getUid();
-        // Initialize SharedPreferences and Gson
         sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         gson = new Gson();
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // Load meals from SharedPreferences
 
-        // Initialize username TextView
         username = view.findViewById(R.id.username);
         loadUsername();
         username.setOnClickListener(v -> navigateToUserProfile());
 
-        // Initialize other UI elements and listeners, e.g., water tracking, calendar
         ImageView calendarIcon = view.findViewById(R.id.calendar_icon);
         calendarIcon.setOnClickListener(v -> openCalendar());
 
         ImageView plusIconMeal = view.findViewById(R.id.plus_icon_meal);
         plusIconMeal.setOnClickListener(v -> navigateToMealInputWithoutDate());
 
-        // Initialize water tracking UI and functionality
         waterBackg = view.findViewById(R.id.water_backg);
         waterPercent = view.findViewById(R.id.water_drank);
         glassesOfWater = 0;
@@ -180,16 +175,12 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                             addMeal(newMeal);
                             mealAdapter.notifyItemInserted(mealList.size() - 1);
                         }
-                        // Recalculate nutrient totals and update views
                         initializeMeals();
                         updateNutrientViews();
                     }
                 }
         );
 
-
-
-        // Fetch intake targets from Firestore and update views
         fetchIntakeTargets();
         if (!mealsInitialized) {
             initializeMeals();
@@ -281,11 +272,9 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getActivity(),
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Get the selected date
                     Calendar selectedCalendar = Calendar.getInstance();
                     selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
 
-                    // Compare selected date with the current date
                     if (isSameDay(selectedCalendar, calendar)) {
                         saveSelectedDate(getCurrentDate());
                         loadDataForDate(getCurrentDate());
@@ -302,7 +291,6 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
                 year, month, day
         );
 
-        // Restrict the calendar to only allow selecting dates up to today
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
 
         datePickerDialog.show();
@@ -324,7 +312,6 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
 
     private void loadDataForDate(String date) {
-        // Load nutrients and water data
         String nutrientsJson = sharedPreferences.getString(NUTRIENTS_KEY + "_" + date + "_" + userId, null);
         if (nutrientsJson != null) {
             NutrientData nutrientData = gson.fromJson(nutrientsJson, NutrientData.class);
@@ -339,42 +326,35 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             currentCalories = 0;
         }
 
-        // Load water intake data
         int waterConsumed = sharedPreferences.getInt(WATER_KEY + "_" + date + "_" + userId,  0);
         glassesOfWater = waterConsumed;
 
-        // Update the UI
         updateNutrientViews();
         updateWaterDisplay();
         loadMealsForDate(date);
     }
 
     private void saveDataForDate(String date) {
-        // Save to SharedPreferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // Save meals list
         String mealsJson = gson.toJson(mealList);
         editor.putString(MEALS_KEY + "_" + date + "_" + userId, mealsJson);
 
-        // Save nutrients data
         NutrientData nutrientData = new NutrientData(currentProteins, currentFats, currentCarbs, currentCalories);
         String nutrientsJson = gson.toJson(nutrientData);
         editor.putString(NUTRIENTS_KEY + "_" + date + "_" + userId, nutrientsJson);
 
-        // Save water intake
         editor.putInt(WATER_KEY + "_" + date + "_" + userId, glassesOfWater);
 
         editor.apply();
 
-        // Save to Firebase
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("meals", mealList); // Assuming mealList is serializable
+        dataMap.put("meals", mealList);
         dataMap.put("nutrients", nutrientData);
         dataMap.put("waterIntake", glassesOfWater);
 
         mDatabase.child("users")
-                .child(userId) // Replace with the current user ID
+                .child(userId)
                 .child("data")
                 .child(date)
                 .setValue(dataMap)
@@ -482,25 +462,21 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void initializeMeals() {
-        // Reset nutrient totals to avoid double-counting
         currentProteins = 0;
         currentFats = 0;
         currentCarbs = 0;
         currentCalories = 0;
 
-        // Calculate totals from the entire mealList
         for (Meal meal : mealList) {
             currentProteins += meal.getProteins();
             currentFats += meal.getFats();
             currentCarbs += meal.getCarbs();
             currentCalories += meal.getCalories();
         }
-        // Update the nutrient views after recalculation
         updateNutrientViews();
     }
 
     private void saveMeals() {
-        // Save meals for the current date using the correct key format
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String mealListJson = gson.toJson(mealList);
         editor.putString(MEALS_KEY + "_" + currentDate + "_" + userId, mealListJson);
@@ -508,7 +484,6 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
     }
 
     private void loadMealsForDate(String date) {
-        // Load meals for specific date using the correct key format
         String mealListJson = sharedPreferences.getString(MEALS_KEY + "_" + date + "_" + userId, null);
         if (mealListJson != null) {
             Type type = new TypeToken<List<Meal>>() {}.getType();
@@ -517,12 +492,10 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
             mealList = new ArrayList<>();
         }
 
-        // Set the updated list to the adapter
         if (mealAdapter != null) {
             mealAdapter.setMealList(mealList);
         }
 
-        // Recalculate and update UI
         initializeMeals();
     }
 
@@ -537,7 +510,7 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
         int index = mealList.indexOf(oldMeal);
         if (index != -1) {
             mealList.set(index, newMeal);
-            saveMeals(); // This now saves with the correct date-specific key
+            saveMeals();
             saveDataForDate(currentDate);
         }
     }
@@ -545,29 +518,25 @@ public class HomeFragment extends Fragment implements MealAdapter.OnMealClickLis
 
 
     private void deleteMeal(Meal meal) {
-        // Update the current totals by subtracting the meal's values
         currentProteins -= meal.getProteins();
         currentFats -= meal.getFats();
         currentCarbs -= meal.getCarbs();
         currentCalories -= meal.getCalories();
 
-        // Remove the meal from the list and save
         mealList.remove(meal);
-        saveMeals(); // This now saves with the correct date-specific key
+        saveMeals();
         saveDataForDate(currentDate);
         updateNutrientViews();
     }
 
     private void addMeal(Meal meal) {
-        // Update the current totals
         currentProteins += meal.getProteins();
         currentFats += meal.getFats();
         currentCarbs += meal.getCarbs();
         currentCalories += meal.getCalories();
 
-        // Add the meal to the list and save
         mealList.add(meal);
-        saveMeals(); // Save to SharedPreferences
+        saveMeals();
         saveDataForDate(currentDate);
         updateNutrientViews();
     }
