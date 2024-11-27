@@ -116,12 +116,17 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         String proteins = proteinsText.getText().toString();
         String fats = fatsText.getText().toString();
         String carbs = carbsText.getText().toString();
-        String newMealName = meal_title.getText().toString();
+
 
         float cal = Float.parseFloat(calories);
         float pro = Float.parseFloat(proteins);
         float fat = Float.parseFloat(fats);
         float carb = Float.parseFloat(carbs);
+
+        //modify name if needed
+        saveMealList(date);
+
+        String newMealName = meal_title.getText().toString();
         // Create an Intent to hold the meal data
         Intent resultIntent = new Intent();
         resultIntent.putExtra("MEAL_NAME", newMealName);
@@ -134,7 +139,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         setResult(RESULT_OK, resultIntent);
         Toast.makeText(this, "Meal saved: " + newMealName + " Calories: " + calories +
                 " Proteins: " + proteins + " Fats: " + fats + " Carbs: " + carbs, Toast.LENGTH_SHORT).show();
-        saveMealList(date);
+
 
         Meal meal = new Meal(newMealName, date, cal, pro, fat, carb);
 
@@ -160,10 +165,20 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
         SharedPreferences sharedPreferences = getSharedPreferences("DailyBitePrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
+        String originalTitle = meal_title.getText().toString().trim();
+        String modifiedTitle = originalTitle;
+        int counter = 1;
+        while (sharedPreferences.contains("MEALS_" + modifiedTitle + "_" + date)) {
+            modifiedTitle = originalTitle + " (" + counter + ")";
+            counter++;
+        }
         String mealsJson = gson.toJson(foodItems);
-        editor.putString("MEALS_" + meal_title.getText().toString() + "_" + date, mealsJson);
+        editor.putString("MEALS_" + modifiedTitle + "_" + date, mealsJson);
+        meal_title.setText(modifiedTitle);
         editor.apply();
+
     }
+
 
     private void loadMealList(String date, String mealTitle) {
         SharedPreferences sharedPreferences = getSharedPreferences("DailyBitePrefs", MODE_PRIVATE);
