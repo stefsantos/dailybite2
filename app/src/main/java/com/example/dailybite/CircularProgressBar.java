@@ -19,18 +19,17 @@ public class CircularProgressBar extends View {
     }
 
     private void init() {
-        // Paint for the background circle
+
         backgroundPaint = new Paint();
-        backgroundPaint.setColor(0xFFE0E0E0); // Gray color for the background
+        backgroundPaint.setColor(0xFFE0E0E0);
         backgroundPaint.setStyle(Paint.Style.STROKE);
-        backgroundPaint.setStrokeWidth(30); // Adjust stroke width for appearance
+        backgroundPaint.setStrokeWidth(30);
         backgroundPaint.setAntiAlias(true);
 
-        // Paint for the foreground (progress) circle
         foregroundPaint = new Paint();
-        foregroundPaint.setColor(0xFF00C853); // Green color for progress
+        foregroundPaint.setColor(0xFF00C853);
         foregroundPaint.setStyle(Paint.Style.STROKE);
-        foregroundPaint.setStrokeWidth(30); // Adjust stroke width for appearance
+        foregroundPaint.setStrokeWidth(30);
         foregroundPaint.setAntiAlias(true);
     }
 
@@ -40,34 +39,34 @@ public class CircularProgressBar extends View {
 
         int width = getWidth();
         int height = getHeight();
-        int radius = Math.min(width, height) / 2 - 15; // Adjust for padding
+        int radius = Math.min(width, height) / 2 - 15;
 
-        // Draw the background circle
+
         canvas.drawCircle(width / 2, height / 2, radius, backgroundPaint);
 
-        // Calculate the sweep angle for the progress
+
         float sweepAngle = 360f * progress / maxProgress;
 
-        // Draw the foreground (progress) arc
+
         canvas.drawArc(
                 width / 2 - radius,
                 height / 2 - radius,
                 width / 2 + radius,
                 height / 2 + radius,
-                -90, // Start from top (12 o'clock)
+                -90,
                 sweepAngle,
                 false,
                 foregroundPaint
         );
     }
 
-    // Method to set progress
+
     public void setProgress(int progress) {
-        this.progress = Math.min(progress, maxProgress); // Ensure progress doesn't exceed maxProgress
-        invalidate(); // Redraw the view when progress is updated
+        this.progress = Math.min(progress, maxProgress);
+        invalidate();
     }
 
-    // Method to set max progress (total step count target)
+
     public void setMaxProgress(int maxProgress) {
         this.maxProgress = maxProgress;
         invalidate();

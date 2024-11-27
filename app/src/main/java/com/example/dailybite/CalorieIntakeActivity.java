@@ -28,7 +28,7 @@ public class CalorieIntakeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    private Map<String, Object> updatedIntakeData; // Store updated intake values for Firebase
+    private Map<String, Object> updatedIntakeData;
 
     private static final String TAG = "CalorieIntakeActivity";
 
@@ -57,7 +57,7 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         fatsText.setOnClickListener(v -> showEditDialog("Edit Fats", fatsText, "g"));
         carbsText.setOnClickListener(v -> showEditDialog("Edit Carbs", carbsText, "g"));
 
-        // back button
+
         backButton.setOnClickListener(v -> finish());
 
         saveButton.setOnClickListener(v -> saveChangesToFirestore());
@@ -107,7 +107,7 @@ public class CalorieIntakeActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Update text view with the new value and unit
+
                     String formattedValue = newValue + " " + unit;
                     textViewToUpdate.setText(formattedValue);
 
@@ -121,7 +121,7 @@ public class CalorieIntakeActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Save all changes to Firestore
+
     private void saveChangesToFirestore() {
         String userId = mAuth.getCurrentUser().getUid();
 
