@@ -234,7 +234,7 @@ public class meal_input extends AppCompatActivity implements foodAdapter.OnFoodI
 
     private void loadMealList(String date, String mealTitle) {
         SharedPreferences sharedPreferences = getSharedPreferences("DailyBitePrefs", MODE_PRIVATE);
-        String key = "MEALS_" + mealTitle + "_" + date;
+        String key = "MEALS_" + mealTitle + "_" + date + "_" + userId;
         String mealsJson = sharedPreferences.getString(key, null);
 
         if (mealsJson != null) {
