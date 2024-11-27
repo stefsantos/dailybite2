@@ -9,8 +9,4 @@
         android:icon="@drawable/home"
         android:title="Home"
         android:backgroundTint="#F7F7F7"/>
-    <item
-        android:id="@+id/navigation_reports"
-        android:icon="@drawable/baseline_auto_graph_24"
-        android:title="Reports" />
 </menu>

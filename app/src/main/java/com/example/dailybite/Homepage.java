@@ -25,9 +25,11 @@ public class Homepage extends AppCompatActivity {
                 selectedFragment = new PedometerFragment();
             } else if (item.getItemId() == R.id.navigation_home) {
                 selectedFragment = new HomeFragment();
-            } else if (item.getItemId() == R.id.navigation_reports) {
+            }
+            /*else if (item.getItemId() == R.id.navigation_reports) {
                 selectedFragment = new ReportsFragment();
             }
+             */
 
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
             return true;
