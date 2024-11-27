@@ -18,7 +18,7 @@
                 android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="80dp"
+                android:layout_marginStart="25dp"
                 android:layout_marginTop="60dp"
                 android:clickable="true"
                 android:focusable="true"
@@ -385,15 +385,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/minus" />
 
-            <ImageView
-                android:id="@+id/user_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="50dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/user_image" />
 
             <TextView
                 android:id="@+id/tv_meals"

@@ -48,7 +48,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Initialize the views from the layout
         backButton = findViewById(R.id.backbutton2);
-        userImage = findViewById(R.id.user_image);
         profileTitle = findViewById(R.id.textView3); // Username TextView
         profileEmail = findViewById(R.id.textView4); // Email TextView
         goalValue = findViewById(R.id.textView5);
